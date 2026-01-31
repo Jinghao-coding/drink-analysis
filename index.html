@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>2026 喝酒日历</title>
+    <title>2026 喝酒记录日历</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -29,6 +29,12 @@
             min-height: 100vh;
             padding-bottom: 60px;
         }
+        
+        /* 容器宽度适配 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
         .navbar {
             background: var(--bg-card);
@@ -37,6 +43,9 @@
             display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 100;
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+        .navbar .container {
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
         }
         .app-title { font-size: 18px; font-weight: 800; color: var(--primary); }
         .sync-badge {
@@ -50,6 +59,14 @@
             background: var(--bg-card);
             margin: 15px; border-radius: 16px; padding: 16px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        
+        /* 桌面端优化 */
+        @media (min-width: 768px) {
+            .card { margin: 20px auto; padding: 24px; max-width: 1200px; }
+            body { padding-bottom: 80px; }
+            .status-dot { max-width: 18px; max-height: 18px; font-size: 10px; }
+            .day-num { font-size: 12px; }
         }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .card-title { font-size: 16px; font-weight: 700; }
@@ -115,14 +132,37 @@
         .bg-good { background: var(--c-good); }
         .bg-drunk { background: var(--c-drunk); }
 
+        /* 筛选按钮 */
+        .filter-bar {
+            display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;
+        }
+        .filter-btn {
+            flex: 1; min-width: calc(25% - 6px); padding: 8px 12px;
+            border: 2px solid #e0e0e0; border-radius: 8px; background: white;
+            font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+        .filter-btn.filter-all { flex-basis: 100%; min-width: 100%; }
+        .filter-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .filter-btn.active { border-width: 2px; }
+        .filter-btn .dot { width: 10px; height: 10px; border-radius: 50%; }
+        @media (max-width: 767px) {
+            .filter-btn { min-width: calc(25% - 6px); font-size: 12px; padding: 10px 8px; }
+            .filter-btn.filter-all { min-width: 100%; }
+        }
+        
         /* 排行榜 */
         .rank-row {
             display: flex; align-items: center; padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
             cursor: pointer;
+            transition: background 0.2s;
         }
+        .rank-row:hover { background: #fafafa; }
         .rank-idx { width: 25px; font-weight: bold; font-style: italic; color: #ccc; }
         .rank-idx.top-1 { color: #f1c40f; }
+        .rank-idx.top-2 { color: #95a5a6; }
+        .rank-idx.top-3 { color: #cd7f32; }
         .rank-avatar {
             width: 36px; height: 36px; border-radius: 50%; color: white;
             display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; margin-right: 10px;
@@ -144,12 +184,17 @@
         /* 抽屉 */
         .sheet-mask {
             position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200;
-            display: flex; align-items: flex-end; opacity: 0; pointer-events: none; transition: 0.3s;
+            display: flex; align-items: flex-end; justify-content: center;
+            opacity: 0; pointer-events: none; transition: 0.3s;
         }
         .sheet-mask.show { opacity: 1; pointer-events: auto; }
         .sheet {
-            width: 100%; background: #fff; border-radius: 20px 20px 0 0; padding: 20px;
+            width: 100%; max-width: 600px; background: #fff; border-radius: 20px 20px 0 0; padding: 20px;
             transform: translateY(100%); transition: 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        @media (min-width: 768px) {
+            .sheet { border-radius: 20px; margin-bottom: 20px; }
+            .sheet-mask { align-items: center; }
         }
         .sheet-mask.show .sheet { transform: translateY(0); }
         
@@ -172,8 +217,10 @@
 <body>
 
 <div class="navbar">
-    <div class="app-title">📅 2026 喝酒日历</div>
-    <div class="sync-badge" id="syncStatus">加载中</div>
+    <div class="container">
+        <div class="app-title">📅 2026 喝酒日历</div>
+        <div class="sync-badge" id="syncStatus">加载中</div>
+    </div>
 </div>
 
 <!-- 1. 日历卡片 -->
@@ -186,6 +233,9 @@
             <button class="m-btn" onclick="chMonth(1)">›</button>
         </div>
     </div>
+    
+    <!-- 筛选按钮 -->
+    <div class="filter-bar" id="filterBar"></div>
 
     <!-- 四宫格说明图例 -->
     <div class="grid-legend">
@@ -248,6 +298,7 @@
     let curYear = 2026;
     let editDay = 1;
     let tempEdit = {};
+    let filterUser = -1; // -1表示不筛选，0-3表示筛选某个用户
     
     // 适配年份
     const now = new Date();
@@ -268,6 +319,16 @@
     function render() {
         document.getElementById('monthTxt').innerText = `${curMonth+1}月`;
         
+        // 0. 筛选按钮
+        const filterBar = document.getElementById('filterBar');
+        let filterHTML = `<div class="filter-btn filter-all ${filterUser === -1 ? 'active' : ''}" onclick="setFilter(-1)" style="border-color: #666; ${filterUser === -1 ? 'background: #f0f0f0;' : ''}">全部显示</div>`;
+        USERS.forEach((u, i) => {
+            filterHTML += `<div class="filter-btn ${filterUser === i ? 'active' : ''}" onclick="setFilter(${i})" style="${filterUser === i ? `border-color: ${u.color}; color: ${u.color}; background: ${u.color}15;` : ''}">
+                <div class="dot" style="background: ${u.color};"></div>${u.name}
+            </div>`;
+        });
+        filterBar.innerHTML = filterHTML;
+        
         // 1. 日历
         const grid = document.getElementById('calendarGrid');
         grid.innerHTML = '';
@@ -286,12 +347,17 @@
             for(let i=0; i<4; i++) {
                 const s = appData[curMonth]?.[d]?.[i];
                 let inner = '';
-                if(s && s !== '') {
-                    // 有状态：显示颜色点 + 名字
-                    inner = `<div class="status-dot ${STATUS_MAP[s].cls}" style="border:1px solid ${USERS[i].color}">${USERS[i].short}</div>`;
+                
+                // 如果正在筛选且不是当前用户，显示灰色占位
+                if(filterUser !== -1 && filterUser !== i) {
+                    if(s && s !== '') {
+                        inner = `<div class="status-dot" style="background:#e0e0e0; border:1px solid #ccc; font-size:7px; opacity:0.3;">${USERS[i].short}</div>`;
+                    }
                 } else {
-                    // 无状态：空占位，保持排版
-                    inner = ``; 
+                    // 正常显示或筛选的用户
+                    if(s && s !== '') {
+                        inner = `<div class="status-dot ${STATUS_MAP[s].cls}" style="border:1px solid ${USERS[i].color}">${USERS[i].short}</div>`;
+                    }
                 }
                 dotsHTML += `<div class="quad-cell">${inner}</div>`;
             }
@@ -318,15 +384,16 @@
 
         list.innerHTML = stats.map((item, idx) => {
             const pct = (item.total/max)*100;
-            const rCls = idx<3 ? `top-${idx+1}` : '';
+            const rCls = idx===0 ? 'top-1' : idx===1 ? 'top-2' : idx===2 ? 'top-3' : '';
+            const isActive = filterUser === item.idx;
             return `
-                <div class="rank-row" onclick="this.classList.toggle('expanded')">
+                <div class="rank-row ${isActive ? 'expanded' : ''}" onclick="toggleRankAndFilter(${item.idx}, this)">
                     <div style="width:100%; display:flex; align-items:center;">
                         <span class="rank-idx ${rCls}">${idx+1}</span>
                         <div class="rank-avatar" style="background:${item.color}">${item.short}</div>
                         <div class="rank-info">
                             <div style="display:flex;justify-content:space-between;">
-                                <b>${item.name}</b>
+                                <b>${item.name} ${isActive ? '✓' : ''}</b>
                                 <b>${item.total} 天</b>
                             </div>
                             <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%;background:${item.color}"></div></div>
@@ -343,6 +410,34 @@
                 </div>
             `;
         }).join('');
+    }
+    
+    // 筛选功能
+    window.setFilter = function(idx) {
+        filterUser = idx;
+        render();
+        // 滚动到日历区域
+        document.querySelector('.cal-body').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    // 点击排行榜切换展开和筛选
+    window.toggleRankAndFilter = function(idx, el) {
+        // 如果点击的是当前筛选的用户，取消筛选
+        if(filterUser === idx) {
+            filterUser = -1;
+            el.classList.remove('expanded');
+        } else {
+            // 否则设置筛选
+            filterUser = idx;
+            // 移除其他的展开状态
+            document.querySelectorAll('.rank-row').forEach(r => r.classList.remove('expanded'));
+            el.classList.add('expanded');
+        }
+        render();
+        // 滚动到日历
+        setTimeout(() => {
+            document.querySelector('.cal-body').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
     }
 
     // Sheet
