@@ -385,9 +385,11 @@
         list.innerHTML = stats.map((item, idx) => {
             const pct = (item.total/max)*100;
             const rCls = idx===0 ? 'top-1' : idx===1 ? 'top-2' : idx===2 ? 'top-3' : '';
+            // 当全部显示或筛选当前用户时，展开详情
             const isActive = filterUser === item.idx;
+            const shouldExpand = filterUser === -1 || isActive;
             return `
-                <div class="rank-row ${isActive ? 'expanded' : ''}" onclick="toggleRankAndFilter(${item.idx}, this)">
+                <div class="rank-row ${shouldExpand ? 'expanded' : ''}" onclick="toggleRankAndFilter(${item.idx}, this)">
                     <div style="width:100%; display:flex; align-items:center;">
                         <span class="rank-idx ${rCls}">${idx+1}</span>
                         <div class="rank-avatar" style="background:${item.color}">${item.short}</div>
