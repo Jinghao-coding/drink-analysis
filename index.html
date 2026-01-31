@@ -3,518 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>2026 喝酒打卡</title>
+    <title>2026 Drunken Diaries</title>
     <style>
         :root {
-            /* 配色方案 - 现代清新 */
-            --bg-body: #f5f7fa;
-            --bg-card: #ffffff;
-            --primary: #4a69bd; /* 优雅蓝 */
-            --text-main: #2f3542;
-            --text-light: #a4b0be;
-            --border: #dfe4ea;
+            --bg-body: #f8f9fd;
+            --primary: #5c7cfa;
+            --primary-dark: #4263eb;
+            --text-main: #343a40;
+            --text-light: #868e96;
+            --card-bg: #ffffff;
             
             /* 状态颜色 */
-            --color-none: #f1f2f6;
-            --text-none: #a4b0be;
-            
-            --color-tipsy: #ffeaa7; /* 微醺 - 鹅黄 */
-            --text-tipsy: #d35400;
-            
-            --color-good: #55efc4;  /* 刚刚好 - 薄荷绿 */
-            --text-good: #00b894;
-            
-            --color-drunk: #ff7675; /* 醉了 - 柔红 */
-            --text-drunk: #fff;
+            --c-none: #e9ecef;
+            --c-tipsy: #ffd43b; /* 微醺-黄 */
+            --c-good: #20c997;  /* 刚刚好-绿 */
+            --c-drunk: #ff6b6b; /* 醉了-红 */
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 40px; /* 底部留白 */
-        }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; }
 
-        /* 顶部导航 */
-        header {
-            background: var(--bg-card);
-            padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        h1 { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
-        
-        .header-controls { display: flex; align-items: center; gap: 12px; }
-        
-        #syncStatus {
-            font-size: 0.75rem;
-            padding: 4px 8px;
-            border-radius: 6px;
-            background: #f1f2f6;
-            color: var(--text-light);
-            transition: all 0.3s;
-        }
-        #syncStatus.saved { background: var(--color-good); color: #006266; }
-        #syncStatus.saving { background: var(--color-tipsy); color: #d35400; }
-        #syncStatus.error { background: var(--color-drunk); color: white; }
-
-        .refresh-btn {
-            background: var(--primary);
-            border: none;
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(74, 105, 189, 0.3);
-            transition: transform 0.2s;
-        }
-        .refresh-btn:active { transform: scale(0.9) rotate(180deg); }
-
-        /* 月份滑动条 */
-        .month-tabs-container {
-            background: var(--bg-card);
-            padding: 10px 0;
-            margin-top: 1px;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            box-shadow: 0 4px 6px -4px rgba(0,0,0,0.05);
-        }
-        
-        .month-tabs-container::-webkit-scrollbar { display: none; } /* 隐藏滚动条 */
-
-        .tab-btn {
-            display: inline-block;
-            padding: 8px 16px;
-            margin: 0 4px;
-            border: none;
-            background: transparent;
-            color: var(--text-light);
-            font-weight: 600;
-            font-size: 0.95rem;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .tab-btn:first-child { margin-left: 15px; }
-        .tab-btn:last-child { margin-right: 15px; }
-        
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 2px 8px rgba(74, 105, 189, 0.4);
-        }
-
-        /* 主内容区域 */
-        .main-container {
-            max-width: 800px;
-            margin: 15px auto;
-            padding: 0 10px;
-        }
-
-        .month-view { display: none; animation: fadeIn 0.3s ease; }
-        .month-view.active { display: block; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 表格样式 */
-        .table-card {
-            background: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-            overflow: hidden; /* 圆角 */
-            position: relative;
-        }
-
-        .table-scroll {
-            overflow-x: auto;
-            padding-bottom: 5px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 100%; /* 确保填满 */
-        }
-
-        th {
-            background: #f8f9fa;
-            color: var(--text-light);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            padding: 10px 5px;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        /* 固定第一列（日期） */
-        th:first-child, td:first-child {
-            position: sticky;
-            left: 0;
-            background: var(--bg-card);
-            z-index: 11;
-            border-right: 1px solid var(--border);
-            width: 50px;
-            min-width: 50px;
-        }
-        th:first-child { background: #f8f9fa; z-index: 12; }
-
-        td {
-            border-bottom: 1px solid var(--border);
-            padding: 6px;
-            text-align: center;
-            vertical-align: middle;
-            height: 44px; /* 增加点击区域 */
-        }
-        
-        td:first-child {
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: var(--text-light);
-        }
-
-        /* 下拉菜单美化 */
-        select {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 100%;
-            height: 32px;
-            border: none;
-            border-radius: 6px;
-            background-color: var(--color-none);
-            color: var(--text-none);
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-align: center;
-            text-align-last: center;
-            cursor: pointer;
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        /* 状态颜色类 */
-        select.status-微醺 { background-color: var(--color-tipsy); color: var(--text-tipsy); }
-        select.status-刚刚好 { background-color: var(--color-good); color: var(--text-good); }
-        select.status-醉了 { background-color: var(--color-drunk); color: var(--text-drunk); }
-
-        /* 底部统计卡片 */
-        .stats-container {
-            margin-top: 15px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            padding: 12px 5px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-        }
-
-        .stat-name { font-size: 0.75rem; color: var(--text-light); margin-bottom: 4px; }
-        .stat-val { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
-        .stat-label { font-size: 0.6rem; color: #ced6e0; }
-
-        /* 加载遮罩 */
-        #loadingMask {
-            position: fixed; top:0; left:0; right:0; bottom:0;
-            background: rgba(255,255,255,0.9);
-            z-index: 999;
+        /* ====================
+           1. 封面页 (Cover)
+           ==================== */
+        #cover-page {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 200;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            backdrop-filter: blur(5px);
+            color: white;
+            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
-        .spinner {
-            width: 40px; height: 40px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { margin-top: 15px; font-size: 0.9rem; color: var(--text-light); }
+        
+        #cover-page.hidden { transform: translateY(-100%); }
 
+        .cover-title { font-size: 3rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .cover-subtitle { font-size: 1.2rem; opacity: 0.9; margin-bottom: 40px; font-weight: 300; }
+        .enter-btn {
+            background: white; color: #764ba2; border: none;
+            padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s;
+        }
+        .enter-btn:active { transform: scale(0.95); }
+
+        /* ====================
+           2. 主界面 (App)
+           ==================== */
+        #app-container {
+            height: 100%; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s 0.3s;
+        }
+        #app-container.visible { opacity: 1; }
+
+        /* 顶部导航 */
+        header {
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+        .app-title { font-weight: 800; font-size: 1.1rem; }
+        .status-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; background: #f1f3f5; color: var(--text-light); transition: 0.3s; }
+        .status-badge.saving { background: var(--c-tipsy); color: #d35400; }
+        .status-badge.saved { background: var(--c-good); color: #fff; }
+
+        /* 月份切换 */
+        .month-nav {
+            display: flex; align-items: center; justify-content: space-between; padding: 15px 20px;
+        }
+        .month-title { font-size: 1.5rem; font-weight: 700; width: 120px; text-align: center; }
+        .nav-btn { background: none; border: none; font-size: 1.5rem; color: var(--primary); cursor: pointer; padding: 5px 15px; }
+
+        /* 日历网格 */
+        .calendar-wrapper { flex: 1; overflow-y: auto; padding: 0 15px 20px; }
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; }
+        .weekday { font-size: 0.8rem; color: var(--text-light); font-weight: 600; }
+        
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        
+        .day-cell {
+            aspect-ratio: 1/1.1; /* 接近正方形 */
+            background: white; border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid transparent;
+            display: flex; flex-direction: column; align-items: center; padding: 5px;
+            cursor: pointer; position: relative; transition: all 0.2s;
+        }
+        .day-cell:active { transform: scale(0.95); background: #f8f9fa; }
+        .day-cell.today { border-color: var(--primary); background: #f0f4ff; }
+        .day-num { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+        
+        /* 4个小点 */
+        .dots-container {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 14px;
+            margin-top: auto; margin-bottom: 4px;
+        }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background-color: var(--c-none); }
+
+        /* 底部统计条 */
+        .footer-stats {
+            background: white; padding: 15px; border-top: 1px solid #eee;
+            display: flex; justify-content: space-around;
+        }
+        .stat-item { text-align: center; }
+        .stat-num { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+        .stat-label { font-size: 0.7rem; color: var(--text-light); }
+
+        /* ====================
+           3. 弹窗 (Modal)
+           ==================== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4); z-index: 300;
+            display: flex; justify-content: center; align-items: flex-end;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        
+        .modal-card {
+            background: white; width: 100%; max-width: 500px;
+            border-radius: 20px 20px 0 0; padding: 25px;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-overlay.open .modal-card { transform: translateY(0); }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-date { font-size: 1.4rem; font-weight: 800; }
+        .modal-close { background: #f1f3f5; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; line-height: 1; cursor: pointer; }
+
+        .person-row { display: flex; align-items: center; margin-bottom: 15px; }
+        .person-name { width: 60px; font-weight: 600; font-size: 1rem; }
+        .status-options { flex: 1; display: flex; gap: 8px; overflow-x: auto; }
+        
+        .radio-opt {
+            flex: 1; text-align: center; padding: 8px 0; border-radius: 8px;
+            font-size: 0.85rem; border: 1px solid #eee; cursor: pointer; transition: 0.2s;
+        }
+        /* 选中状态 */
+        .radio-opt.selected[data-val=""] { background: var(--c-none); border-color: #ced4da; }
+        .radio-opt.selected[data-val="微醺"] { background: var(--c-tipsy); color: #d35400; border-color: var(--c-tipsy); font-weight: bold;}
+        .radio-opt.selected[data-val="刚刚好"] { background: var(--c-good); color: white; border-color: var(--c-good); font-weight: bold;}
+        .radio-opt.selected[data-val="醉了"] { background: var(--c-drunk); color: white; border-color: var(--c-drunk); font-weight: bold;}
+
+        .save-btn {
+            width: 100%; background: var(--primary); color: white; border: none;
+            padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; margin-top: 10px; cursor: pointer;
+        }
+        
     </style>
 </head>
 <body>
 
-<!-- 加载遮罩 -->
-<div id="loadingMask">
-    <div class="spinner"></div>
-    <div class="loading-text">正在同步云端数据...</div>
-</div>
-
-<header>
-    <h1>🍺 2026 统计</h1>
-    <div class="header-controls">
-        <span id="syncStatus">就绪</span>
-        <button class="refresh-btn" onclick="pullData(true)" title="刷新数据">↻</button>
+    <!-- 1. 封面 -->
+    <div id="cover-page">
+        <div class="cover-title">2026</div>
+        <div class="cover-subtitle">喝酒统计 · Drunken Diaries</div>
+        <button class="enter-btn" onclick="enterApp()">开启旅程</button>
     </div>
-</header>
 
-<!-- 月份导航 -->
-<div class="month-tabs-container" id="monthTabs">
-    <!-- JS生成月份按钮 -->
-</div>
+    <!-- 2. 主界面 -->
+    <div id="app-container">
+        <header>
+            <div class="app-title">🍺 2026 统计</div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="syncStatus" class="status-badge">同步中...</span>
+                <button onclick="pullData(true)" style="background:none;border:none;font-size:1.2rem;">↻</button>
+            </div>
+        </header>
 
-<div class="main-container" id="sheetsContainer">
-    <!-- JS生成表格 -->
-</div>
+        <!-- 月份导航 -->
+        <div class="month-nav">
+            <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
+            <div class="month-title" id="currentMonthLabel">1月</div>
+            <button class="nav-btn" onclick="changeMonth(1)">❯</button>
+        </div>
+
+        <!-- 日历主体 -->
+        <div class="calendar-wrapper">
+            <div class="weekdays">
+                <div class="weekday">日</div><div class="weekday">一</div><div class="weekday">二</div>
+                <div class="weekday">三</div><div class="weekday">四</div><div class="weekday">五</div>
+                <div class="weekday">六</div>
+            </div>
+            <div class="days-grid" id="calendarGrid">
+                <!-- JS生成格子 -->
+            </div>
+        </div>
+
+        <!-- 底部简单统计 -->
+        <div class="footer-stats" id="footerStats">
+            <!-- JS生成 -->
+        </div>
+    </div>
+
+    <!-- 3. 打卡弹窗 -->
+    <div class="modal-overlay" id="editModal" onclick="if(event.target===this) closeModal()">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-date" id="modalDateTitle">1月1日</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div id="modalContent">
+                <!-- JS 生成4个人的选项 -->
+            </div>
+            <button class="save-btn" onclick="saveAndClose()">保存记录</button>
+        </div>
+    </div>
 
 <script>
-    // ==========================================
-    // 🔗 配置区域 (已填入你的Key)
-    // ==========================================
+    // ================= 配置区域 =================
     const BIN_ID = "697e0a63d0ea881f40962da0"; 
     const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
-    // ==========================================
-
-    const PEOPLE = ['王思', '郭思', '路思', '高思'];
-    const STATUS_OPTIONS = ['', '微醺', '刚刚好', '醉了'];
-    // 2026年是平年，2月28天
-    const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     
-    let appData = {}; 
-    let saveTimeout = null; // 用于防抖
+    const PEOPLE = ['王思', '郭思', '路思', '高思'];
+    const STATUS_MAP = {
+        '': { color: 'var(--c-none)', label: '空' },
+        '微醺': { color: 'var(--c-tipsy)', label: '微醺' },
+        '刚刚好': { color: 'var(--c-good)', label: '好' },
+        '醉了': { color: 'var(--c-drunk)', label: '醉' }
+    };
+    const OPTIONS = Object.keys(STATUS_MAP);
 
+    // ================= 全局变量 =================
+    let appData = {};
+    let currentMonth = 0; // 0 = Jan
+    let selectedDay = 1;
+    let saveTimeout = null;
+
+    // ================= 初始化 =================
     document.addEventListener('DOMContentLoaded', () => {
-        initUI();
-        pullData(); 
+        // 设置当前月份
+        const now = new Date();
+        // 只有年份是2026才跳到对应月份，否则默认1月
+        if(now.getFullYear() === 2026) {
+            currentMonth = now.getMonth();
+        }
+        
+        updateMonthHeader();
+        pullData();
     });
 
-    // --- 1. 获取数据 (GET) ---
-    async function pullData(isManual = false) {
-        updateStatus('同步中...', 'saving');
-        if(isManual) document.getElementById('loadingMask').style.display = 'flex';
+    function enterApp() {
+        document.getElementById('cover-page').classList.add('hidden');
+        document.getElementById('app-container').classList.add('visible');
+        renderCalendar(); // 确保渲染
+    }
 
-        try {
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                method: 'GET',
-                headers: { 'X-Master-Key': API_KEY }
-            });
+    // ================= 日历逻辑 =================
+    function changeMonth(delta) {
+        let newM = currentMonth + delta;
+        if(newM < 0) return;
+        if(newM > 11) return;
+        currentMonth = newM;
+        updateMonthHeader();
+        renderCalendar();
+    }
 
-            if (!res.ok) throw new Error("API Error");
+    function updateMonthHeader() {
+        document.getElementById('currentMonthLabel').textContent = `${currentMonth + 1}月`;
+    }
+
+    function renderCalendar() {
+        const grid = document.getElementById('calendarGrid');
+        grid.innerHTML = '';
+
+        // 2026年日历算法
+        const firstDayOfMonth = new Date(2026, currentMonth, 1).getDay(); // 星期几 (0-6)
+        const daysInMonth = new Date(2026, currentMonth + 1, 0).getDate(); // 当月天数
+
+        // 1. 填充空白格子 (上个月的)
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            const empty = document.createElement('div');
+            grid.appendChild(empty);
+        }
+
+        // 2. 填充具体日期
+        for (let d = 1; d <= daysInMonth; d++) {
+            const cell = document.createElement('div');
+            cell.className = 'day-cell';
             
-            const json = await res.json();
-            // JSONBin v3 返回的数据在 record 字段里
-            appData = json.record || {};
-            
-            // 兼容性处理：如果record里还是空的或者格式不对
-            if (!appData || Object.keys(appData).length === 0 || appData.status === 'start') {
-                appData = {}; 
+            // 标记今天 (假设现在是2026)
+            const now = new Date();
+            if(now.getFullYear() === 2026 && now.getMonth() === currentMonth && now.getDate() === d) {
+                cell.classList.add('today');
             }
 
-            console.log("数据加载完成:", appData);
-            renderAllValues();
-            recalcAllStats();
-            updateStatus('已同步', 'saved');
-        } catch (error) {
-            console.error(error);
-            updateStatus('同步失败', 'error');
-            alert("网络不太好，请点击右上角刷新重试");
-        } finally {
-            document.getElementById('loadingMask').style.display = 'none';
-        }
-    }
-
-    // --- 2. 保存数据 (PUT) ---
-    async function pushData() {
-        updateStatus('保存中...', 'saving');
-        
-        try {
-            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY
-                },
-                body: JSON.stringify(appData)
-            });
-
-            if (!res.ok) throw new Error("Save Error");
-            updateStatus('已保存', 'saved');
-        } catch (error) {
-            console.error(error);
-            updateStatus('保存失败', 'error');
-        }
-    }
-
-    // --- UI 初始化 ---
-    function initUI() {
-        const tabsContainer = document.getElementById('monthTabs');
-        const sheetsContainer = document.getElementById('sheetsContainer');
-
-        // 生成12个月的界面
-        for (let m = 0; m < 12; m++) {
-            // Tab
-            const btn = document.createElement('button');
-            btn.className = `tab-btn ${m === 0 ? 'active' : ''}`;
-            btn.textContent = `${m + 1}月`;
-            btn.onclick = (e) => {
-                switchTab(m);
-                // 滚动 Tab 到中间让视觉更舒服
-                e.target.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
-            };
-            btn.dataset.month = m;
-            tabsContainer.appendChild(btn);
-
-            // View
-            const view = document.createElement('div');
-            view.className = `month-view ${m === 0 ? 'active' : ''}`;
-            view.id = `view-${m}`;
-            
-            // 表格 HTML
-            let html = `
-                <div class="table-card">
-                    <div class="table-scroll">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>日</th>
-                                    ${PEOPLE.map(p => `<th>${p}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody>
-            `;
-
-            for (let d = 1; d <= DAYS_IN_MONTH[m]; d++) {
-                html += `<tr>
-                    <td>${d}</td>
-                    ${PEOPLE.map((p, pIndex) => `
-                        <td id="cell-${m}-${d}-${pIndex}">
-                            <select onchange="handleStatusChange(${m}, ${d}, ${pIndex}, this)">
-                                ${STATUS_OPTIONS.map(opt => `<option value="${opt}">${opt === '' ? '·' : opt}</option>`).join('')}
-                            </select>
-                        </td>
-                    `).join('')}
-                </tr>`;
+            // 获取4个人的状态颜色
+            let dotsHtml = '';
+            for(let p=0; p<4; p++) {
+                const status = appData[currentMonth]?.[d]?.[p] || '';
+                const color = STATUS_MAP[status].color;
+                dotsHtml += `<div class="dot" style="background-color: ${color}"></div>`;
             }
 
-            html += `
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- 底部统计 -->
-                <div class="stats-container" id="stats-grid-${m}"></div>
+            cell.innerHTML = `
+                <div class="day-num">${d}</div>
+                <div class="dots-container">${dotsHtml}</div>
             `;
-
-            view.innerHTML = html;
-            sheetsContainer.appendChild(view);
+            cell.onclick = () => openModal(d);
+            grid.appendChild(cell);
         }
-        
-        // 确保当前月份高亮
-        const currentMonth = new Date().getMonth();
-        if(currentMonth !== 0) {
-             // 如果想默认跳到当前月，可以取消下面注释
-             // switchTab(currentMonth);
-             // setTimeout(() => document.querySelector(`.tab-btn[data-month="${currentMonth}"]`).scrollIntoView(), 100);
-        }
+
+        renderFooterStats();
     }
 
-    // --- 交互逻辑 ---
-    window.handleStatusChange = function(month, day, personIndex, selectParams) {
-        const val = selectParams.value;
-        
-        // 更新本地数据
-        if (!appData[month]) appData[month] = {};
-        if (!appData[month][day]) appData[month][day] = {};
-        appData[month][day][personIndex] = val;
+    function renderFooterStats() {
+        const footer = document.getElementById('footerStats');
+        let counts = [0, 0, 0, 0];
+        const daysInMonth = new Date(2026, currentMonth + 1, 0).getDate();
 
-        // UI 更新
-        updateColor(selectParams, val);
-        updateMonthStats(month);
-        
-        // 防抖保存（避免快速点击时频繁请求，延迟1秒保存）
-        if (saveTimeout) clearTimeout(saveTimeout);
-        updateStatus('准备保存...', 'saving');
-        saveTimeout = setTimeout(pushData, 1000);
-    };
-
-    function updateColor(el, val) {
-        el.className = ''; // 清空类
-        if(val) el.classList.add(`status-${val}`);
-    }
-
-    function switchTab(monthIndex) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector(`.tab-btn[data-month="${monthIndex}"]`).classList.add('active');
-        
-        document.querySelectorAll('.month-view').forEach(v => v.classList.remove('active'));
-        document.getElementById(`view-${monthIndex}`).classList.add('active');
-    }
-
-    function updateMonthStats(month) {
-        const grid = document.getElementById(`stats-grid-${month}`);
-        if(!grid) return;
-        let counts = [0, 0, 0, 0]; // 对应 4 个人
-        
-        for (let d = 1; d <= DAYS_IN_MONTH[month]; d++) {
+        for (let d = 1; d <= daysInMonth; d++) {
             for (let p = 0; p < 4; p++) {
-                const status = appData[month]?.[d]?.[p];
+                const status = appData[currentMonth]?.[d]?.[p];
                 if (status && status !== '') counts[p]++;
             }
         }
-        
-        grid.innerHTML = PEOPLE.map((name, idx) => `
-            <div class="stat-card">
-                <div class="stat-name">${name}</div>
-                <div class="stat-val">${counts[idx]}</div>
-                <div class="stat-label">天 / 月</div>
+
+        footer.innerHTML = PEOPLE.map((name, idx) => `
+            <div class="stat-item">
+                <div class="stat-num">${counts[idx]}</div>
+                <div class="stat-label">${name}</div>
             </div>
         `).join('');
     }
 
-    function renderAllValues() {
-        // 遍历所有可能的格子，填入数据
-        for (let m = 0; m < 12; m++) {
-            if(!appData[m]) continue;
-            for (let d = 1; d <= DAYS_IN_MONTH[m]; d++) {
-                if(!appData[m][d]) continue;
-                for (let p = 0; p < 4; p++) {
-                    const val = appData[m][d][p];
-                    if(val) {
-                        const cell = document.getElementById(`cell-${m}-${d}-${p}`);
-                        if (cell) {
-                            const select = cell.querySelector('select');
-                            select.value = val;
-                            updateColor(select, val);
-                        }
-                    }
-                }
-            }
+    // ================= 弹窗逻辑 =================
+    // 临时存储当前弹窗里的选择
+    let tempDayData = {};
+
+    function openModal(day) {
+        selectedDay = day;
+        document.getElementById('modalDateTitle').innerText = `${currentMonth+1}月${day}日`;
+        const container = document.getElementById('modalContent');
+        container.innerHTML = '';
+
+        // 获取当前已保存的数据
+        const dayData = appData[currentMonth]?.[day] || {};
+        tempDayData = {...dayData}; // 复制一份
+
+        PEOPLE.forEach((pName, pIndex) => {
+            const currentVal = dayData[pIndex] || '';
+            
+            const row = document.createElement('div');
+            row.className = 'person-row';
+            
+            let optionsHtml = OPTIONS.map(opt => {
+                const isSelected = currentVal === opt ? 'selected' : '';
+                // 仅显示非空选项的Label，或者空
+                const label = opt === '' ? '空' : opt;
+                return `<div class="radio-opt ${isSelected}" 
+                             data-val="${opt}" 
+                             onclick="selectOption(${pIndex}, '${opt}', this)">
+                             ${label}
+                        </div>`;
+            }).join('');
+
+            row.innerHTML = `
+                <div class="person-name">${pName}</div>
+                <div class="status-options" id="opts-${pIndex}">${optionsHtml}</div>
+            `;
+            container.appendChild(row);
+        });
+
+        document.getElementById('editModal').classList.add('open');
+    }
+
+    // 在弹窗里点击某个选项
+    window.selectOption = function(pIndex, val, el) {
+        // 更新临时数据
+        tempDayData[pIndex] = val;
+        
+        // 更新UI高亮
+        const parent = document.getElementById(`opts-${pIndex}`);
+        parent.querySelectorAll('.radio-opt').forEach(opt => opt.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').classList.remove('open');
+    }
+
+    function saveAndClose() {
+        // 写入 appData
+        if (!appData[currentMonth]) appData[currentMonth] = {};
+        appData[currentMonth][selectedDay] = tempDayData;
+
+        // 关闭UI
+        closeModal();
+        renderCalendar(); // 刷新日历上的点
+        renderFooterStats();
+
+        // 触发云端保存
+        pushData();
+    }
+
+    // ================= 数据同步 =================
+    async function pullData(isManual = false) {
+        updateStatus('sync', '同步中...');
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                headers: { 'X-Master-Key': API_KEY }
+            });
+            const json = await res.json();
+            appData = json.record || {};
+            if(!appData || appData.status === 'start') appData = {};
+            
+            renderCalendar();
+            updateStatus('saved', '已同步');
+        } catch (e) {
+            console.error(e);
+            updateStatus('error', '同步失败');
         }
     }
 
-    function recalcAllStats() {
-        for(let m=0; m<12; m++) updateMonthStats(m);
+    async function pushData() {
+        updateStatus('saving', '保存中...');
+        try {
+            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                body: JSON.stringify(appData)
+            });
+            updateStatus('saved', '已保存');
+        } catch (e) {
+            updateStatus('error', '保存失败');
+        }
     }
 
-    function updateStatus(text, type) {
+    function updateStatus(type, text) {
         const el = document.getElementById('syncStatus');
-        el.textContent = text;
-        el.className = type;
+        el.innerText = text;
+        el.className = 'status-badge ' + type;
     }
+
 </script>
 </body>
 </html>
