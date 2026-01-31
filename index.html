@@ -256,6 +256,86 @@
             box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
         }
         #fileInput { display: none; }
+        
+        /* 照片上传样式 */
+        .photo-upload {
+            margin-top: 20px; padding-top: 20px; border-top: 1px dashed #e0e0e0;
+        }
+        .photo-label {
+            font-size: 13px; font-weight: 600; color: var(--text-main);
+            margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
+        }
+        .photo-preview {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;
+        }
+        .photo-item {
+            position: relative; width: 80px; height: 80px; border-radius: 8px;
+            overflow: hidden; border: 2px solid #e0e0e0;
+        }
+        .photo-item img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .photo-remove {
+            position: absolute; top: 2px; right: 2px; width: 20px; height: 20px;
+            background: rgba(0,0,0,0.6); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; cursor: pointer;
+        }
+        .photo-add-btn {
+            width: 80px; height: 80px; border: 2px dashed #ccc; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; color: #ccc; cursor: pointer; transition: 0.2s;
+        }
+        .photo-add-btn:hover { border-color: var(--primary); color: var(--primary); }
+        
+        /* 年度报告样式 */
+        .report-section {
+            margin-top: 20px;
+        }
+        .report-user-tabs {
+            display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;
+        }
+        .report-tab {
+            flex: 1; min-width: calc(25% - 6px); padding: 10px; border-radius: 8px;
+            border: 2px solid #e0e0e0; background: white; font-weight: 600;
+            cursor: pointer; transition: 0.2s; text-align: center;
+        }
+        .report-tab.active {
+            border-width: 2px; transform: translateY(-2px);
+        }
+        .report-content {
+            background: #f8f9fa; padding: 20px; border-radius: 12px;
+        }
+        .report-stats {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;
+            margin-bottom: 20px;
+        }
+        .report-stat-box {
+            background: white; padding: 15px; border-radius: 10px;
+            text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .report-stat-box h3 {
+            margin: 0; font-size: 28px; font-weight: bold;
+        }
+        .report-stat-box p {
+            margin: 5px 0 0 0; font-size: 12px; color: #999;
+        }
+        .report-photos {
+            margin-top: 20px;
+        }
+        .report-photos-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+        }
+        .report-photo {
+            aspect-ratio: 1; border-radius: 8px; overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+        .report-photo img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        @media (max-width: 767px) {
+            .report-tab { min-width: calc(50% - 4px); }
+        }
 
     </style>
 </head>
@@ -284,10 +364,10 @@
 
     <!-- 四宫格说明图例 -->
     <div class="grid-legend">
-        <div class="legend-item"><span style="font-size:14px;">🍷</span> 皓皓 (左上)</div>
-        <div class="legend-item"><span style="font-size:14px;">🍺</span> 小郭 (右上)</div>
-        <div class="legend-item"><span style="font-size:14px;">🥃</span> 路思 (左下)</div>
-        <div class="legend-item"><span style="font-size:14px;">🍻</span> 高博 (右下)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#8e44ad"></div>皓 (左上)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2980b9"></div>郭 (右上)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#d35400"></div>路 (左下)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#16a085"></div>高 (右下)</div>
     </div>
 
     <div class="cal-head">
@@ -321,7 +401,16 @@
     </div>
 </div>
 
-<!-- 4. 录入抽屉 -->
+<!-- 4. 年度报告卡片 -->
+<div class="card">
+    <div class="card-header"><div class="card-title">📊 年度喝酒报告</div></div>
+    <div class="report-section">
+        <div class="report-user-tabs" id="reportTabs"></div>
+        <div class="report-content" id="reportContent"></div>
+    </div>
+</div>
+
+<!-- 5. 录入抽屉 -->
 <div class="sheet-mask" id="sheet" onclick="if(event.target===this) closeSheet()">
     <div class="sheet">
         <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
@@ -329,6 +418,13 @@
             <span onclick="closeSheet()" style="font-size:20px;color:#999;">×</span>
         </div>
         <div id="sheetRows"></div>
+        
+        <!-- 照片上传区域 -->
+        <div class="photo-upload">
+            <div class="photo-label">📸 今日照片 (可选)</div>
+            <div class="photo-preview" id="photoPreview"></div>
+        </div>
+        
         <button class="save-btn" onclick="save()">保存状态</button>
     </div>
 </div>
@@ -338,12 +434,12 @@
     const BIN_ID = "697e0a63d0ea881f40962da0"; 
     const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
 
-    // 用户定义：增加了"位置"说明和专属酒杯图标
+    // 用户定义
     const USERS = [
-        { name: '皓皓', short: '皓', icon: '🍷', color: '#8e44ad', pos: '左上' }, // Purple - 红酒
-        { name: '小郭', short: '郭', icon: '🍺', color: '#2980b9', pos: '右上' }, // Blue - 啤酒
-        { name: '路思', short: '路', icon: '🥃', color: '#d35400', pos: '左下' }, // Orange - 威士忌
-        { name: '高博', short: '高', icon: '🍻', color: '#16a085', pos: '右下' }  // Green - 干杯
+        { name: '皓皓', short: '皓', color: '#8e44ad', pos: '左上' },
+        { name: '小郭', short: '郭', color: '#2980b9', pos: '右上' },
+        { name: '路思', short: '路', color: '#d35400', pos: '左下' },
+        { name: '高博', short: '高', color: '#16a085', pos: '右下' }
     ];
     
     // 状态定义
@@ -360,7 +456,9 @@
     let curYear = 2026;
     let editDay = 1;
     let tempEdit = {};
+    let tempPhotos = []; // 临时存储当天照片
     let filterUser = -1; // -1表示不筛选，0-3表示筛选某个用户
+    let reportUser = 0; // 当前查看的年度报告用户
     
     // 适配年份
     const now = new Date();
@@ -369,6 +467,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         render();
         pull();
+        renderReport();
     });
 
     function chMonth(d) {
@@ -413,12 +512,12 @@
                 // 如果正在筛选且不是当前用户，显示灰色占位
                 if(filterUser !== -1 && filterUser !== i) {
                     if(s && s !== '') {
-                        inner = `<div class="status-dot" style="background:#e0e0e0; border:1px solid #ccc; opacity:0.3;">${USERS[i].icon}</div>`;
+                        inner = `<div class="status-dot" style="background:#e0e0e0; border:1px solid #ccc; font-size:7px; opacity:0.3;">${USERS[i].short}</div>`;
                     }
                 } else {
                     // 正常显示或筛选的用户
                     if(s && s !== '') {
-                        inner = `<div class="status-dot ${STATUS_MAP[s].cls}" style="border:2px solid ${USERS[i].color}">${USERS[i].icon}</div>`;
+                        inner = `<div class="status-dot ${STATUS_MAP[s].cls}" style="border:1px solid ${USERS[i].color}">${USERS[i].short}</div>`;
                     }
                 }
                 dotsHTML += `<div class="quad-cell">${inner}</div>`;
@@ -510,6 +609,7 @@
         document.getElementById('sheetTitle').innerText = `${curMonth+1}月${d}日`;
         const dayData = appData[curMonth]?.[d] || {};
         tempEdit = {...dayData};
+        tempPhotos = dayData.photos ? [...dayData.photos] : [];
         
         document.getElementById('sheetRows').innerHTML = USERS.map((u, i) => {
             const cur = dayData[i] || '';
@@ -521,7 +621,49 @@
             return `<div style="margin-bottom:12px;"><div style="font-weight:bold;margin-bottom:4px;color:${u.color}">${u.name}</div><div class="opt-grid" id="rg-${i}">${btns}</div></div>`;
         }).join('');
         
+        renderPhotoPreview();
         document.getElementById('sheet').classList.add('show');
+    }
+    
+    // 渲染照片预览
+    function renderPhotoPreview() {
+        const preview = document.getElementById('photoPreview');
+        let html = '';
+        tempPhotos.forEach((photo, idx) => {
+            html += `
+                <div class="photo-item">
+                    <img src="${photo}" alt="照片${idx+1}">
+                    <div class="photo-remove" onclick="removePhoto(${idx})">×</div>
+                </div>
+            `;
+        });
+        html += `
+            <div class="photo-add-btn" onclick="addPhoto()">+</div>
+            <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+        `;
+        preview.innerHTML = html;
+    }
+    
+    window.addPhoto = function() {
+        document.getElementById('photoInput').click();
+    }
+    
+    window.handlePhotoUpload = function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            tempPhotos.push(e.target.result);
+            renderPhotoPreview();
+        };
+        reader.readAsDataURL(file);
+        event.target.value = '';
+    }
+    
+    window.removePhoto = function(idx) {
+        tempPhotos.splice(idx, 1);
+        renderPhotoPreview();
     }
 
     window.setOpt = function(i, v, el) {
@@ -534,9 +676,13 @@
 
     function save() {
         if(!appData[curMonth]) appData[curMonth]={};
-        appData[curMonth][editDay] = tempEdit;
+        appData[curMonth][editDay] = {...tempEdit};
+        if(tempPhotos.length > 0) {
+            appData[curMonth][editDay].photos = tempPhotos;
+        }
         closeSheet();
         render();
+        renderReport();
         push();
     }
 
@@ -547,7 +693,9 @@
             const j = await r.json();
             appData = j.record || {};
             if(appData.status==='start') appData={};
-            render(); updSync('saved','已同步');
+            render(); 
+            renderReport();
+            updSync('saved','已同步');
         } catch(e) { updSync('', '离线'); }
     }
 
@@ -626,6 +774,114 @@
         
         // 清空input，允许重复导入同一文件
         event.target.value = '';
+    }
+    
+    // 年度报告生成
+    function renderReport() {
+        // 渲染用户标签
+        const tabs = document.getElementById('reportTabs');
+        tabs.innerHTML = USERS.map((u, i) => {
+            return `<div class="report-tab ${reportUser === i ? 'active' : ''}" 
+                         style="${reportUser === i ? `border-color: ${u.color}; background: ${u.color}15; color: ${u.color};` : ''}"
+                         onclick="switchReport(${i})">${u.name}</div>`;
+        }).join('');
+        
+        // 统计当前用户的年度数据
+        const user = USERS[reportUser];
+        let totalDays = 0;
+        let statusCount = { '微醺': 0, '刚刚好': 0, '醉了': 0 };
+        let photos = [];
+        let monthlyCount = new Array(12).fill(0);
+        
+        for(let m = 0; m < 12; m++) {
+            if(!appData[m]) continue;
+            for(let d = 1; d <= 31; d++) {
+                const dayData = appData[m][d];
+                if(!dayData) continue;
+                
+                const status = dayData[reportUser];
+                if(status && status !== '') {
+                    totalDays++;
+                    monthlyCount[m]++;
+                    if(statusCount[status] !== undefined) {
+                        statusCount[status]++;
+                    }
+                }
+                
+                // 收集照片
+                if(dayData.photos && dayData.photos.length > 0) {
+                    photos.push(...dayData.photos);
+                }
+            }
+        }
+        
+        const maxMonth = monthlyCount.indexOf(Math.max(...monthlyCount)) + 1;
+        const favStatus = Object.keys(statusCount).reduce((a, b) => statusCount[a] > statusCount[b] ? a : b, '微醺');
+        
+        // 渲染报告内容
+        const content = document.getElementById('reportContent');
+        content.innerHTML = `
+            <div style="text-align:center; margin-bottom:20px;">
+                <h2 style="margin:0; color:${user.color};">${user.name} 的 2026 喝酒年度报告</h2>
+                <p style="margin:5px 0; color:#999;">让数据说话，记录美好时光 🍻</p>
+            </div>
+            
+            <div class="report-stats">
+                <div class="report-stat-box">
+                    <h3 style="color:${user.color};">${totalDays}</h3>
+                    <p>总喝酒天数</p>
+                </div>
+                <div class="report-stat-box">
+                    <h3 style="color:var(--c-${favStatus === '微醺' ? 'tipsy' : favStatus === '刚刚好' ? 'good' : 'drunk'});">${favStatus}</h3>
+                    <p>最常见状态</p>
+                </div>
+                <div class="report-stat-box">
+                    <h3 style="color:#3498db;">${maxMonth}月</h3>
+                    <p>喝酒最多月份</p>
+                </div>
+                <div class="report-stat-box">
+                    <h3 style="color:#e67e22;">${photos.length}</h3>
+                    <p>珍贵照片数</p>
+                </div>
+            </div>
+            
+            <div style="background:white; padding:15px; border-radius:10px; margin-bottom:15px;">
+                <h4 style="margin:0 0 10px 0; font-size:14px;">📈 状态分布</h4>
+                <div class="stat-flex">
+                    <div class="stat-item">
+                        <h4 style="color:var(--c-tipsy)">${statusCount['微醺']}</h4>
+                        <p>微醺次数</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4 style="color:var(--c-good)">${statusCount['刚刚好']}</h4>
+                        <p>刚好次数</p>
+                    </div>
+                    <div class="stat-item">
+                        <h4 style="color:var(--c-drunk)">${statusCount['醉了']}</h4>
+                        <p>醉了次数</p>
+                    </div>
+                </div>
+            </div>
+            
+            ${photos.length > 0 ? `
+                <div class="report-photos">
+                    <h4 style="margin:0 0 10px 0; font-size:14px;">📸 年度回忆相册</h4>
+                    <div class="report-photos-grid">
+                        ${photos.slice(0, 9).map(p => `
+                            <div class="report-photo">
+                                <img src="${p}" alt="回忆">
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${photos.length > 9 ? `<p style="text-align:center; color:#999; font-size:12px; margin-top:10px;">还有 ${photos.length - 9} 张照片...</p>` : ''}
+                </div>
+            ` : '<p style="text-align:center; color:#999; padding:20px;">暂无照片记录</p>'}
+        `;
+    }
+    
+    window.switchReport = function(idx) {
+        reportUser = idx;
+        renderReport();
     }
 </script>
 </body>
