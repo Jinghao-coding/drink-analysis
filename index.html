@@ -24,7 +24,8 @@
         body {
             margin: 0; padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-body);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-attachment: fixed;
             color: var(--text-main);
             min-height: 100vh;
             padding-bottom: 60px;
@@ -37,12 +38,13 @@
         }
 
         .navbar {
-            background: var(--bg-card);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             padding: 12px 16px;
             padding-top: max(12px, env(safe-area-inset-top));
             display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
         }
         .navbar .container {
             width: 100%; display: flex; justify-content: space-between; align-items: center;
@@ -58,7 +60,12 @@
         .card {
             background: var(--bg-card);
             margin: 15px; border-radius: 16px; padding: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.25);
         }
         
         /* 桌面端优化 */
@@ -210,7 +217,45 @@
         .save-btn {
             width: 100%; background: var(--primary); color: white; padding: 12px;
             border: none; border-radius: 10px; font-weight: bold; margin-top: 20px; font-size: 16px;
+            cursor: pointer; transition: 0.3s;
         }
+        .save-btn:hover { background: #1a252f; transform: scale(1.02); }
+        
+        /* 导入导出按钮样式 */
+        .io-section {
+            margin-top: 20px; padding-top: 20px; border-top: 2px dashed #e0e0e0;
+        }
+        .io-title {
+            font-size: 14px; font-weight: 700; color: var(--text-main);
+            margin-bottom: 10px; display: flex; align-items: center; gap: 5px;
+        }
+        .io-desc {
+            font-size: 12px; color: var(--text-sub); margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        .io-btns {
+            display: flex; gap: 10px;
+        }
+        .io-btn {
+            flex: 1; padding: 12px; border-radius: 10px; border: 2px solid;
+            font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .io-btn.export {
+            background: white; border-color: #2ecc71; color: #2ecc71;
+        }
+        .io-btn.export:hover {
+            background: #2ecc71; color: white; transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+        .io-btn.import {
+            background: white; border-color: #3498db; color: #3498db;
+        }
+        .io-btn.import:hover {
+            background: #3498db; color: white; transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        #fileInput { display: none; }
 
     </style>
 </head>
@@ -255,11 +300,28 @@
 
 <!-- 2. 排行榜卡片 -->
 <div class="card">
-    <div class="card-header"><div class="card-title">统计排行 (点击展开)</div></div>
+    <div class="card-header"><div class="card-title">统计排行 (点击筛选)</div></div>
     <div id="rankList"></div>
 </div>
 
-<!-- 3. 录入抽屉 -->
+<!-- 3. 数据管理卡片 -->
+<div class="card">
+    <div class="io-section">
+        <div class="io-title">📦 数据管理</div>
+        <div class="io-desc">导出数据保存备份，或导入之前的数据恢复记录</div>
+        <div class="io-btns">
+            <button class="io-btn export" onclick="exportData()">
+                <span>📥</span> 导出数据
+            </button>
+            <button class="io-btn import" onclick="document.getElementById('fileInput').click()">
+                <span>📤</span> 导入数据
+            </button>
+        </div>
+        <input type="file" id="fileInput" accept=".json" onchange="importData(event)">
+    </div>
+</div>
+
+<!-- 4. 录入抽屉 -->
 <div class="sheet-mask" id="sheet" onclick="if(event.target===this) closeSheet()">
     <div class="sheet">
         <div style="display:flex;justify-content:space-between;margin-bottom:15px;">
@@ -279,9 +341,9 @@
     // 用户定义：增加了“位置”说明
     const USERS = [
         { name: '王思', short: '王', color: '#8e44ad', pos: '左上' }, // Purple
-        { name: '郭思', short: '郭', color: '#2980b9', pos: '右上' }, // Blue
+        { name: '小郭', short: '郭', color: '#2980b9', pos: '右上' }, // Blue
         { name: '路思', short: '路', color: '#d35400', pos: '左下' }, // Orange
-        { name: '高思', short: '高', color: '#16a085', pos: '右下' }  // Green
+        { name: '高博', short: '高', color: '#16a085', pos: '右下' }  // Green
     ];
     
     // 状态定义
@@ -502,6 +564,68 @@
 
     function updSync(c,t) { 
         const el=document.getElementById('syncStatus'); el.className=`sync-badge ${c}`; el.innerText=t; 
+    }
+    
+    // 导出数据
+    function exportData() {
+        const dataStr = JSON.stringify(appData, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `drink-calendar-${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // 提示
+        const badge = document.getElementById('syncStatus');
+        const oldText = badge.innerText;
+        const oldClass = badge.className;
+        badge.className = 'sync-badge saved';
+        badge.innerText = '已导出';
+        setTimeout(() => {
+            badge.className = oldClass;
+            badge.innerText = oldText;
+        }, 2000);
+    }
+    
+    // 导入数据
+    function importData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const imported = JSON.parse(e.target.result);
+                
+                // 简单验证数据格式
+                if (typeof imported === 'object') {
+                    appData = imported;
+                    render();
+                    push(); // 同步到云端
+                    
+                    // 提示
+                    const badge = document.getElementById('syncStatus');
+                    badge.className = 'sync-badge saved';
+                    badge.innerText = '导入成功';
+                    setTimeout(() => {
+                        badge.className = 'sync-badge saved';
+                        badge.innerText = '已同步';
+                    }, 2000);
+                } else {
+                    alert('数据格式错误，请选择正确的JSON文件');
+                }
+            } catch (err) {
+                alert('文件解析失败，请确认文件格式正确');
+            }
+        };
+        reader.readAsText(file);
+        
+        // 清空input，允许重复导入同一文件
+        event.target.value = '';
     }
 </script>
 </body>
