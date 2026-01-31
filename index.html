@@ -2,252 +2,408 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026年喝酒统计</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2026 喝酒打卡</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --border-color: #ddd;
-            --bg-tipsy: #ffeaa7; /* 微醺 - 浅黄 */
-            --bg-good: #55efc4;  /* 刚刚好 - 浅绿 */
-            --bg-drunk: #ff7675; /* 醉了 - 红 */
+            /* 配色方案 - 现代清新 */
+            --bg-body: #f5f7fa;
+            --bg-card: #ffffff;
+            --primary: #4a69bd; /* 优雅蓝 */
+            --text-main: #2f3542;
+            --text-light: #a4b0be;
+            --border: #dfe4ea;
+            
+            /* 状态颜色 */
+            --color-none: #f1f2f6;
+            --text-none: #a4b0be;
+            
+            --color-tipsy: #ffeaa7; /* 微醺 - 鹅黄 */
+            --text-tipsy: #d35400;
+            
+            --color-good: #55efc4;  /* 刚刚好 - 薄荷绿 */
+            --text-good: #00b894;
+            
+            --color-drunk: #ff7675; /* 醉了 - 柔红 */
             --text-drunk: #fff;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 0;
+            padding-bottom: 40px; /* 底部留白 */
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            min-height: 80vh;
-            display: flex;
-            flex-direction: column;
-        }
-
+        /* 顶部导航 */
         header {
-            background: var(--primary-color);
-            color: white;
+            background: var(--bg-card);
             padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        h1 { margin: 0; font-size: 1.5rem; }
+        h1 { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+        
+        .header-controls { display: flex; align-items: center; gap: 12px; }
+        
+        #syncStatus {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: #f1f2f6;
+            color: var(--text-light);
+            transition: all 0.3s;
+        }
+        #syncStatus.saved { background: var(--color-good); color: #006266; }
+        #syncStatus.saving { background: var(--color-tipsy); color: #d35400; }
+        #syncStatus.error { background: var(--color-drunk); color: white; }
 
-        .data-controls button {
-            background: rgba(255,255,255,0.2);
-            border: 1px solid rgba(255,255,255,0.5);
+        .refresh-btn {
+            background: var(--primary);
+            border: none;
             color: white;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-left: 5px;
-        }
-        .data-controls button:hover { background: rgba(255,255,255,0.4); }
-
-        /* Tabs styling */
-        .tabs {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             display: flex;
-            background: #ecf0f1;
-            overflow-x: auto;
-            border-bottom: 2px solid var(--primary-color);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(74, 105, 189, 0.3);
+            transition: transform 0.2s;
         }
+        .refresh-btn:active { transform: scale(0.9) rotate(180deg); }
+
+        /* 月份滑动条 */
+        .month-tabs-container {
+            background: var(--bg-card);
+            padding: 10px 0;
+            margin-top: 1px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: 0 4px 6px -4px rgba(0,0,0,0.05);
+        }
+        
+        .month-tabs-container::-webkit-scrollbar { display: none; } /* 隐藏滚动条 */
 
         .tab-btn {
-            flex: 1;
-            min-width: 60px;
-            padding: 12px 5px;
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 0 4px;
             border: none;
-            background: none;
+            background: transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 20px;
             cursor: pointer;
-            font-weight: bold;
-            color: #7f8c8d;
-            transition: all 0.3s;
-            text-align: center;
+            transition: all 0.2s;
         }
-
-        .tab-btn:hover { background: #dfe6e9; }
+        .tab-btn:first-child { margin-left: 15px; }
+        .tab-btn:last-child { margin-right: 15px; }
+        
         .tab-btn.active {
-            background: var(--primary-color);
+            background: var(--primary);
             color: white;
+            box-shadow: 0 2px 8px rgba(74, 105, 189, 0.4);
         }
 
-        /* Table Styling */
-        .sheet-content {
-            padding: 20px;
-            flex-grow: 1;
+        /* 主内容区域 */
+        .main-container {
+            max-width: 800px;
+            margin: 15px auto;
+            padding: 0 10px;
+        }
+
+        .month-view { display: none; animation: fadeIn 0.3s ease; }
+        .month-view.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 表格样式 */
+        .table-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            overflow: hidden; /* 圆角 */
+            position: relative;
+        }
+
+        .table-scroll {
             overflow-x: auto;
+            padding-bottom: 5px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem;
-        }
-
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 8px;
-            text-align: center;
+            min-width: 100%; /* 确保填满 */
         }
 
         th {
-            background-color: #f8f9fa;
+            background: #f8f9fa;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 10px 5px;
             font-weight: 600;
             position: sticky;
             top: 0;
+            z-index: 10;
         }
 
-        /* Column widths */
-        th:first-child { width: 60px; } /* Date column */
+        /* 固定第一列（日期） */
+        th:first-child, td:first-child {
+            position: sticky;
+            left: 0;
+            background: var(--bg-card);
+            z-index: 11;
+            border-right: 1px solid var(--border);
+            width: 50px;
+            min-width: 50px;
+        }
+        th:first-child { background: #f8f9fa; z-index: 12; }
 
-        select {
-            width: 100%;
+        td {
+            border-bottom: 1px solid var(--border);
             padding: 6px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            background: transparent;
-            cursor: pointer;
             text-align: center;
-            text-align-last: center;
-            font-weight: 500;
-        }
-
-        select:focus { outline: none; border-color: var(--accent-color); }
-
-        /* Conditional Formatting Colors */
-        .status- { background-color: #fff; }
-        .status-微醺 { background-color: var(--bg-tipsy); color: #d35400; }
-        .status-刚刚好 { background-color: var(--bg-good); color: #006266; }
-        .status-醉了 { background-color: var(--bg-drunk); color: var(--text-drunk); }
-
-        /* Footer Stats */
-        .stats-footer {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f1f2f6;
-            border-radius: 6px;
+            vertical-align: middle;
+            height: 44px; /* 增加点击区域 */
         }
         
-        .stats-grid {
+        td:first-child {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* 下拉菜单美化 */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 100%;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--color-none);
+            color: var(--text-none);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            text-align-last: center;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        /* 状态颜色类 */
+        select.status-微醺 { background-color: var(--color-tipsy); color: var(--text-tipsy); }
+        select.status-刚刚好 { background-color: var(--color-good); color: var(--text-good); }
+        select.status-醉了 { background-color: var(--color-drunk); color: var(--text-drunk); }
+
+        /* 底部统计卡片 */
+        .stats-container {
+            margin-top: 15px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 People */
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
         }
 
         .stat-card {
-            background: white;
-            padding: 10px;
-            border-radius: 4px;
+            background: var(--bg-card);
+            padding: 12px 5px;
+            border-radius: 10px;
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
         }
 
-        .stat-name { font-size: 0.85rem; color: #7f8c8d; margin-bottom: 5px; }
-        .stat-value { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); }
-        .stat-unit { font-size: 0.8rem; color: #999; }
+        .stat-name { font-size: 0.75rem; color: var(--text-light); margin-bottom: 4px; }
+        .stat-val { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
+        .stat-label { font-size: 0.6rem; color: #ced6e0; }
 
-        /* Hide logic */
-        .month-view { display: none; }
-        .month-view.active { display: block; }
+        /* 加载遮罩 */
+        #loadingMask {
+            position: fixed; top:0; left:0; right:0; bottom:0;
+            background: rgba(255,255,255,0.9);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { margin-top: 15px; font-size: 0.9rem; color: var(--text-light); }
 
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <h1>🍺 2026年喝酒统计</h1>
-        <div class="data-controls">
-            <button onclick="exportData()">备份数据</button>
-            <button onclick="importData()">恢复数据</button>
-        </div>
-    </header>
+<!-- 加载遮罩 -->
+<div id="loadingMask">
+    <div class="spinner"></div>
+    <div class="loading-text">正在同步云端数据...</div>
+</div>
 
-    <!-- Month Tabs -->
-    <nav class="tabs" id="monthTabs">
-        <!-- Generated by JS -->
-    </nav>
-
-    <div id="sheetsContainer">
-        <!-- Tables Generated by JS -->
+<header>
+    <h1>🍺 2026 统计</h1>
+    <div class="header-controls">
+        <span id="syncStatus">就绪</span>
+        <button class="refresh-btn" onclick="pullData(true)" title="刷新数据">↻</button>
     </div>
+</header>
+
+<!-- 月份导航 -->
+<div class="month-tabs-container" id="monthTabs">
+    <!-- JS生成月份按钮 -->
+</div>
+
+<div class="main-container" id="sheetsContainer">
+    <!-- JS生成表格 -->
 </div>
 
 <script>
-    // 配置
+    // ==========================================
+    // 🔗 配置区域 (已填入你的Key)
+    // ==========================================
+    const BIN_ID = "697e0a63d0ea881f40962da0"; 
+    const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
+    // ==========================================
+
     const PEOPLE = ['王思', '郭思', '路思', '高思'];
     const STATUS_OPTIONS = ['', '微醺', '刚刚好', '醉了'];
-    const YEAR = 2026;
-    
-    // 2026年各月天数 (2026是平年)
+    // 2026年是平年，2月28天
     const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    
+    let appData = {}; 
+    let saveTimeout = null; // 用于防抖
 
-    // 全局数据存储结构: data[monthIndex][dayIndex][personIndex] = statusString
-    let appData = {};
-
-    // 初始化
     document.addEventListener('DOMContentLoaded', () => {
-        loadDataFromStorage();
         initUI();
-        switchTab(0); // 默认显示1月
+        pullData(); 
     });
 
+    // --- 1. 获取数据 (GET) ---
+    async function pullData(isManual = false) {
+        updateStatus('同步中...', 'saving');
+        if(isManual) document.getElementById('loadingMask').style.display = 'flex';
+
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+                method: 'GET',
+                headers: { 'X-Master-Key': API_KEY }
+            });
+
+            if (!res.ok) throw new Error("API Error");
+            
+            const json = await res.json();
+            // JSONBin v3 返回的数据在 record 字段里
+            appData = json.record || {};
+            
+            // 兼容性处理：如果record里还是空的或者格式不对
+            if (!appData || Object.keys(appData).length === 0 || appData.status === 'start') {
+                appData = {}; 
+            }
+
+            console.log("数据加载完成:", appData);
+            renderAllValues();
+            recalcAllStats();
+            updateStatus('已同步', 'saved');
+        } catch (error) {
+            console.error(error);
+            updateStatus('同步失败', 'error');
+            alert("网络不太好，请点击右上角刷新重试");
+        } finally {
+            document.getElementById('loadingMask').style.display = 'none';
+        }
+    }
+
+    // --- 2. 保存数据 (PUT) ---
+    async function pushData() {
+        updateStatus('保存中...', 'saving');
+        
+        try {
+            const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
+                body: JSON.stringify(appData)
+            });
+
+            if (!res.ok) throw new Error("Save Error");
+            updateStatus('已保存', 'saved');
+        } catch (error) {
+            console.error(error);
+            updateStatus('保存失败', 'error');
+        }
+    }
+
+    // --- UI 初始化 ---
     function initUI() {
         const tabsContainer = document.getElementById('monthTabs');
         const sheetsContainer = document.getElementById('sheetsContainer');
 
-        // 生成12个月
+        // 生成12个月的界面
         for (let m = 0; m < 12; m++) {
-            // 1. 创建 Tab 按钮
+            // Tab
             const btn = document.createElement('button');
-            btn.className = 'tab-btn';
+            btn.className = `tab-btn ${m === 0 ? 'active' : ''}`;
             btn.textContent = `${m + 1}月`;
-            btn.onclick = () => switchTab(m);
+            btn.onclick = (e) => {
+                switchTab(m);
+                // 滚动 Tab 到中间让视觉更舒服
+                e.target.scrollIntoView({behavior: 'smooth', inline: 'center', block: 'nearest'});
+            };
             btn.dataset.month = m;
             tabsContainer.appendChild(btn);
 
-            // 2. 创建月份视图 (表格 + 统计)
+            // View
             const view = document.createElement('div');
-            view.className = 'month-view';
+            view.className = `month-view ${m === 0 ? 'active' : ''}`;
             view.id = `view-${m}`;
             
-            // 构建表格 HTML
+            // 表格 HTML
             let html = `
-                <div class="sheet-content">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>日期</th>
-                                ${PEOPLE.map(p => `<th>${p}</th>`).join('')}
-                            </tr>
-                        </thead>
-                        <tbody>
+                <div class="table-card">
+                    <div class="table-scroll">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>日</th>
+                                    ${PEOPLE.map(p => `<th>${p}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
             `;
 
-            // 生成每一天
             for (let d = 1; d <= DAYS_IN_MONTH[m]; d++) {
                 html += `<tr>
-                    <td>${d}日</td>
+                    <td>${d}</td>
                     ${PEOPLE.map((p, pIndex) => `
-                        <td class="cell-wrapper">
-                            <select 
-                                onchange="handleStatusChange(${m}, ${d}, ${pIndex}, this)"
-                                id="select-${m}-${d}-${pIndex}">
-                                ${STATUS_OPTIONS.map(opt => `<option value="${opt}">${opt === '' ? '...' : opt}</option>`).join('')}
+                        <td id="cell-${m}-${d}-${pIndex}">
+                            <select onchange="handleStatusChange(${m}, ${d}, ${pIndex}, this)">
+                                ${STATUS_OPTIONS.map(opt => `<option value="${opt}">${opt === '' ? '·' : opt}</option>`).join('')}
                             </select>
                         </td>
                     `).join('')}
@@ -255,171 +411,110 @@
             }
 
             html += `
-                        </tbody>
-                    </table>
-                    
-                    <!-- 底部统计区域 -->
-                    <div class="stats-footer">
-                        <div class="stats-grid" id="stats-grid-${m}">
-                            <!-- 统计卡片会动态生成 -->
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+                <!-- 底部统计 -->
+                <div class="stats-container" id="stats-grid-${m}"></div>
             `;
 
             view.innerHTML = html;
             sheetsContainer.appendChild(view);
         }
         
-        // 渲染所有下拉框的初始值和颜色
-        renderAllValues();
-        // 计算所有统计
-        recalcAllStats();
+        // 确保当前月份高亮
+        const currentMonth = new Date().getMonth();
+        if(currentMonth !== 0) {
+             // 如果想默认跳到当前月，可以取消下面注释
+             // switchTab(currentMonth);
+             // setTimeout(() => document.querySelector(`.tab-btn[data-month="${currentMonth}"]`).scrollIntoView(), 100);
+        }
     }
 
-    // 切换月份 Tab
-    function switchTab(monthIndex) {
-        // 更新按钮状态
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector(`.tab-btn[data-month="${monthIndex}"]`).classList.add('active');
-
-        // 更新视图显示
-        document.querySelectorAll('.month-view').forEach(v => v.classList.remove('active'));
-        document.getElementById(`view-${monthIndex}`).classList.add('active');
-    }
-
-    // 处理状态变更
+    // --- 交互逻辑 ---
     window.handleStatusChange = function(month, day, personIndex, selectParams) {
         const val = selectParams.value;
         
-        // 更新数据对象
+        // 更新本地数据
         if (!appData[month]) appData[month] = {};
         if (!appData[month][day]) appData[month][day] = {};
         appData[month][day][personIndex] = val;
 
-        // 保存到本地存储
-        saveDataToStorage();
-
-        // 更新颜色
+        // UI 更新
         updateColor(selectParams, val);
-
-        // 更新当月统计
         updateMonthStats(month);
+        
+        // 防抖保存（避免快速点击时频繁请求，延迟1秒保存）
+        if (saveTimeout) clearTimeout(saveTimeout);
+        updateStatus('准备保存...', 'saving');
+        saveTimeout = setTimeout(pushData, 1000);
     };
 
-    // 更新颜色 (Conditional Formatting)
-    function updateColor(selectElement, value) {
-        // 移除所有旧的状态类
-        STATUS_OPTIONS.forEach(opt => {
-            selectElement.classList.remove(`status-${opt}`);
-        });
-        // 添加新的状态类
-        selectElement.classList.add(`status-${value}`);
-        
-        // 同时修改父级td背景，为了更好看的效果 (可选)
-        selectElement.parentElement.className = `cell-wrapper status-${value}`;
+    function updateColor(el, val) {
+        el.className = ''; // 清空类
+        if(val) el.classList.add(`status-${val}`);
     }
 
-    // 更新某月的统计数据
+    function switchTab(monthIndex) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector(`.tab-btn[data-month="${monthIndex}"]`).classList.add('active');
+        
+        document.querySelectorAll('.month-view').forEach(v => v.classList.remove('active'));
+        document.getElementById(`view-${monthIndex}`).classList.add('active');
+    }
+
     function updateMonthStats(month) {
         const grid = document.getElementById(`stats-grid-${month}`);
+        if(!grid) return;
         let counts = [0, 0, 0, 0]; // 对应 4 个人
-
-        // 遍历该月所有天数
+        
         for (let d = 1; d <= DAYS_IN_MONTH[month]; d++) {
             for (let p = 0; p < 4; p++) {
                 const status = appData[month]?.[d]?.[p];
-                // 只要不是 undefined 且不是空字符串，就算喝了
-                if (status && status !== '') {
-                    counts[p]++;
-                }
+                if (status && status !== '') counts[p]++;
             }
         }
-
-        // 渲染统计 HTML
+        
         grid.innerHTML = PEOPLE.map((name, idx) => `
             <div class="stat-card">
                 <div class="stat-name">${name}</div>
-                <div class="stat-value">${counts[idx]}</div>
-                <div class="stat-unit">天 / 月</div>
+                <div class="stat-val">${counts[idx]}</div>
+                <div class="stat-label">天 / 月</div>
             </div>
         `).join('');
     }
 
-    function recalcAllStats() {
-        for(let m=0; m<12; m++) updateMonthStats(m);
-    }
-
     function renderAllValues() {
+        // 遍历所有可能的格子，填入数据
         for (let m = 0; m < 12; m++) {
+            if(!appData[m]) continue;
             for (let d = 1; d <= DAYS_IN_MONTH[m]; d++) {
+                if(!appData[m][d]) continue;
                 for (let p = 0; p < 4; p++) {
-                    const savedVal = appData[month]?.[d]?.[p] || ''; // Typo fixed in logic below
-                    const val = (appData[m] && appData[m][d] && appData[m][d][p]) ? appData[m][d][p] : '';
-                    
-                    const select = document.getElementById(`select-${m}-${d}-${p}`);
-                    if (select) {
-                        select.value = val;
-                        updateColor(select, val);
+                    const val = appData[m][d][p];
+                    if(val) {
+                        const cell = document.getElementById(`cell-${m}-${d}-${p}`);
+                        if (cell) {
+                            const select = cell.querySelector('select');
+                            select.value = val;
+                            updateColor(select, val);
+                        }
                     }
                 }
             }
         }
     }
 
-    // --- 数据持久化 ---
-
-    function saveDataToStorage() {
-        localStorage.setItem('drinkStats2026', JSON.stringify(appData));
+    function recalcAllStats() {
+        for(let m=0; m<12; m++) updateMonthStats(m);
     }
 
-    function loadDataFromStorage() {
-        const saved = localStorage.getItem('drinkStats2026');
-        if (saved) {
-            try {
-                appData = JSON.parse(saved);
-            } catch (e) {
-                console.error("数据解析失败", e);
-                appData = {};
-            }
-        }
+    function updateStatus(text, type) {
+        const el = document.getElementById('syncStatus');
+        el.textContent = text;
+        el.className = type;
     }
-
-    // --- 导出导入功能 (JSON) ---
-    window.exportData = function() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "2026_drinking_stats.json");
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-    }
-
-    window.importData = function() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'application/json';
-        input.onchange = e => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.readAsText(file, 'UTF-8');
-            reader.onload = readerEvent => {
-                try {
-                    const content = readerEvent.target.result;
-                    appData = JSON.parse(content);
-                    saveDataToStorage();
-                    renderAllValues();
-                    recalcAllStats();
-                    alert("数据恢复成功！");
-                } catch (err) {
-                    alert("文件格式错误");
-                }
-            }
-        };
-        input.click();
-    }
-
 </script>
 </body>
 </html>
