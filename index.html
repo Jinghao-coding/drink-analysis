@@ -6,433 +6,424 @@
     <title>2026 Drunken Diaries</title>
     <style>
         :root {
-            --bg-body: #f8f9fd;
+            --bg-body: #f4f7f6;
             --primary: #5c7cfa;
-            --primary-dark: #4263eb;
-            --text-main: #343a40;
-            --text-light: #868e96;
+            --text-main: #2c3e50;
+            --text-light: #95a5a6;
             --card-bg: #ffffff;
             
-            /* 状态颜色 */
-            --c-none: #e9ecef;
-            --c-tipsy: #ffd43b; /* 微醺-黄 */
-            --c-good: #20c997;  /* 刚刚好-绿 */
-            --c-drunk: #ff6b6b; /* 醉了-红 */
+            /* 状态颜色定义 */
+            --c-tipsy: #f1c40f; /* 微醺 - 亮黄 */
+            --c-good: #2ecc71;  /* 刚刚好 - 鲜绿 */
+            --c-drunk: #e74c3c; /* 醉了 - 鲜红 */
+            --c-none: #ecf0f1;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg-body); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* ====================
-           1. 封面页 (Cover)
-           ==================== */
+        /* ==================== 1. 封面 ==================== */
         #cover-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            z-index: 200;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            z-index: 200; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1);
         }
-        
         #cover-page.hidden { transform: translateY(-100%); }
+        .cover-title { font-size: 2.5rem; font-weight: 800; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .enter-btn { margin-top: 40px; padding: 12px 35px; border-radius: 30px; border: none; background: white; color: #2a5298; font-weight: bold; font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2); cursor: pointer; }
 
-        .cover-title { font-size: 3rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -1px; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .cover-subtitle { font-size: 1.2rem; opacity: 0.9; margin-bottom: 40px; font-weight: 300; }
-        .enter-btn {
-            background: white; color: #764ba2; border: none;
-            padding: 15px 40px; font-size: 1.2rem; font-weight: bold; border-radius: 50px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s;
-        }
-        .enter-btn:active { transform: scale(0.95); }
+        /* ==================== 2. 主界面 ==================== */
+        #app-container { flex: 1; display: flex; flex-direction: column; height: 100%; }
 
-        /* ====================
-           2. 主界面 (App)
-           ==================== */
-        #app-container {
-            height: 100%; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s 0.3s;
-        }
-        #app-container.visible { opacity: 1; }
-
-        /* 顶部导航 */
-        header {
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            background: var(--card-bg); box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-        }
+        header { padding: 12px 15px; background: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); z-index: 10; }
         .app-title { font-weight: 800; font-size: 1.1rem; }
-        .status-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; background: #f1f3f5; color: var(--text-light); transition: 0.3s; }
-        .status-badge.saving { background: var(--c-tipsy); color: #d35400; }
-        .status-badge.saved { background: var(--c-good); color: #fff; }
+        .sync-tag { font-size: 0.7rem; padding: 3px 8px; border-radius: 4px; background: #eee; color: #777; transition: 0.3s; }
+        .sync-tag.saved { background: var(--c-good); color: white; }
+        .sync-tag.saving { background: var(--c-tipsy); color: white; }
 
         /* 月份切换 */
-        .month-nav {
-            display: flex; align-items: center; justify-content: space-between; padding: 15px 20px;
-        }
-        .month-title { font-size: 1.5rem; font-weight: 700; width: 120px; text-align: center; }
-        .nav-btn { background: none; border: none; font-size: 1.5rem; color: var(--primary); cursor: pointer; padding: 5px 15px; }
+        .month-bar { display: flex; align-items: center; justify-content: center; padding: 10px 0; background: var(--bg-body); }
+        .month-label { font-size: 1.2rem; font-weight: 700; width: 100px; text-align: center; }
+        .arrow-btn { border: none; background: none; font-size: 1.2rem; color: var(--primary); padding: 0 20px; cursor: pointer; }
 
-        /* 日历网格 */
-        .calendar-wrapper { flex: 1; overflow-y: auto; padding: 0 15px 20px; }
-        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 10px; }
-        .weekday { font-size: 0.8rem; color: var(--text-light); font-weight: 600; }
-        
-        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+        /* 日历区域 */
+        .calendar-area { flex: 1; overflow-y: auto; padding: 0 10px; }
+        .week-header { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 5px; }
+        .w-day { font-size: 0.8rem; color: var(--text-light); }
+
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; padding-bottom: 20px; }
         
         .day-cell {
-            aspect-ratio: 1/1.1; /* 接近正方形 */
-            background: white; border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02); border: 1px solid transparent;
-            display: flex; flex-direction: column; align-items: center; padding: 5px;
-            cursor: pointer; position: relative; transition: all 0.2s;
+            background: white; border-radius: 8px; aspect-ratio: 1/1.1;
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+            padding: 4px 2px; position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer;
         }
-        .day-cell:active { transform: scale(0.95); background: #f8f9fa; }
-        .day-cell.today { border-color: var(--primary); background: #f0f4ff; }
-        .day-num { font-size: 0.9rem; font-weight: 600; margin-bottom: 4px; }
+        .day-cell.today { border: 2px solid var(--primary); }
+        .day-num { font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px; }
+
+        /* 格子内的头像矩阵 (2x2) */
+        .avatars-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2px; width: 100%; height: 100%; align-content: start; justify-items: center;
+        }
+        .avatar-badge {
+            width: 18px; height: 18px; border-radius: 50%;
+            font-size: 0.6rem; color: white; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+
+        /* 底部统计面板 */
+        .stats-panel {
+            background: white; border-top: 1px solid #eee; padding: 10px 15px 20px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03); z-index: 20;
+        }
+        .stats-title { font-size: 0.8rem; font-weight: bold; color: var(--text-light); margin-bottom: 8px; }
         
-        /* 4个小点 */
-        .dots-container {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 14px;
-            margin-top: auto; margin-bottom: 4px;
+        .stats-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        /* 隐藏滚动条 */
+        .stats-row::-webkit-scrollbar { display: none; }
+        
+        .stat-card {
+            flex: 1; min-width: 80px; background: #f8f9fa; border-radius: 8px; padding: 8px;
+            display: flex; flex-direction: column; align-items: center;
         }
-        .dot { width: 6px; height: 6px; border-radius: 50%; background-color: var(--c-none); }
+        .p-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 5px; color: var(--text-main); }
+        .stat-bars { width: 100%; display: flex; flex-direction: column; gap: 3px; }
+        .bar-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; }
+        .dot-indicator { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
 
-        /* 底部统计条 */
-        .footer-stats {
-            background: white; padding: 15px; border-top: 1px solid #eee;
-            display: flex; justify-content: space-around;
-        }
-        .stat-item { text-align: center; }
-        .stat-num { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
-        .stat-label { font-size: 0.7rem; color: var(--text-light); }
-
-        /* ====================
-           3. 弹窗 (Modal)
-           ==================== */
-        .modal-overlay {
+        /* ==================== 3. 弹窗 ==================== */
+        .modal-mask {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.4); z-index: 300;
-            display: flex; justify-content: center; align-items: flex-end;
+            background: rgba(0,0,0,0.5); z-index: 100;
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
+            display: flex; align-items: flex-end; justify-content: center;
         }
-        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-mask.show { opacity: 1; pointer-events: auto; }
         
-        .modal-card {
-            background: white; width: 100%; max-width: 500px;
+        .modal-body {
+            background: white; width: 100%; max-width: 600px;
             border-radius: 20px 20px 0 0; padding: 25px;
-            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        .modal-overlay.open .modal-card { transform: translateY(0); }
+        .modal-mask.show .modal-body { transform: translateY(0); }
 
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-date { font-size: 1.4rem; font-weight: 800; }
-        .modal-close { background: #f1f3f5; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.2rem; line-height: 1; cursor: pointer; }
-
-        .person-row { display: flex; align-items: center; margin-bottom: 15px; }
-        .person-name { width: 60px; font-weight: 600; font-size: 1rem; }
-        .status-options { flex: 1; display: flex; gap: 8px; overflow-x: auto; }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .modal-title { font-size: 1.3rem; font-weight: 800; }
         
-        .radio-opt {
-            flex: 1; text-align: center; padding: 8px 0; border-radius: 8px;
-            font-size: 0.85rem; border: 1px solid #eee; cursor: pointer; transition: 0.2s;
+        .opt-row { display: flex; align-items: center; margin-bottom: 15px; }
+        .opt-name { width: 50px; font-weight: bold; font-size: 1rem; }
+        .opt-group { flex: 1; display: flex; background: #f1f3f5; border-radius: 8px; padding: 2px; }
+        .opt-btn {
+            flex: 1; text-align: center; padding: 8px 0; font-size: 0.8rem; border-radius: 6px; color: #7f8c8d; cursor: pointer; transition: 0.2s;
         }
-        /* 选中状态 */
-        .radio-opt.selected[data-val=""] { background: var(--c-none); border-color: #ced4da; }
-        .radio-opt.selected[data-val="微醺"] { background: var(--c-tipsy); color: #d35400; border-color: var(--c-tipsy); font-weight: bold;}
-        .radio-opt.selected[data-val="刚刚好"] { background: var(--c-good); color: white; border-color: var(--c-good); font-weight: bold;}
-        .radio-opt.selected[data-val="醉了"] { background: var(--c-drunk); color: white; border-color: var(--c-drunk); font-weight: bold;}
-
-        .save-btn {
-            width: 100%; background: var(--primary); color: white; border: none;
-            padding: 14px; border-radius: 12px; font-size: 1rem; font-weight: bold; margin-top: 10px; cursor: pointer;
-        }
+        .opt-btn.active { background: white; color: #333; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         
+        /* 选中态颜色 */
+        .opt-btn[data-v="微醺"].active { color: #d35400; background: var(--c-tipsy); }
+        .opt-btn[data-v="刚刚好"].active { color: #fff; background: var(--c-good); }
+        .opt-btn[data-v="醉了"].active { color: #fff; background: var(--c-drunk); }
+
+        .confirm-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: bold; margin-top: 10px; cursor: pointer; }
+
     </style>
 </head>
 <body>
 
-    <!-- 1. 封面 -->
+    <!-- 封面 -->
     <div id="cover-page">
-        <div class="cover-title">2026</div>
-        <div class="cover-subtitle">喝酒统计 · Drunken Diaries</div>
-        <button class="enter-btn" onclick="enterApp()">开启旅程</button>
+        <div class="cover-title">2026 🍻</div>
+        <div style="opacity: 0.8; margin-top: 5px;">Drunken Diaries</div>
+        <button class="enter-btn" onclick="enterApp()">开始记录</button>
     </div>
 
-    <!-- 2. 主界面 -->
+    <!-- 主程序 -->
     <div id="app-container">
         <header>
-            <div class="app-title">🍺 2026 统计</div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <span id="syncStatus" class="status-badge">同步中...</span>
-                <button onclick="pullData(true)" style="background:none;border:none;font-size:1.2rem;">↻</button>
-            </div>
+            <div class="app-title">2026 统计</div>
+            <div class="sync-tag" id="syncStatus">就绪</div>
         </header>
 
-        <!-- 月份导航 -->
-        <div class="month-nav">
-            <button class="nav-btn" onclick="changeMonth(-1)">❮</button>
-            <div class="month-title" id="currentMonthLabel">1月</div>
-            <button class="nav-btn" onclick="changeMonth(1)">❯</button>
+        <div class="month-bar">
+            <button class="arrow-btn" onclick="switchMonth(-1)">❮</button>
+            <div class="month-label" id="monthTitle">1月</div>
+            <button class="arrow-btn" onclick="switchMonth(1)">❯</button>
         </div>
 
-        <!-- 日历主体 -->
-        <div class="calendar-wrapper">
-            <div class="weekdays">
-                <div class="weekday">日</div><div class="weekday">一</div><div class="weekday">二</div>
-                <div class="weekday">三</div><div class="weekday">四</div><div class="weekday">五</div>
-                <div class="weekday">六</div>
+        <div class="calendar-area">
+            <div class="week-header">
+                <div class="w-day">日</div><div class="w-day">一</div><div class="w-day">二</div>
+                <div class="w-day">三</div><div class="w-day">四</div><div class="w-day">五</div>
+                <div class="w-day">六</div>
             </div>
             <div class="days-grid" id="calendarGrid">
-                <!-- JS生成格子 -->
+                <!-- 动态生成 -->
             </div>
         </div>
 
-        <!-- 底部简单统计 -->
-        <div class="footer-stats" id="footerStats">
-            <!-- JS生成 -->
+        <!-- 详细统计看板 -->
+        <div class="stats-panel">
+            <div class="stats-title">本月详细统计</div>
+            <div class="stats-row" id="statsContainer">
+                <!-- 动态生成 -->
+            </div>
         </div>
     </div>
 
-    <!-- 3. 打卡弹窗 -->
-    <div class="modal-overlay" id="editModal" onclick="if(event.target===this) closeModal()">
-        <div class="modal-card">
+    <!-- 弹窗 -->
+    <div class="modal-mask" id="editModal" onclick="if(event.target===this) closeModal()">
+        <div class="modal-body">
             <div class="modal-header">
-                <div class="modal-date" id="modalDateTitle">1月1日</div>
-                <button class="modal-close" onclick="closeModal()">×</button>
+                <div class="modal-title" id="modalDate">1月1日</div>
+                <div onclick="closeModal()" style="font-size:1.5rem;color:#999;">×</div>
             </div>
-            <div id="modalContent">
-                <!-- JS 生成4个人的选项 -->
+            <div id="modalList">
+                <!-- 选项列表 -->
             </div>
-            <button class="save-btn" onclick="saveAndClose()">保存记录</button>
+            <button class="confirm-btn" onclick="saveData()">保存</button>
         </div>
     </div>
 
 <script>
-    // ================= 配置区域 =================
+    // ================= 配置 (保留你的KEY) =================
     const BIN_ID = "697e0a63d0ea881f40962da0"; 
     const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
     
     const PEOPLE = ['王思', '郭思', '路思', '高思'];
-    const STATUS_MAP = {
-        '': { color: 'var(--c-none)', label: '空' },
-        '微醺': { color: 'var(--c-tipsy)', label: '微醺' },
-        '刚刚好': { color: 'var(--c-good)', label: '好' },
-        '醉了': { color: 'var(--c-drunk)', label: '醉' }
+    const P_INITIALS = ['王', '郭', '路', '高']; // 头像里显示的字
+    
+    // 状态定义：颜色和标签
+    const STATUS_CFG = {
+        '':       { color: 'transparent', label: '空' },
+        '微醺':   { color: 'var(--c-tipsy)', label: '微醺' },
+        '刚刚好': { color: 'var(--c-good)', label: '刚好' },
+        '醉了':   { color: 'var(--c-drunk)', label: '醉了' }
     };
-    const OPTIONS = Object.keys(STATUS_MAP);
+    const OPTIONS = ['', '微醺', '刚刚好', '醉了'];
 
     // ================= 全局变量 =================
     let appData = {};
-    let currentMonth = 0; // 0 = Jan
-    let selectedDay = 1;
-    let saveTimeout = null;
+    let curMonth = 0; // 0-11
+    let curYear = 2026;
+    let editingDay = 1;
+    let tempEditData = {}; // 暂存弹窗里的修改
 
-    // ================= 初始化 =================
     document.addEventListener('DOMContentLoaded', () => {
-        // 设置当前月份
         const now = new Date();
-        // 只有年份是2026才跳到对应月份，否则默认1月
-        if(now.getFullYear() === 2026) {
-            currentMonth = now.getMonth();
-        }
-        
-        updateMonthHeader();
+        if(now.getFullYear() === 2026) curMonth = now.getMonth();
+        updateHeader();
         pullData();
     });
 
     function enterApp() {
         document.getElementById('cover-page').classList.add('hidden');
-        document.getElementById('app-container').classList.add('visible');
-        renderCalendar(); // 确保渲染
-    }
-
-    // ================= 日历逻辑 =================
-    function changeMonth(delta) {
-        let newM = currentMonth + delta;
-        if(newM < 0) return;
-        if(newM > 11) return;
-        currentMonth = newM;
-        updateMonthHeader();
         renderCalendar();
     }
 
-    function updateMonthHeader() {
-        document.getElementById('currentMonthLabel').textContent = `${currentMonth + 1}月`;
-    }
-
+    // ================= 日历渲染 (核心) =================
     function renderCalendar() {
         const grid = document.getElementById('calendarGrid');
         grid.innerHTML = '';
+        
+        const firstDay = new Date(curYear, curMonth, 1).getDay(); // 当月1号星期几
+        const totalDays = new Date(curYear, curMonth + 1, 0).getDate(); // 当月总天数
 
-        // 2026年日历算法
-        const firstDayOfMonth = new Date(2026, currentMonth, 1).getDay(); // 星期几 (0-6)
-        const daysInMonth = new Date(2026, currentMonth + 1, 0).getDate(); // 当月天数
-
-        // 1. 填充空白格子 (上个月的)
-        for (let i = 0; i < firstDayOfMonth; i++) {
-            const empty = document.createElement('div');
-            grid.appendChild(empty);
+        // 1. 空白占位
+        for(let i=0; i<firstDay; i++) {
+            grid.appendChild(document.createElement('div'));
         }
 
-        // 2. 填充具体日期
-        for (let d = 1; d <= daysInMonth; d++) {
+        // 2. 日期格子
+        for(let d=1; d<=totalDays; d++) {
             const cell = document.createElement('div');
             cell.className = 'day-cell';
             
-            // 标记今天 (假设现在是2026)
+            // 标记今天
             const now = new Date();
-            if(now.getFullYear() === 2026 && now.getMonth() === currentMonth && now.getDate() === d) {
+            if(now.getFullYear()===2026 && now.getMonth()===curMonth && now.getDate()===d) {
                 cell.classList.add('today');
             }
 
-            // 获取4个人的状态颜色
-            let dotsHtml = '';
+            // --- 核心：渲染4个人的小头像 ---
+            let avatarsHtml = `<div class="avatars-grid">`;
             for(let p=0; p<4; p++) {
-                const status = appData[currentMonth]?.[d]?.[p] || '';
-                const color = STATUS_MAP[status].color;
-                dotsHtml += `<div class="dot" style="background-color: ${color}"></div>`;
+                const status = appData[curMonth]?.[d]?.[p] || '';
+                if(status && status !== '') {
+                    // 有状态：显示彩色圆圈+姓氏
+                    const color = STATUS_CFG[status].color;
+                    avatarsHtml += `<div class="avatar-badge" style="background:${color}">${P_INITIALS[p]}</div>`;
+                } else {
+                    // 无状态：显示透明占位，保持排版工整
+                    avatarsHtml += `<div class="avatar-badge"></div>`;
+                }
             }
+            avatarsHtml += `</div>`;
 
-            cell.innerHTML = `
-                <div class="day-num">${d}</div>
-                <div class="dots-container">${dotsHtml}</div>
-            `;
+            cell.innerHTML = `<div class="day-num">${d}</div>${avatarsHtml}`;
             cell.onclick = () => openModal(d);
             grid.appendChild(cell);
         }
 
-        renderFooterStats();
+        renderStats();
     }
 
-    function renderFooterStats() {
-        const footer = document.getElementById('footerStats');
-        let counts = [0, 0, 0, 0];
-        const daysInMonth = new Date(2026, currentMonth + 1, 0).getDate();
+    // ================= 统计渲染 (核心升级) =================
+    function renderStats() {
+        const container = document.getElementById('statsContainer');
+        const totalDays = new Date(curYear, curMonth + 1, 0).getDate();
+        
+        // 初始化统计数据结构
+        // stats[pIndex] = { '微醺': 0, '刚刚好': 0, '醉了': 0 }
+        let stats = PEOPLE.map(() => ({ '微醺':0, '刚刚好':0, '醉了':0 }));
 
-        for (let d = 1; d <= daysInMonth; d++) {
-            for (let p = 0; p < 4; p++) {
-                const status = appData[currentMonth]?.[d]?.[p];
-                if (status && status !== '') counts[p]++;
+        for(let d=1; d<=totalDays; d++) {
+            for(let p=0; p<4; p++) {
+                const status = appData[curMonth]?.[d]?.[p];
+                if(status && stats[p][status] !== undefined) {
+                    stats[p][status]++;
+                }
             }
         }
 
-        footer.innerHTML = PEOPLE.map((name, idx) => `
-            <div class="stat-item">
-                <div class="stat-num">${counts[idx]}</div>
-                <div class="stat-label">${name}</div>
-            </div>
-        `).join('');
+        // 生成HTML卡片
+        container.innerHTML = PEOPLE.map((name, idx) => {
+            const s = stats[idx];
+            const total = s['微醺'] + s['刚刚好'] + s['醉了'];
+            
+            // 只有当月有数据时，才显示详细条目，否则显示 0
+            return `
+                <div class="stat-card">
+                    <div class="p-name">${name} <span style="font-size:0.7rem;color:#999">(${total}天)</span></div>
+                    <div class="stat-bars">
+                        <div class="bar-item">
+                            <span><span class="dot-indicator" style="background:var(--c-tipsy)"></span>微醺</span>
+                            <b>${s['微醺']}</b>
+                        </div>
+                        <div class="bar-item">
+                            <span><span class="dot-indicator" style="background:var(--c-good)"></span>刚好</span>
+                            <b>${s['刚刚好']}</b>
+                        </div>
+                        <div class="bar-item">
+                            <span><span class="dot-indicator" style="background:var(--c-drunk)"></span>醉了</span>
+                            <b>${s['醉了']}</b>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
 
-    // ================= 弹窗逻辑 =================
-    // 临时存储当前弹窗里的选择
-    let tempDayData = {};
+    // ================= 交互逻辑 =================
+    function switchMonth(delta) {
+        let n = curMonth + delta;
+        if(n<0) n=0; if(n>11) n=11;
+        curMonth = n;
+        updateHeader();
+        renderCalendar();
+    }
 
+    function updateHeader() {
+        document.getElementById('monthTitle').innerText = `${curMonth+1}月`;
+    }
+
+    // 打开弹窗
     function openModal(day) {
-        selectedDay = day;
-        document.getElementById('modalDateTitle').innerText = `${currentMonth+1}月${day}日`;
-        const container = document.getElementById('modalContent');
-        container.innerHTML = '';
+        editingDay = day;
+        document.getElementById('modalDate').innerText = `${curMonth+1}月${day}日`;
+        
+        // 准备临时数据
+        const dayData = appData[curMonth]?.[day] || {};
+        tempEditData = { ...dayData }; // 浅拷贝
 
-        // 获取当前已保存的数据
-        const dayData = appData[currentMonth]?.[day] || {};
-        tempDayData = {...dayData}; // 复制一份
-
-        PEOPLE.forEach((pName, pIndex) => {
-            const currentVal = dayData[pIndex] || '';
+        const list = document.getElementById('modalList');
+        list.innerHTML = PEOPLE.map((name, idx) => {
+            const curVal = dayData[idx] || '';
             
-            const row = document.createElement('div');
-            row.className = 'person-row';
-            
-            let optionsHtml = OPTIONS.map(opt => {
-                const isSelected = currentVal === opt ? 'selected' : '';
-                // 仅显示非空选项的Label，或者空
-                const label = opt === '' ? '空' : opt;
-                return `<div class="radio-opt ${isSelected}" 
-                             data-val="${opt}" 
-                             onclick="selectOption(${pIndex}, '${opt}', this)">
-                             ${label}
+            // 生成4个按钮 (空, 微醺, 刚好, 醉)
+            const btns = OPTIONS.map(opt => {
+                const active = curVal === opt ? 'active' : '';
+                const label = opt === '' ? '无' : opt;
+                return `<div class="opt-btn ${active}" 
+                            data-v="${opt}"
+                            onclick="selectStatus(${idx}, '${opt}', this)">
+                            ${label}
                         </div>`;
             }).join('');
 
-            row.innerHTML = `
-                <div class="person-name">${pName}</div>
-                <div class="status-options" id="opts-${pIndex}">${optionsHtml}</div>
+            return `
+                <div class="opt-row">
+                    <div class="opt-name">${name}</div>
+                    <div class="opt-group" id="group-${idx}">${btns}</div>
+                </div>
             `;
-            container.appendChild(row);
-        });
+        }).join('');
 
-        document.getElementById('editModal').classList.add('open');
+        document.getElementById('editModal').classList.add('show');
     }
 
-    // 在弹窗里点击某个选项
-    window.selectOption = function(pIndex, val, el) {
-        // 更新临时数据
-        tempDayData[pIndex] = val;
-        
-        // 更新UI高亮
-        const parent = document.getElementById(`opts-${pIndex}`);
-        parent.querySelectorAll('.radio-opt').forEach(opt => opt.classList.remove('selected'));
-        el.classList.add('selected');
+    // 弹窗内选择状态
+    window.selectStatus = function(pIndex, val, el) {
+        tempEditData[pIndex] = val;
+        // UI更新高亮
+        const group = document.getElementById(`group-${pIndex}`);
+        group.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
     }
 
     function closeModal() {
-        document.getElementById('editModal').classList.remove('open');
+        document.getElementById('editModal').classList.remove('show');
     }
 
-    function saveAndClose() {
-        // 写入 appData
-        if (!appData[currentMonth]) appData[currentMonth] = {};
-        appData[currentMonth][selectedDay] = tempDayData;
-
-        // 关闭UI
+    function saveData() {
+        // 写入内存
+        if(!appData[curMonth]) appData[curMonth] = {};
+        appData[curMonth][editingDay] = tempEditData;
+        
         closeModal();
-        renderCalendar(); // 刷新日历上的点
-        renderFooterStats();
-
-        // 触发云端保存
-        pushData();
+        renderCalendar(); // 刷新视图
+        pushData();       // 存云端
     }
 
-    // ================= 数据同步 =================
-    async function pullData(isManual = false) {
-        updateStatus('sync', '同步中...');
+    // ================= 云端同步 =================
+    async function pullData() {
+        updateSyncUI('saving', '同步中');
         try {
             const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
                 headers: { 'X-Master-Key': API_KEY }
             });
             const json = await res.json();
             appData = json.record || {};
-            if(!appData || appData.status === 'start') appData = {};
+            // 校验格式
+            if(!appData || appData.status==='start') appData={};
             
             renderCalendar();
-            updateStatus('saved', '已同步');
-        } catch (e) {
+            updateSyncUI('saved', '已同步');
+        } catch(e) {
             console.error(e);
-            updateStatus('error', '同步失败');
+            updateSyncUI('saved', '同步失败'); // 暂时显示红色或保持原状
         }
     }
 
     async function pushData() {
-        updateStatus('saving', '保存中...');
+        updateSyncUI('saving', '保存中...');
         try {
             await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Master-Key': API_KEY
+                },
                 body: JSON.stringify(appData)
             });
-            updateStatus('saved', '已保存');
-        } catch (e) {
-            updateStatus('error', '保存失败');
+            updateSyncUI('saved', '已保存');
+        } catch(e) {
+            alert("保存失败，请检查网络");
         }
     }
 
-    function updateStatus(type, text) {
+    function updateSyncUI(cls, txt) {
         const el = document.getElementById('syncStatus');
-        el.innerText = text;
-        el.className = 'status-badge ' + type;
+        el.className = `sync-tag ${cls}`;
+        el.innerText = txt;
     }
 
 </script>
