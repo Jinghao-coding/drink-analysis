@@ -627,6 +627,94 @@
         .sheet-mask.show .sheet {
             transform: translateY(0);
         }
+
+        /* 弹窗头部信息 */
+        .sheet-header-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            margin: -24px -24px 20px -24px;
+            padding: 20px 24px;
+            border-radius: 24px 24px 0 0;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .sheet-date-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .sheet-date-main {
+            font-weight: 800;
+            font-size: 22px;
+            color: var(--primary);
+        }
+        .sheet-weekday {
+            font-size: 14px;
+            color: var(--text-sub);
+            font-weight: 600;
+            padding: 4px 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
+        .sheet-weekday.weekend {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #f57c00;
+        }
+        .sheet-holiday {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            color: #c62828;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 8px;
+            box-shadow: 0 2px 6px rgba(198, 40, 40, 0.2);
+        }
+        .sheet-stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .sheet-stat-item {
+            background: white;
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+        .sheet-stat-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+        .sheet-stat-label {
+            font-size: 10px;
+            color: #999;
+            font-weight: 600;
+        }
+        .sheet-close-btn {
+            font-size: 28px;
+            color: #bbb;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        .sheet-close-btn:hover {
+            color: #666;
+            background: rgba(0, 0, 0, 0.05);
+            transform: rotate(90deg);
+        }
         
         .opt-grid {
             display: flex;
@@ -958,6 +1046,49 @@
             }
         }
 
+        /* 统计概览卡片 */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stats-overview-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        .stats-overview-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: #bbb;
+        }
+        .stats-overview-label {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .stats-overview-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .stats-overview-detail {
+            font-size: 11px;
+            color: #999;
+            display: flex;
+            gap: 8px;
+        }
+        @media (min-width: 768px) {
+            .stats-overview {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -971,6 +1102,9 @@
 
 <!-- 1. 日历卡片 -->
 <div class="card">
+    <!-- 统计概览 -->
+    <div class="stats-overview" id="statsOverview"></div>
+
     <div class="card-header">
         <div class="card-title">月历概览</div>
         <div class="month-ctrl">
@@ -1034,10 +1168,23 @@
 <!-- 5. 录入抽屉 -->
 <div class="sheet-mask" id="sheet" onclick="if(event.target===this) closeSheet()">
     <div class="sheet">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid #f0f0f0;">
-            <span style="font-weight:800;font-size:20px;color:var(--primary);" id="sheetTitle">📅 日期</span>
-            <span onclick="closeSheet()" style="font-size:28px;color:#bbb;cursor:pointer;transition:all 0.2s;line-height:1;" onmouseover="this.style.color='#666';this.style.transform='rotate(90deg)'" onmouseout="this.style.color='#bbb';this.style.transform='rotate(0)'">×</span>
+        <!-- 头部信息区 -->
+        <div class="sheet-header-info">
+            <div class="sheet-date-row">
+                <div>
+                    <div class="sheet-date-main" id="sheetTitle">📅 日期</div>
+                    <div id="sheetHoliday"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                    <div class="sheet-weekday" id="sheetWeekday">星期一</div>
+                    <span class="sheet-close-btn" onclick="closeSheet()">×</span>
+                </div>
+            </div>
+            <!-- 快速统计 -->
+            <div class="sheet-stats-row" id="sheetStats"></div>
         </div>
+
+        <!-- 记录选项 -->
         <div id="sheetRows"></div>
 
         <!-- 照片上传区域 -->
@@ -1052,7 +1199,7 @@
 
 <script>
     // 配置
-    const BIN_ID = "697e0a63d0ea881f40962da0"; 
+    const BIN_ID = "697e0a63d0ea881f40962da0";
     const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
 
     // 用户定义
@@ -1062,6 +1209,142 @@
         { name: '路思', short: '路', color: '#d35400', pos: '左下' },
         { name: '高博', short: '高', color: '#16a085', pos: '右下' }
     ];
+
+    // ==================== 工具函数模块 ====================
+
+    // 日期工具类
+    const DateUtils = {
+        // 获取星期几（中文）
+        getWeekDay(year, month, day) {
+            const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+            const date = new Date(year, month, day);
+            return '星期' + weekDays[date.getDay()];
+        },
+
+        // 判断是否为周末
+        isWeekend(year, month, day) {
+            const date = new Date(year, month, day);
+            const dayOfWeek = date.getDay();
+            return dayOfWeek === 0 || dayOfWeek === 6;
+        },
+
+        // 获取节日信息
+        getHoliday(month, day) {
+            const holidays = {
+                '1-1': '元旦',
+                '2-14': '情人节',
+                '3-8': '妇女节',
+                '4-4': '清明节',
+                '4-5': '清明节',
+                '5-1': '劳动节',
+                '6-1': '儿童节',
+                '9-10': '教师节',
+                '10-1': '国庆节',
+                '12-25': '圣诞节',
+                '12-31': '跨年夜'
+            };
+
+            // 农历节日（简化处理，使用大致日期）
+            const lunarHolidays = {
+                '1-22': '春节', // 2026年春节大约在1月底/2月初
+                '2-5': '元宵节',
+                '6-10': '端午节',
+                '9-15': '中秋节'
+            };
+
+            const key = `${month + 1}-${day}`;
+            return holidays[key] || lunarHolidays[key] || '';
+        },
+
+        // 获取本周的日期范围
+        getWeekRange(year, month, day) {
+            const date = new Date(year, month, day);
+            const dayOfWeek = date.getDay();
+            const diff = date.getDate() - dayOfWeek;
+
+            const monday = new Date(date.setDate(diff + 1));
+            const sunday = new Date(date.setDate(monday.getDate() + 6));
+
+            return {
+                start: { month: monday.getMonth(), day: monday.getDate() },
+                end: { month: sunday.getMonth(), day: sunday.getDate() }
+            };
+        }
+    };
+
+    // 统计工具类
+    const StatsUtils = {
+        // 计算指定日期范围内某用户的统计
+        getUserStats(data, userIdx, startMonth, startDay, endMonth, endDay) {
+            let count = 0;
+            let details = { '微醺': 0, '刚刚好': 0, '醉了': 0 };
+
+            for (let m = startMonth; m <= endMonth; m++) {
+                if (!data[m]) continue;
+                const start = m === startMonth ? startDay : 1;
+                const end = m === endMonth ? endDay : 31;
+
+                for (let d = start; d <= end; d++) {
+                    const status = data[m]?.[d]?.[userIdx];
+                    if (status && status !== '') {
+                        count++;
+                        if (details[status] !== undefined) {
+                            details[status]++;
+                        }
+                    }
+                }
+            }
+
+            return { total: count, details };
+        },
+
+        // 计算本周统计
+        getWeekStats(data, year, month, day, userIdx) {
+            const range = DateUtils.getWeekRange(year, month, day);
+            return this.getUserStats(data, userIdx, range.start.month, range.start.day, range.end.month, range.end.day);
+        },
+
+        // 计算本月统计
+        getMonthStats(data, month, userIdx) {
+            return this.getUserStats(data, userIdx, month, 1, month, 31);
+        },
+
+        // 计算当天已记录人数
+        getDayRecordCount(data, month, day) {
+            let count = 0;
+            const dayData = data[month]?.[day];
+            if (dayData) {
+                for (let i = 0; i < 4; i++) {
+                    if (dayData[i] && dayData[i] !== '') {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        },
+
+        // 计算连续记录天数
+        getConsecutiveDays(data, month, day, userIdx) {
+            let consecutive = 0;
+            let currentMonth = month;
+            let currentDay = day;
+
+            // 向前查找连续天数
+            while (currentMonth >= 0 && consecutive < 365) {
+                const status = data[currentMonth]?.[currentDay]?.[userIdx];
+                if (!status || status === '') break;
+
+                consecutive++;
+                currentDay--;
+                if (currentDay < 1) {
+                    currentMonth--;
+                    currentDay = 31;
+                }
+            }
+
+            return consecutive;
+        }
+    };
     
     // 状态定义
     const STATUS_MAP = {
@@ -1098,9 +1381,73 @@
         render();
     }
 
+    // 渲染统计概览
+    function renderStatsOverview() {
+        const now = new Date();
+        const today = now.getDate();
+
+        // 计算本月总计
+        let monthTotal = 0;
+        for (let d = 1; d <= 31; d++) {
+            monthTotal += StatsUtils.getDayRecordCount(appData, curMonth, d);
+        }
+
+        // 计算本周总计（基于当前日期）
+        let weekTotal = 0;
+        const range = DateUtils.getWeekRange(curYear, curMonth, today);
+        for (let d = range.start.day; d <= range.end.day; d++) {
+            weekTotal += StatsUtils.getDayRecordCount(appData, curMonth, d);
+        }
+
+        // 计算今日记录
+        const todayCount = StatsUtils.getDayRecordCount(appData, curMonth, today);
+
+        // 计算活跃用户数（本月至少记录过一次）
+        let activeUsers = 0;
+        USERS.forEach((u, i) => {
+            const stats = StatsUtils.getMonthStats(appData, curMonth, i);
+            if (stats.total > 0) activeUsers++;
+        });
+
+        const overview = document.getElementById('statsOverview');
+        overview.innerHTML = `
+            <div class="stats-overview-item">
+                <div class="stats-overview-label">📊 本月总计</div>
+                <div class="stats-overview-value">${monthTotal}</div>
+                <div class="stats-overview-detail">
+                    <span>${activeUsers}人活跃</span>
+                </div>
+            </div>
+            <div class="stats-overview-item">
+                <div class="stats-overview-label">📅 本周记录</div>
+                <div class="stats-overview-value">${weekTotal}</div>
+                <div class="stats-overview-detail">
+                    <span>周一至今</span>
+                </div>
+            </div>
+            <div class="stats-overview-item">
+                <div class="stats-overview-label">✨ 今日记录</div>
+                <div class="stats-overview-value">${todayCount}/4</div>
+                <div class="stats-overview-detail">
+                    <span>${todayCount === 4 ? '已全员!' : '待记录'}</span>
+                </div>
+            </div>
+            <div class="stats-overview-item">
+                <div class="stats-overview-label">🔥 活跃度</div>
+                <div class="stats-overview-value">${Math.round(monthTotal / 4)}天</div>
+                <div class="stats-overview-detail">
+                    <span>平均每人</span>
+                </div>
+            </div>
+        `;
+    }
+
     function render() {
         document.getElementById('monthTxt').innerText = `${curMonth+1}月`;
-        
+
+        // 渲染统计概览
+        renderStatsOverview();
+
         // 0. 筛选按钮
         const filterBar = document.getElementById('filterBar');
         let filterHTML = `<div class="filter-btn filter-all ${filterUser === -1 ? 'active' : ''}" onclick="setFilter(-1)" style="border-color: #666; ${filterUser === -1 ? 'background: #f0f0f0;' : ''}">全部显示</div>`;
@@ -1227,19 +1574,82 @@
     // Sheet
     function openSheet(d) {
         editDay = d;
-        document.getElementById('sheetTitle').innerText = `📅 ${curMonth+1}月${d}日`;
+
+        // 基础日期信息
+        const fullDate = `${curYear}年${curMonth + 1}月${d}日`;
+        document.getElementById('sheetTitle').innerText = `📅 ${fullDate}`;
+
+        // 星期几
+        const weekday = DateUtils.getWeekDay(curYear, curMonth, d);
+        const isWeekend = DateUtils.isWeekend(curYear, curMonth, d);
+        const weekdayEl = document.getElementById('sheetWeekday');
+        weekdayEl.innerText = weekday;
+        weekdayEl.className = 'sheet-weekday' + (isWeekend ? ' weekend' : '');
+
+        // 节日信息
+        const holiday = DateUtils.getHoliday(curMonth, d);
+        const holidayEl = document.getElementById('sheetHoliday');
+        if (holiday) {
+            holidayEl.innerHTML = `<div class="sheet-holiday">🎉 ${holiday}</div>`;
+        } else {
+            holidayEl.innerHTML = '';
+        }
+
+        // 快速统计
+        const recordCount = StatsUtils.getDayRecordCount(appData, curMonth, d);
+        const statsHTML = `
+            <div class="sheet-stat-item">
+                <div class="sheet-stat-value">${recordCount}/4</div>
+                <div class="sheet-stat-label">已记录</div>
+            </div>
+            <div class="sheet-stat-item">
+                <div class="sheet-stat-value">${curMonth + 1}月</div>
+                <div class="sheet-stat-label">当前月份</div>
+            </div>
+            <div class="sheet-stat-item">
+                <div class="sheet-stat-value">${d}</div>
+                <div class="sheet-stat-label">第${d}天</div>
+            </div>
+        `;
+        document.getElementById('sheetStats').innerHTML = statsHTML;
+
+        // 原有的记录选项
         const dayData = appData[curMonth]?.[d] || {};
-        tempEdit = {...dayData};
+        tempEdit = { ...dayData };
         tempPhotos = dayData.photos ? [...dayData.photos] : [];
 
         document.getElementById('sheetRows').innerHTML = USERS.map((u, i) => {
             const cur = dayData[i] || '';
+
+            // 计算该用户的统计
+            const weekStats = StatsUtils.getWeekStats(appData, curYear, curMonth, d, i);
+            const monthStats = StatsUtils.getMonthStats(appData, curMonth, i);
+            const consecutive = StatsUtils.getConsecutiveDays(appData, curMonth, d, i);
+
             const btns = OPTS.map(o => {
-                const label = o===''?'无':o;
-                const act = cur===o?'active':'';
+                const label = o === '' ? '无' : o;
+                const act = cur === o ? 'active' : '';
                 return `<div class="opt-btn ${act}" data-v="${o}" onclick="setOpt(${i},'${o}',this)">${label}</div>`;
             }).join('');
-            return `<div style="margin-bottom:16px;"><div style="font-weight:700;margin-bottom:8px;color:${u.color};font-size:14px;">${u.name}</div><div class="opt-grid" id="rg-${i}">${btns}</div></div>`;
+
+            // 个人统计信息
+            const userStatsHTML = cur && cur !== '' ? `
+                <div style="display:flex;gap:8px;margin-top:8px;font-size:11px;color:#999;">
+                    <span>📊 本周${weekStats.total}次</span>
+                    <span>📅 本月${monthStats.total}次</span>
+                    ${consecutive > 1 ? `<span>🔥 连续${consecutive}天</span>` : ''}
+                </div>
+            ` : '';
+
+            return `
+                <div style="margin-bottom:16px;">
+                    <div style="font-weight:700;margin-bottom:8px;color:${u.color};font-size:14px;">
+                        ${u.name}
+                    </div>
+                    <div class="opt-grid" id="rg-${i}">${btns}</div>
+                    ${userStatsHTML}
+                </div>
+            `;
         }).join('');
 
         renderPhotoPreview();
