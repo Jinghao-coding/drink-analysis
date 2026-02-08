@@ -2201,6 +2201,18 @@
         render();
         renderReport();
         pull();
+
+        // 添加全局事件委托处理选项按钮点击
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('.opt-btn');
+            if (btn) {
+                const userId = btn.dataset.userId;
+                const value = btn.dataset.v;
+                if (userId !== undefined) {
+                    setOpt(userId, value);
+                }
+            }
+        });
     });
 
     function chMonth(d) {
@@ -2532,7 +2544,7 @@
             const btns = OPTS.map(o => {
                 const label = o === '' ? '无' : o;
                 const act = cur === o ? 'active' : '';
-                return `<div class="opt-btn ${act}" data-v="${o}" onclick="setOpt(${JSON.stringify(u.id)}, ${JSON.stringify(o)}, this)">${label}</div>`;
+                return `<div class="opt-btn ${act}" data-v="${o}" data-user-id="${u.id}">${label}</div>`;
             }).join('');
 
             // 个人统计信息
@@ -2600,12 +2612,22 @@
         renderPhotoPreview();
     }
 
-    window.setOpt = function(userId, v, el) {
+    window.setOpt = function(userId, v) {
         if (!userId) return;
         if (!v) delete tempEdit[userId];
         else tempEdit[userId] = v;
-        document.getElementById(`rg-${userId}`).querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));
-        el.classList.add('active');
+
+        // 更新按钮状态
+        const container = document.getElementById(`rg-${userId}`);
+        if (container) {
+            container.querySelectorAll('.opt-btn').forEach(btn => {
+                if (btn.dataset.v === v) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
     }
 
     function closeSheet() { document.getElementById('sheet').classList.remove('show'); }
