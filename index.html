@@ -1089,6 +1089,296 @@
             }
         }
 
+        /* 人员管理样式 */
+        .user-manage-btn {
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .user-manage-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+        }
+
+        .user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .user-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+        .user-item:hover {
+            transform: translateX(4px);
+            box-shadow: var(--shadow-md);
+            border-color: #bbb;
+        }
+        .user-item-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+        .user-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .user-item-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+        .user-item-position {
+            font-size: 12px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .user-item-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .user-action-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .user-action-btn.edit {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        .user-action-btn.edit:hover {
+            background: #1976d2;
+            color: white;
+            transform: translateY(-2px);
+        }
+        .user-action-btn.delete {
+            background: #ffebee;
+            color: #c62828;
+        }
+        .user-action-btn.delete:hover {
+            background: #c62828;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .add-user-form {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px dashed #e0e0e0;
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+        .color-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+        }
+        .color-option {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .color-option.selected {
+            border-color: white;
+            box-shadow: 0 0 0 2px var(--primary), 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: scale(1.15);
+        }
+        .color-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: 800;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        .position-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .position-option {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        .position-option:hover {
+            border-color: var(--primary);
+            background: #f0f0f0;
+        }
+        .position-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            color: var(--primary);
+            border-width: 3px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .form-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .form-btn.primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+        }
+        .form-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(44, 62, 80, 0.3);
+        }
+        .form-btn.secondary {
+            background: white;
+            color: var(--text-sub);
+            border: 2px solid #e0e0e0;
+        }
+        .form-btn.secondary:hover {
+            background: #f5f5f5;
+            border-color: #bbb;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-sub);
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        /* 节日与农历展示 */
+        .sheet-holiday-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .sheet-holiday.lunar {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            color: #e65100;
+            box-shadow: 0 2px 6px rgba(230, 81, 0, 0.18);
+        }
+        .sheet-lunar {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #e8f8f5 0%, #d5f4e6 100%);
+            color: #0e6655;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(14, 102, 85, 0.16);
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: max(18px, env(safe-area-inset-bottom));
+            transform: translateX(-50%) translateY(16px);
+            background: rgba(0, 0, 0, 0.82);
+            color: white;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.25s ease;
+            z-index: 300;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            max-width: calc(100vw - 40px);
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
     </style>
 </head>
 <body>
@@ -1096,7 +1386,13 @@
 <div class="navbar">
     <div class="container">
         <div class="app-title">📅 2026 喝酒日历</div>
-        <div class="sync-badge" id="syncStatus">加载中</div>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="user-manage-btn" onclick="openUserManage()">
+                <span>👥</span>
+                <span>人员管理</span>
+            </button>
+            <div class="sync-badge" id="syncStatus">加载中</div>
+        </div>
     </div>
 </div>
 
@@ -1118,12 +1414,7 @@
     <div class="filter-bar" id="filterBar"></div>
 
     <!-- 四宫格说明图例 -->
-    <div class="grid-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:#8e44ad"></div>皓 (左上)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#2980b9"></div>郭 (右上)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#d35400"></div>路 (左下)</div>
-        <div class="legend-item"><div class="legend-dot" style="background:#16a085"></div>高 (右下)</div>
-    </div>
+    <div class="grid-legend" id="gridLegend"></div>
 
     <div class="cal-head">
         <div class="cal-day-name">日</div><div class="cal-day-name">一</div><div class="cal-day-name">二</div>
@@ -1197,40 +1488,658 @@
     </div>
 </div>
 
+<!-- 6. 人员管理弹窗 -->
+<div class="sheet-mask" id="userManageSheet" onclick="if(event.target===this) closeUserManage()">
+    <div class="sheet">
+        <div class="sheet-header-info">
+            <div class="sheet-date-row">
+                <div class="sheet-date-main">👥 人员管理</div>
+                <span class="sheet-close-btn" onclick="closeUserManage()">×</span>
+            </div>
+        </div>
+
+        <!-- 人员列表 -->
+        <div class="user-list" id="userList"></div>
+
+        <!-- 添加/编辑表单 -->
+        <div class="add-user-form" id="userForm" style="display:none;">
+            <h3 style="margin:0 0 16px 0;font-size:16px;color:var(--primary);" id="formTitle">➕ 添加新成员</h3>
+
+            <div class="form-group">
+                <label class="form-label">姓名</label>
+                <input type="text" class="form-input" id="userName" placeholder="请输入姓名">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">简称（1-2个字）</label>
+                <input type="text" class="form-input" id="userShort" placeholder="用于日历显示" maxlength="2">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">颜色主题</label>
+                <div class="color-picker-grid" id="colorPicker"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">日历位置</label>
+                <div class="position-grid">
+                    <div class="position-option" data-pos="左上" onclick="selectPosition('左上')">
+                        📍 左上角
+                    </div>
+                    <div class="position-option" data-pos="右上" onclick="selectPosition('右上')">
+                        📍 右上角
+                    </div>
+                    <div class="position-option" data-pos="左下" onclick="selectPosition('左下')">
+                        📍 左下角
+                    </div>
+                    <div class="position-option" data-pos="右下" onclick="selectPosition('右下')">
+                        📍 右下角
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="form-btn secondary" onclick="cancelUserEdit()">取消</button>
+                <button class="form-btn primary" onclick="saveUser()">保存</button>
+            </div>
+        </div>
+
+        <!-- 添加新成员按钮 -->
+        <button class="save-btn" id="addUserBtn" onclick="showAddUserForm()">
+            ➕ 添加新成员
+        </button>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
 <script>
     // 配置
     const BIN_ID = "697e0a63d0ea881f40962da0";
     const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
 
-    // 用户定义
-    const USERS = [
-        { name: '皓皓', short: '皓', color: '#8e44ad', pos: '左上' },
-        { name: '小郭', short: '郭', color: '#2980b9', pos: '右上' },
-        { name: '路思', short: '路', color: '#d35400', pos: '左下' },
-        { name: '高博', short: '高', color: '#16a085', pos: '右下' }
+    const APP_SCHEMA_VERSION = 2;
+    const USERS_STORAGE_KEY = 'drinkCalendarUsers';
+    const POSITIONS = ['左上', '右上', '左下', '右下'];
+
+    // 预设颜色选项
+    const COLOR_PALETTE = [
+        '#8e44ad', '#9b59b6', '#3498db', '#2980b9',
+        '#1abc9c', '#16a085', '#27ae60', '#2ecc71',
+        '#f39c12', '#f1c40f', '#e67e22', '#d35400',
+        '#e74c3c', '#c0392b', '#e91e63', '#ff5722'
     ];
 
-    // ==================== 工具函数模块 ====================
+    // 用户定义（使用稳定 id；数据用 id 绑定，避免重命名/删除导致历史错位）
+    let USERS = [
+        { id: 'u_haohao', name: '皓皓', short: '皓', color: '#8e44ad', pos: '左上' },
+        { id: 'u_xiaoguo', name: '小郭', short: '郭', color: '#2980b9', pos: '右上' },
+        { id: 'u_lusi', name: '路思', short: '路', color: '#d35400', pos: '左下' },
+        { id: 'u_gaobo', name: '高博', short: '高', color: '#16a085', pos: '右下' }
+    ];
 
-    // 日期工具类
+    // Toast
+    let toastTimer = null;
+    function showToast(text, ms = 1800) {
+        const el = document.getElementById('toast');
+        if (!el) return;
+        el.textContent = text;
+        el.classList.add('show');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove('show'), ms);
+    }
+
+    function genId() {
+        try {
+            if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+                return window.crypto.randomUUID();
+            }
+        } catch (e) {}
+        return `u_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+    }
+
+    function serializeUsers(users) {
+        return JSON.stringify((Array.isArray(users) ? users : []).map(u => ({
+            id: typeof u.id === 'string' ? u.id : '',
+            name: typeof u.name === 'string' ? u.name : '',
+            short: typeof u.short === 'string' ? u.short : '',
+            color: typeof u.color === 'string' ? u.color : '',
+            pos: typeof u.pos === 'string' ? u.pos : ''
+        })));
+    }
+
+    function normalizeUsers(rawUsers) {
+        const input = Array.isArray(rawUsers) ? rawUsers : [];
+        const normalized = input.map(u => {
+            const name = String(u?.name ?? '').trim();
+            const shortRaw = String(u?.short ?? '').trim();
+            const short = (shortRaw || name.slice(0, 2)).slice(0, 2);
+            const color = typeof u?.color === 'string' && u.color ? u.color : COLOR_PALETTE[0];
+            const pos = POSITIONS.includes(u?.pos) ? u.pos : '';
+            return {
+                id: typeof u?.id === 'string' && u.id ? u.id : genId(),
+                name: name || '未命名',
+                short: short || '？',
+                color,
+                pos
+            };
+        });
+
+        const usedIds = new Set();
+        for (const u of normalized) {
+            if (usedIds.has(u.id)) u.id = genId();
+            usedIds.add(u.id);
+        }
+
+        const usedPos = new Set();
+        for (const u of normalized) {
+            if (!POSITIONS.includes(u.pos) || usedPos.has(u.pos)) u.pos = '';
+            if (u.pos) usedPos.add(u.pos);
+        }
+        for (const u of normalized) {
+            if (!u.pos) {
+                const available = POSITIONS.find(p => !usedPos.has(p));
+                if (available) {
+                    u.pos = available;
+                    usedPos.add(available);
+                }
+            }
+        }
+
+        const posOrder = POSITIONS.reduce((acc, p, i) => (acc[p] = i, acc), {});
+        normalized.sort((a, b) => (posOrder[a.pos] ?? 99) - (posOrder[b.pos] ?? 99));
+
+        return normalized.filter(u => POSITIONS.includes(u.pos)).slice(0, POSITIONS.length);
+    }
+
+    let localUsersUpdatedAt = 0;
+    function readUsersFromLocal() {
+        const raw = localStorage.getItem(USERS_STORAGE_KEY);
+        if (!raw) return { users: null, updatedAt: 0 };
+        try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) return { users: parsed, updatedAt: 0 };
+            if (parsed && typeof parsed === 'object' && Array.isArray(parsed.users)) {
+                return { users: parsed.users, updatedAt: Number(parsed.updatedAt) || 0 };
+            }
+        } catch (e) {}
+        return { users: null, updatedAt: 0 };
+    }
+    function writeUsersToLocal(updatedAt) {
+        const ts = Number(updatedAt);
+        localUsersUpdatedAt = Number.isFinite(ts) ? ts : Date.now();
+        localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify({
+            v: APP_SCHEMA_VERSION,
+            updatedAt: localUsersUpdatedAt,
+            users: USERS
+        }));
+    }
+
+    function getUserByPos(pos) {
+        return USERS.find(u => u.pos === pos) || null;
+    }
+
+    function getUsersInPositionOrder() {
+        return POSITIONS.map(p => getUserByPos(p)).filter(Boolean);
+    }
+
+    function ensureSelectionsValid() {
+        const ids = new Set(USERS.map(u => u.id));
+        if (filterUserId && !ids.has(filterUserId)) filterUserId = null;
+        if (!reportUserId || !ids.has(reportUserId)) reportUserId = USERS[0]?.id || null;
+    }
+
+    // ==================== 人员管理功能 ====================
+
+    let editingUserId = null;
+    let selectedColor = '';
+    let selectedPosition = '';
+
+    window.openUserManage = function() {
+        renderUserList();
+        document.getElementById('userManageSheet').classList.add('show');
+    };
+
+    window.closeUserManage = function() {
+        document.getElementById('userManageSheet').classList.remove('show');
+        window.cancelUserEdit();
+    };
+
+    function renderUserList() {
+        const list = document.getElementById('userList');
+        const users = getUsersInPositionOrder();
+
+        if (users.length === 0) {
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">👥</div>
+                    <div>暂无成员，点击下方按钮添加</div>
+                </div>
+            `;
+            return;
+        }
+
+        list.innerHTML = users.map((user) => {
+            const idx = USERS.findIndex(u => u.id === user.id);
+            return `
+                <div class="user-item">
+                    <div class="user-item-avatar" style="background:${user.color}">
+                        ${user.short}
+                    </div>
+                    <div class="user-item-info">
+                        <div class="user-item-name">${user.name}</div>
+                        <div class="user-item-position">
+                            <span>📍</span>
+                            <span>${user.pos}</span>
+                        </div>
+                    </div>
+                    <div class="user-item-actions">
+                        <button class="user-action-btn edit" onclick="editUser(${idx})">✏️ 编辑</button>
+                        <button class="user-action-btn delete" onclick="deleteUser(${idx})">🗑️ 删除</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function getAvailablePositions(excludeUserId = null) {
+        const used = new Set(USERS.filter(u => u.id !== excludeUserId).map(u => u.pos));
+        return POSITIONS.filter(p => !used.has(p));
+    }
+
+    function getSuggestedColor(excludeUserId = null) {
+        const used = new Set(USERS.filter(u => u.id !== excludeUserId).map(u => u.color));
+        return COLOR_PALETTE.find(c => !used.has(c)) || COLOR_PALETTE[0];
+    }
+
+    window.showAddUserForm = function() {
+        const available = getAvailablePositions(null);
+        if (available.length === 0) {
+            alert('日历最多支持 4 位成员（四宫格位置已满）。\n\n你可以先删除一位成员，再添加新成员。');
+            return;
+        }
+
+        editingUserId = null;
+        document.getElementById('formTitle').innerText = '➕ 添加新成员';
+        document.getElementById('userName').value = '';
+        document.getElementById('userShort').value = '';
+        selectedColor = getSuggestedColor(null);
+        selectedPosition = available[0];
+
+        renderColorPicker();
+        updatePositionSelection();
+
+        document.getElementById('userForm').style.display = 'block';
+        document.getElementById('addUserBtn').style.display = 'none';
+    };
+
+    window.editUser = function(idx) {
+        const user = USERS[idx];
+        if (!user) return;
+
+        editingUserId = user.id;
+        document.getElementById('formTitle').innerText = '✏️ 编辑成员';
+        document.getElementById('userName').value = user.name;
+        document.getElementById('userShort').value = user.short;
+        selectedColor = user.color;
+        selectedPosition = user.pos;
+
+        renderColorPicker();
+        updatePositionSelection();
+
+        document.getElementById('userForm').style.display = 'block';
+        document.getElementById('addUserBtn').style.display = 'none';
+    };
+
+    window.deleteUser = function(idx) {
+        const user = USERS[idx];
+        if (!user) return;
+
+        if (!confirm(`确定要删除「${user.name}」吗？\n\n删除后该成员的历史记录会保留在数据里，但将不再显示在日历/统计中。`)) {
+            return;
+        }
+
+        USERS.splice(idx, 1);
+        bumpUsersUpdatedAtAndPersist();
+        renderUserList();
+        ensureSelectionsValid();
+        render();
+        renderReport();
+        showToast('已删除');
+    };
+
+    window.cancelUserEdit = function() {
+        editingUserId = null;
+        document.getElementById('userForm').style.display = 'none';
+        document.getElementById('addUserBtn').style.display = 'block';
+    };
+
+    function bumpUsersUpdatedAtAndPersist() {
+        USERS = normalizeUsers(USERS);
+        const now = Date.now();
+        writeUsersToLocal(now);
+        syncUsersToAppMeta(now);
+        ensureSelectionsValid();
+        if (hasPulled) {
+            push();
+        } else {
+            pendingUserPush = true;
+        }
+    }
+
+    window.saveUser = function() {
+        const name = document.getElementById('userName').value.trim();
+        const short = document.getElementById('userShort').value.trim().slice(0, 2);
+
+        if (!name) return alert('请输入姓名');
+        if (!short) return alert('请输入简称（1-2个字）');
+        if (!selectedColor) return alert('请选择颜色');
+        if (!selectedPosition) return alert('请选择位置');
+
+        const shortDup = USERS.some(u => u.id !== editingUserId && u.short === short);
+        if (shortDup) return alert('简称已被占用，请换一个（避免日历里看不清）。');
+
+        if (!editingUserId) {
+            const occupied = USERS.some(u => u.pos === selectedPosition);
+            if (occupied) return alert(`位置「${selectedPosition}」已被占用，请选择其他位置。`);
+            USERS.push({
+                id: genId(),
+                name,
+                short,
+                color: selectedColor,
+                pos: selectedPosition
+            });
+            bumpUsersUpdatedAtAndPersist();
+            renderUserList();
+            window.cancelUserEdit();
+            render();
+            renderReport();
+            showToast('已添加');
+            return;
+        }
+
+        const idx = USERS.findIndex(u => u.id === editingUserId);
+        if (idx === -1) return;
+
+        const oldPos = USERS[idx].pos;
+        const occupiedBy = USERS.find(u => u.id !== editingUserId && u.pos === selectedPosition);
+        if (occupiedBy) {
+            const ok = confirm(`位置「${selectedPosition}」已被「${occupiedBy.name}」占用。\n\n是否与 TA 交换位置？`);
+            if (!ok) return;
+            occupiedBy.pos = oldPos;
+        }
+
+        USERS[idx] = { ...USERS[idx], name, short, color: selectedColor, pos: selectedPosition };
+        bumpUsersUpdatedAtAndPersist();
+        renderUserList();
+        window.cancelUserEdit();
+        render();
+        renderReport();
+        showToast('已保存');
+    };
+
+    function renderColorPicker() {
+        const picker = document.getElementById('colorPicker');
+        picker.innerHTML = COLOR_PALETTE.map(color => `
+            <div class="color-option ${color === selectedColor ? 'selected' : ''}"
+                 style="background:${color}"
+                 onclick="selectColor('${color}')">
+            </div>
+        `).join('');
+    }
+
+    window.selectColor = function(color) {
+        selectedColor = color;
+        renderColorPicker();
+    };
+
+    window.selectPosition = function(pos) {
+        selectedPosition = pos;
+        updatePositionSelection();
+    };
+
+    function updatePositionSelection() {
+        document.querySelectorAll('.position-option').forEach(el => {
+            if (el.dataset.pos === selectedPosition) el.classList.add('selected');
+            else el.classList.remove('selected');
+        });
+    }
+
+    // ==================== 数据结构与迁移 ====================
+
+    let appData = {};
+    let hasPulled = false;
+    let pendingUserPush = false;
+
+    function ensureAppMeta() {
+        if (!appData || typeof appData !== 'object') appData = {};
+        if (!appData._meta || typeof appData._meta !== 'object') appData._meta = {};
+        if (appData._meta.schemaVersion !== APP_SCHEMA_VERSION) appData._meta.schemaVersion = APP_SCHEMA_VERSION;
+    }
+
+    function syncUsersToAppMeta(updatedAt) {
+        ensureAppMeta();
+        const meta = appData._meta;
+        meta.users = USERS;
+        meta.usersUpdatedAt = Number(updatedAt) || Date.now();
+    }
+
+    function migrateLegacyDayData(dayData) {
+        const u = {};
+        for (let i = 0; i < POSITIONS.length; i++) {
+            const v = dayData?.[i];
+            if (typeof v !== 'string' || !v) continue;
+            const pos = POSITIONS[i];
+            const user = getUserByPos(pos);
+            if (user) u[user.id] = v;
+            else u[`_legacy_${pos}`] = v;
+        }
+
+        const photos = Array.isArray(dayData?.photos) ? dayData.photos : [];
+        return { u, photos };
+    }
+
+    function normalizeDayData(dayData) {
+        if (!dayData || typeof dayData !== 'object') return { u: {}, photos: [] };
+
+        if (dayData.u && typeof dayData.u === 'object') {
+            const u = {};
+            for (const [k, v] of Object.entries(dayData.u)) {
+                if (typeof v === 'string' && v) u[k] = v;
+            }
+            const photos = Array.isArray(dayData.photos) ? dayData.photos : [];
+            return { u, photos };
+        }
+
+        const hasLegacy = [0, 1, 2, 3].some(i => typeof dayData[i] === 'string');
+        if (hasLegacy || Array.isArray(dayData.photos)) return migrateLegacyDayData(dayData);
+
+        return { u: {}, photos: [] };
+    }
+
+    function migrateAppDataToV2() {
+        let changed = false;
+
+        for (let m = 0; m < 12; m++) {
+            const monthData = appData?.[m];
+            if (!monthData || typeof monthData !== 'object') continue;
+
+            for (let d = 1; d <= 31; d++) {
+                const dayData = monthData?.[d];
+                if (!dayData || typeof dayData !== 'object') continue;
+
+                const alreadyV2 = dayData.u && typeof dayData.u === 'object';
+                const normalized = normalizeDayData(dayData);
+
+                const hadSomething = alreadyV2 || [0, 1, 2, 3].some(i => typeof dayData[i] === 'string') || Array.isArray(dayData.photos);
+                const isEmpty = Object.keys(normalized.u).length === 0 && (!normalized.photos || normalized.photos.length === 0);
+                if (hadSomething) {
+                    if (isEmpty) {
+                        delete monthData[d];
+                        changed = true;
+                    } else if (!alreadyV2 || JSON.stringify(dayData) !== JSON.stringify(normalized)) {
+                        monthData[d] = normalized;
+                        changed = true;
+                    }
+                }
+            }
+        }
+
+        return changed;
+    }
+
+    function reconcileUsersFromAppData({ preferCloud } = { preferCloud: false }) {
+        ensureAppMeta();
+        const meta = appData._meta;
+        const cloudUsersRaw = Array.isArray(meta.users) ? meta.users : null;
+        const cloudUpdatedAt = Number(meta.usersUpdatedAt) || 0;
+
+        const localUsersRaw = USERS;
+        const localUpdatedAt = localUsersUpdatedAt || 0;
+
+        if (cloudUsersRaw) {
+            const cloudUsersNormalized = normalizeUsers(cloudUsersRaw);
+            const cloudUsersSerialized = serializeUsers(cloudUsersRaw);
+            const cloudNormalizedSerialized = serializeUsers(cloudUsersNormalized);
+            const cloudNeedsPush = cloudUsersSerialized !== cloudNormalizedSerialized;
+
+            if (preferCloud || cloudUpdatedAt >= localUpdatedAt) {
+                USERS = cloudUsersNormalized;
+                localUsersUpdatedAt = cloudUpdatedAt;
+                writeUsersToLocal(localUsersUpdatedAt);
+                meta.users = USERS;
+                meta.usersUpdatedAt = localUsersUpdatedAt;
+                return cloudNeedsPush || cloudUpdatedAt === 0;
+            }
+
+            USERS = normalizeUsers(localUsersRaw);
+            const now = localUpdatedAt || Date.now();
+            writeUsersToLocal(now);
+            meta.users = USERS;
+            meta.usersUpdatedAt = now;
+            return true;
+        }
+
+        USERS = normalizeUsers(localUsersRaw);
+        const now = localUpdatedAt || Date.now();
+        writeUsersToLocal(now);
+        meta.users = USERS;
+        meta.usersUpdatedAt = now;
+        return true;
+    }
+
+    // ==================== 日期/农历 ====================
+
+    const LunarUtils = (() => {
+        let fmt = null;
+        try {
+            fmt = new Intl.DateTimeFormat('zh-CN-u-ca-chinese', { month: 'long', day: 'numeric' });
+            fmt.format(new Date());
+        } catch (e) {
+            fmt = null;
+        }
+
+        const fallback2026 = {
+            '1-25': '腊八节',
+            '2-16': '除夕',
+            '2-17': '春节',
+            '3-3': '元宵节',
+            '6-19': '端午节',
+            '9-25': '中秋节',
+            '10-17': '重阳节'
+        };
+
+        function parts(date) {
+            if (!fmt) return null;
+            const p = fmt.formatToParts(date);
+            const monthText = p.find(x => x.type === 'month')?.value;
+            const dayNum = Number(p.find(x => x.type === 'day')?.value);
+            if (!monthText || !dayNum) return null;
+            const isLeapMonth = monthText.includes('闰');
+
+            const monthTextNoLeap = monthText.replace('闰', '');
+            const monthMap = { '正月': 1, '二月': 2, '三月': 3, '四月': 4, '五月': 5, '六月': 6, '七月': 7, '八月': 8, '九月': 9, '十月': 10, '十一月': 11, '腊月': 12 };
+            const monthNum = monthMap[monthTextNoLeap] || 0;
+
+            return { monthText, monthNum, dayNum, isLeapMonth };
+        }
+
+        function dayToCn(n) {
+            const num = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九', '十'];
+            if (n <= 10) return '初' + num[n];
+            if (n < 20) return '十' + num[n - 10];
+            if (n === 20) return '二十';
+            if (n < 30) return '廿' + num[n - 20];
+            return '三十';
+        }
+
+        function getLunarText(year, month0, day) {
+            const p = parts(new Date(year, month0, day));
+            if (!p) return '';
+            return `${p.monthText}${dayToCn(p.dayNum)}`;
+        }
+
+        function getFestival(year, month0, day) {
+            const date = new Date(year, month0, day);
+            const p = parts(date);
+            if (!p) {
+                if (year === 2026) {
+                    const key = `${month0 + 1}-${day}`;
+                    return fallback2026[key] || '';
+                }
+                return '';
+            }
+
+            if (!p.isLeapMonth) {
+                if (p.monthNum === 1 && p.dayNum === 1) return '春节';
+                if (p.monthNum === 1 && p.dayNum === 15) return '元宵节';
+                if (p.monthNum === 5 && p.dayNum === 5) return '端午节';
+                if (p.monthNum === 8 && p.dayNum === 15) return '中秋节';
+                if (p.monthNum === 9 && p.dayNum === 9) return '重阳节';
+                if (p.monthNum === 12 && p.dayNum === 8) return '腊八节';
+            }
+
+            if (!p.isLeapMonth && p.monthNum === 12) {
+                const next = new Date(date);
+                next.setDate(date.getDate() + 1);
+                const np = parts(next);
+                if (np && !np.isLeapMonth && np.monthNum === 1 && np.dayNum === 1) return '除夕';
+            }
+
+            return '';
+        }
+
+        return { getLunarText, getFestival };
+    })();
+
     const DateUtils = {
-        // 获取星期几（中文）
         getWeekDay(year, month, day) {
             const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
             const date = new Date(year, month, day);
             return '星期' + weekDays[date.getDay()];
         },
 
-        // 判断是否为周末
         isWeekend(year, month, day) {
             const date = new Date(year, month, day);
             const dayOfWeek = date.getDay();
             return dayOfWeek === 0 || dayOfWeek === 6;
         },
 
-        // 获取节日信息
-        getHoliday(month, day) {
-            const holidays = {
+        getWeekRange(year, month, day) {
+            const date = new Date(year, month, day);
+            const dayOfWeek = date.getDay() || 7;
+            const monday = new Date(date);
+            monday.setDate(date.getDate() - (dayOfWeek - 1));
+            monday.setHours(0, 0, 0, 0);
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            sunday.setHours(0, 0, 0, 0);
+            return { startDate: monday, endDate: sunday };
+        },
+
+        getHolidayInfo(year, month, day) {
+            const solar = {
                 '1-1': '元旦',
                 '2-14': '情人节',
                 '3-8': '妇女节',
@@ -1244,107 +2153,15 @@
                 '12-31': '跨年夜'
             };
 
-            // 农历节日（简化处理，使用大致日期）
-            const lunarHolidays = {
-                '1-22': '春节', // 2026年春节大约在1月底/2月初
-                '2-5': '元宵节',
-                '6-10': '端午节',
-                '9-15': '中秋节'
-            };
-
             const key = `${month + 1}-${day}`;
-            return holidays[key] || lunarHolidays[key] || '';
-        },
-
-        // 获取本周的日期范围
-        getWeekRange(year, month, day) {
-            const date = new Date(year, month, day);
-            const dayOfWeek = date.getDay();
-            const diff = date.getDate() - dayOfWeek;
-
-            const monday = new Date(date.setDate(diff + 1));
-            const sunday = new Date(date.setDate(monday.getDate() + 6));
-
-            return {
-                start: { month: monday.getMonth(), day: monday.getDate() },
-                end: { month: sunday.getMonth(), day: sunday.getDate() }
-            };
+            const solarHoliday = solar[key] || '';
+            const lunarHoliday = LunarUtils.getFestival(year, month, day);
+            const lunarText = LunarUtils.getLunarText(year, month, day);
+            return { solarHoliday, lunarHoliday, lunarText };
         }
     };
 
-    // 统计工具类
-    const StatsUtils = {
-        // 计算指定日期范围内某用户的统计
-        getUserStats(data, userIdx, startMonth, startDay, endMonth, endDay) {
-            let count = 0;
-            let details = { '微醺': 0, '刚刚好': 0, '醉了': 0 };
-
-            for (let m = startMonth; m <= endMonth; m++) {
-                if (!data[m]) continue;
-                const start = m === startMonth ? startDay : 1;
-                const end = m === endMonth ? endDay : 31;
-
-                for (let d = start; d <= end; d++) {
-                    const status = data[m]?.[d]?.[userIdx];
-                    if (status && status !== '') {
-                        count++;
-                        if (details[status] !== undefined) {
-                            details[status]++;
-                        }
-                    }
-                }
-            }
-
-            return { total: count, details };
-        },
-
-        // 计算本周统计
-        getWeekStats(data, year, month, day, userIdx) {
-            const range = DateUtils.getWeekRange(year, month, day);
-            return this.getUserStats(data, userIdx, range.start.month, range.start.day, range.end.month, range.end.day);
-        },
-
-        // 计算本月统计
-        getMonthStats(data, month, userIdx) {
-            return this.getUserStats(data, userIdx, month, 1, month, 31);
-        },
-
-        // 计算当天已记录人数
-        getDayRecordCount(data, month, day) {
-            let count = 0;
-            const dayData = data[month]?.[day];
-            if (dayData) {
-                for (let i = 0; i < 4; i++) {
-                    if (dayData[i] && dayData[i] !== '') {
-                        count++;
-                    }
-                }
-            }
-            return count;
-        },
-
-        // 计算连续记录天数
-        getConsecutiveDays(data, month, day, userIdx) {
-            let consecutive = 0;
-            let currentMonth = month;
-            let currentDay = day;
-
-            // 向前查找连续天数
-            while (currentMonth >= 0 && consecutive < 365) {
-                const status = data[currentMonth]?.[currentDay]?.[userIdx];
-                if (!status || status === '') break;
-
-                consecutive++;
-                currentDay--;
-                if (currentDay < 1) {
-                    currentMonth--;
-                    currentDay = 31;
-                }
-            }
-
-            return consecutive;
-        }
-    };
+    // ==================== 状态/统计 ====================
     
     // 状态定义
     const STATUS_MAP = {
@@ -1355,23 +2172,35 @@
     };
     const OPTS = ['', '微醺', '刚刚好', '醉了'];
 
-    let appData = {};
     let curMonth = new Date().getMonth();
     let curYear = 2026;
     let editDay = 1;
-    let tempEdit = {};
+    let tempEdit = {}; // userId -> status
     let tempPhotos = []; // 临时存储当天照片
-    let filterUser = -1; // -1表示不筛选，0-3表示筛选某个用户
-    let reportUser = 0; // 当前查看的年度报告用户
+    let filterUserId = null; // null表示不筛选
+    let reportUserId = null; // 当前查看的年度报告用户
     
     // 适配年份
     const now = new Date();
     if (now.getFullYear() === 2026) curMonth = now.getMonth();
 
     document.addEventListener('DOMContentLoaded', () => {
+        const local = readUsersFromLocal();
+        if (local.users) {
+            USERS = normalizeUsers(local.users);
+            const ts = Number(local.updatedAt);
+            localUsersUpdatedAt = Number.isFinite(ts) ? ts : 0;
+            writeUsersToLocal(localUsersUpdatedAt);
+        } else {
+            USERS = normalizeUsers(USERS);
+            localUsersUpdatedAt = 0;
+            writeUsersToLocal(localUsersUpdatedAt);
+        }
+
+        ensureSelectionsValid();
         render();
-        pull();
         renderReport();
+        pull();
     });
 
     function chMonth(d) {
@@ -1381,33 +2210,104 @@
         render();
     }
 
+    const StatsUtils = {
+        getDayRecordCount(month, day) {
+            const dayData = appData?.[month]?.[day];
+            if (!dayData || typeof dayData !== 'object') return 0;
+            const u = dayData.u && typeof dayData.u === 'object' ? dayData.u : {};
+            const activeIds = USERS.map(x => x.id);
+            let count = 0;
+            for (const id of activeIds) {
+                if (u[id]) count++;
+            }
+            return count;
+        },
+
+        getUserStatsInRange(userId, startDate, endDate) {
+            let count = 0;
+            const details = { '微醺': 0, '刚刚好': 0, '醉了': 0 };
+
+            const cur = new Date(startDate);
+            cur.setHours(0, 0, 0, 0);
+            const end = new Date(endDate);
+            end.setHours(0, 0, 0, 0);
+
+            while (cur <= end) {
+                const m = cur.getMonth();
+                const d = cur.getDate();
+                const status = appData?.[m]?.[d]?.u?.[userId];
+                if (status) {
+                    count++;
+                    if (details[status] !== undefined) details[status]++;
+                }
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            return { total: count, details };
+        },
+
+        getWeekStats(year, month, day, userId) {
+            const range = DateUtils.getWeekRange(year, month, day);
+            return this.getUserStatsInRange(userId, range.startDate, range.endDate);
+        },
+
+        getMonthStats(year, month, userId) {
+            const start = new Date(year, month, 1);
+            const end = new Date(year, month + 1, 0);
+            return this.getUserStatsInRange(userId, start, end);
+        },
+
+        getConsecutiveDays(year, month, day, userId) {
+            let consecutive = 0;
+            const cur = new Date(year, month, day);
+            cur.setHours(0, 0, 0, 0);
+            while (consecutive < 370) {
+                const m = cur.getMonth();
+                const d = cur.getDate();
+                const status = appData?.[m]?.[d]?.u?.[userId];
+                if (!status) break;
+                consecutive++;
+                cur.setDate(cur.getDate() - 1);
+            }
+            return consecutive;
+        }
+    };
+
     // 渲染统计概览
     function renderStatsOverview() {
-        const now = new Date();
-        const today = now.getDate();
+        const realNow = new Date();
+        const isCurrentMonth = realNow.getFullYear() === curYear && realNow.getMonth() === curMonth;
+        const today = realNow.getDate();
 
         // 计算本月总计
         let monthTotal = 0;
-        for (let d = 1; d <= 31; d++) {
-            monthTotal += StatsUtils.getDayRecordCount(appData, curMonth, d);
-        }
+        const tDays = new Date(curYear, curMonth + 1, 0).getDate();
+        for (let d = 1; d <= tDays; d++) monthTotal += StatsUtils.getDayRecordCount(curMonth, d);
 
         // 计算本周总计（基于当前日期）
         let weekTotal = 0;
-        const range = DateUtils.getWeekRange(curYear, curMonth, today);
-        for (let d = range.start.day; d <= range.end.day; d++) {
-            weekTotal += StatsUtils.getDayRecordCount(appData, curMonth, d);
+        if (isCurrentMonth) {
+            const range = DateUtils.getWeekRange(curYear, curMonth, today);
+            const cur = new Date(range.startDate);
+            while (cur <= range.endDate) {
+                weekTotal += StatsUtils.getDayRecordCount(cur.getMonth(), cur.getDate());
+                cur.setDate(cur.getDate() + 1);
+            }
         }
 
         // 计算今日记录
-        const todayCount = StatsUtils.getDayRecordCount(appData, curMonth, today);
+        const todayCount = isCurrentMonth ? StatsUtils.getDayRecordCount(curMonth, today) : 0;
 
         // 计算活跃用户数（本月至少记录过一次）
         let activeUsers = 0;
-        USERS.forEach((u, i) => {
-            const stats = StatsUtils.getMonthStats(appData, curMonth, i);
-            if (stats.total > 0) activeUsers++;
+        USERS.forEach((u) => {
+            const stats = StatsUtils.getMonthStats(curYear, curMonth, u.id);
+            if (stats.total > 0) activeUsers += 1;
         });
+
+        const denom = USERS.length;
+        const todayText = denom ? `${todayCount}/${denom}` : '—';
+        const avgDays = denom ? Math.round(monthTotal / denom) : 0;
 
         const overview = document.getElementById('statsOverview');
         overview.innerHTML = `
@@ -1420,21 +2320,21 @@
             </div>
             <div class="stats-overview-item">
                 <div class="stats-overview-label">📅 本周记录</div>
-                <div class="stats-overview-value">${weekTotal}</div>
+                <div class="stats-overview-value">${isCurrentMonth ? weekTotal : '—'}</div>
                 <div class="stats-overview-detail">
-                    <span>周一至今</span>
+                    <span>${isCurrentMonth ? '周一至周日' : '非本月'}</span>
                 </div>
             </div>
             <div class="stats-overview-item">
                 <div class="stats-overview-label">✨ 今日记录</div>
-                <div class="stats-overview-value">${todayCount}/4</div>
+                <div class="stats-overview-value">${isCurrentMonth ? todayText : '—'}</div>
                 <div class="stats-overview-detail">
-                    <span>${todayCount === 4 ? '已全员!' : '待记录'}</span>
+                    <span>${isCurrentMonth ? (denom && todayCount === denom ? '已全员!' : '待记录') : '非本月'}</span>
                 </div>
             </div>
             <div class="stats-overview-item">
                 <div class="stats-overview-label">🔥 活跃度</div>
-                <div class="stats-overview-value">${Math.round(monthTotal / 4)}天</div>
+                <div class="stats-overview-value">${avgDays}天</div>
                 <div class="stats-overview-detail">
                     <span>平均每人</span>
                 </div>
@@ -1450,13 +2350,24 @@
 
         // 0. 筛选按钮
         const filterBar = document.getElementById('filterBar');
-        let filterHTML = `<div class="filter-btn filter-all ${filterUser === -1 ? 'active' : ''}" onclick="setFilter(-1)" style="border-color: #666; ${filterUser === -1 ? 'background: #f0f0f0;' : ''}">全部显示</div>`;
-        USERS.forEach((u, i) => {
-            filterHTML += `<div class="filter-btn ${filterUser === i ? 'active' : ''}" onclick="setFilter(${i})" style="${filterUser === i ? `border-color: ${u.color}; color: ${u.color}; background: ${u.color}15;` : ''}">
+        let filterHTML = `<div class="filter-btn filter-all ${filterUserId === null ? 'active' : ''}" onclick="setFilter(null)" style="border-color: #666; ${filterUserId === null ? 'background: #f0f0f0;' : ''}">全部显示</div>`;
+        getUsersInPositionOrder().forEach((u) => {
+            const active = filterUserId === u.id;
+            filterHTML += `<div class="filter-btn ${active ? 'active' : ''}" onclick="setFilter(${JSON.stringify(u.id)})" style="${active ? `border-color: ${u.color}; color: ${u.color}; background: ${u.color}15;` : ''}">
                 <div class="dot" style="background: ${u.color};"></div>${u.name}
             </div>`;
         });
         filterBar.innerHTML = filterHTML;
+
+        // 图例
+        const legend = document.getElementById('gridLegend');
+        legend.innerHTML = POSITIONS.map(pos => {
+            const u = getUserByPos(pos);
+            if (!u) {
+                return `<div class="legend-item" style="opacity:0.55;"><div class="legend-dot" style="background:#e0e0e0; border:1px dashed #bbb;"></div>空位 (${pos})</div>`;
+            }
+            return `<div class="legend-item"><div class="legend-dot" style="background:${u.color}"></div>${u.short} (${pos})</div>`;
+        }).join('');
         
         // 1. 日历
         const grid = document.getElementById('calendarGrid');
@@ -1473,20 +2384,20 @@
             
             // 四宫格生成
             let dotsHTML = '';
-            for(let i=0; i<4; i++) {
-                const s = appData[curMonth]?.[d]?.[i];
+            const dayData = appData?.[curMonth]?.[d];
+            const uMap = dayData?.u && typeof dayData.u === 'object' ? dayData.u : {};
+            for (const pos of POSITIONS) {
+                const u = getUserByPos(pos);
+                if (!u) {
+                    dotsHTML += `<div class="quad-cell"></div>`;
+                    continue;
+                }
+                const s = uMap[u.id] || '';
                 let inner = '';
-                
-                // 如果正在筛选且不是当前用户，显示灰色占位
-                if(filterUser !== -1 && filterUser !== i) {
-                    if(s && s !== '') {
-                        inner = `<div class="status-dot" style="background:#e0e0e0; border:1px solid #ccc; font-size:7px; opacity:0.3;">${USERS[i].short}</div>`;
-                    }
+                if (filterUserId !== null && filterUserId !== u.id) {
+                    if (s) inner = `<div class="status-dot" style="background:#e0e0e0; border:1px solid #ccc; font-size:7px; opacity:0.28;">${u.short}</div>`;
                 } else {
-                    // 正常显示或筛选的用户
-                    if(s && s !== '') {
-                        inner = `<div class="status-dot ${STATUS_MAP[s].cls}" style="border:1px solid ${USERS[i].color}">${USERS[i].short}</div>`;
-                    }
+                    if (s) inner = `<div class="status-dot ${STATUS_MAP[s].cls}" style="border:1px solid ${u.color}">${u.short}</div>`;
                 }
                 dotsHTML += `<div class="quad-cell">${inner}</div>`;
             }
@@ -1498,14 +2409,14 @@
 
         // 2. 排行榜
         const list = document.getElementById('rankList');
-        let stats = USERS.map((u, i) => {
+        let stats = getUsersInPositionOrder().map((u) => {
             let t = 0;
             let d = { '微醺':0, '刚刚好':0, '醉了':0 };
             for(let day=1; day<=tDays; day++) {
-                const s = appData[curMonth]?.[day]?.[i];
-                if(s && s!=='') { t++; if(d[s]!==undefined) d[s]++; }
+                const s = appData?.[curMonth]?.[day]?.u?.[u.id];
+                if(s) { t++; if(d[s]!==undefined) d[s]++; }
             }
-            return { ...u, total:t, details:d, idx:i };
+            return { ...u, total:t, details:d };
         });
         
         stats.sort((a,b) => b.total - a.total);
@@ -1514,11 +2425,10 @@
         list.innerHTML = stats.map((item, idx) => {
             const pct = (item.total/max)*100;
             const rCls = idx===0 ? 'top-1' : idx===1 ? 'top-2' : idx===2 ? 'top-3' : '';
-            // 当全部显示或筛选当前用户时，展开详情
-            const isActive = filterUser === item.idx;
-            const shouldExpand = filterUser === -1 || isActive;
+            const isActive = filterUserId === item.id;
+            const shouldExpand = filterUserId === null || isActive;
             return `
-                <div class="rank-row ${shouldExpand ? 'expanded' : ''}" onclick="toggleRankAndFilter(${item.idx}, this)">
+                <div class="rank-row ${shouldExpand ? 'expanded' : ''}" onclick="toggleRankAndFilter(${JSON.stringify(item.id)}, this)">
                     <div style="width:100%; display:flex; align-items:center;">
                         <span class="rank-idx ${rCls}">${idx+1}</span>
                         <div class="rank-avatar" style="background:${item.color}">${item.short}</div>
@@ -1544,26 +2454,17 @@
     }
     
     // 筛选功能
-    window.setFilter = function(idx) {
-        filterUser = idx;
+    window.setFilter = function(userId) {
+        filterUserId = userId || null;
         render();
         // 滚动到日历区域
         document.querySelector('.cal-body').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     
     // 点击排行榜切换展开和筛选
-    window.toggleRankAndFilter = function(idx, el) {
-        // 如果点击的是当前筛选的用户，取消筛选
-        if(filterUser === idx) {
-            filterUser = -1;
-            el.classList.remove('expanded');
-        } else {
-            // 否则设置筛选
-            filterUser = idx;
-            // 移除其他的展开状态
-            document.querySelectorAll('.rank-row').forEach(r => r.classList.remove('expanded'));
-            el.classList.add('expanded');
-        }
+    window.toggleRankAndFilter = function(userId) {
+        if (filterUserId === userId) filterUserId = null;
+        else filterUserId = userId;
         render();
         // 滚动到日历
         setTimeout(() => {
@@ -1587,19 +2488,21 @@
         weekdayEl.className = 'sheet-weekday' + (isWeekend ? ' weekend' : '');
 
         // 节日信息
-        const holiday = DateUtils.getHoliday(curMonth, d);
+        const { solarHoliday, lunarHoliday, lunarText } = DateUtils.getHolidayInfo(curYear, curMonth, d);
         const holidayEl = document.getElementById('sheetHoliday');
-        if (holiday) {
-            holidayEl.innerHTML = `<div class="sheet-holiday">🎉 ${holiday}</div>`;
-        } else {
-            holidayEl.innerHTML = '';
-        }
+        const badges = [];
+        if (solarHoliday) badges.push(`<div class="sheet-holiday">🎉 ${solarHoliday}</div>`);
+        if (lunarHoliday) badges.push(`<div class="sheet-holiday lunar">🧧 ${lunarHoliday}</div>`);
+        if (lunarText) badges.push(`<div class="sheet-lunar">🌙 农历${lunarText}</div>`);
+        holidayEl.innerHTML = badges.length ? `<div class="sheet-holiday-wrap">${badges.join('')}</div>` : '';
 
         // 快速统计
-        const recordCount = StatsUtils.getDayRecordCount(appData, curMonth, d);
+        const recordCount = StatsUtils.getDayRecordCount(curMonth, d);
+        const denom = USERS.length;
+        const recordText = denom ? `${recordCount}/${denom}` : '—';
         const statsHTML = `
             <div class="sheet-stat-item">
-                <div class="sheet-stat-value">${recordCount}/4</div>
+                <div class="sheet-stat-value">${recordText}</div>
                 <div class="sheet-stat-label">已记录</div>
             </div>
             <div class="sheet-stat-item">
@@ -1614,22 +2517,22 @@
         document.getElementById('sheetStats').innerHTML = statsHTML;
 
         // 原有的记录选项
-        const dayData = appData[curMonth]?.[d] || {};
-        tempEdit = { ...dayData };
-        tempPhotos = dayData.photos ? [...dayData.photos] : [];
+        const dayData = normalizeDayData(appData?.[curMonth]?.[d]);
+        tempEdit = { ...(dayData.u || {}) };
+        tempPhotos = Array.isArray(dayData.photos) ? [...dayData.photos] : [];
 
-        document.getElementById('sheetRows').innerHTML = USERS.map((u, i) => {
-            const cur = dayData[i] || '';
+        document.getElementById('sheetRows').innerHTML = getUsersInPositionOrder().map((u) => {
+            const cur = dayData.u?.[u.id] || '';
 
             // 计算该用户的统计
-            const weekStats = StatsUtils.getWeekStats(appData, curYear, curMonth, d, i);
-            const monthStats = StatsUtils.getMonthStats(appData, curMonth, i);
-            const consecutive = StatsUtils.getConsecutiveDays(appData, curMonth, d, i);
+            const weekStats = StatsUtils.getWeekStats(curYear, curMonth, d, u.id);
+            const monthStats = StatsUtils.getMonthStats(curYear, curMonth, u.id);
+            const consecutive = StatsUtils.getConsecutiveDays(curYear, curMonth, d, u.id);
 
             const btns = OPTS.map(o => {
                 const label = o === '' ? '无' : o;
                 const act = cur === o ? 'active' : '';
-                return `<div class="opt-btn ${act}" data-v="${o}" onclick="setOpt(${i},'${o}',this)">${label}</div>`;
+                return `<div class="opt-btn ${act}" data-v="${o}" onclick="setOpt(${JSON.stringify(u.id)}, ${JSON.stringify(o)}, this)">${label}</div>`;
             }).join('');
 
             // 个人统计信息
@@ -1646,7 +2549,7 @@
                     <div style="font-weight:700;margin-bottom:8px;color:${u.color};font-size:14px;">
                         ${u.name}
                     </div>
-                    <div class="opt-grid" id="rg-${i}">${btns}</div>
+                    <div class="opt-grid" id="rg-${u.id}">${btns}</div>
                     ${userStatsHTML}
                 </div>
             `;
@@ -1697,20 +2600,26 @@
         renderPhotoPreview();
     }
 
-    window.setOpt = function(i, v, el) {
-        tempEdit[i] = v;
-        document.getElementById(`rg-${i}`).querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));
+    window.setOpt = function(userId, v, el) {
+        if (!userId) return;
+        if (!v) delete tempEdit[userId];
+        else tempEdit[userId] = v;
+        document.getElementById(`rg-${userId}`).querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('active'));
         el.classList.add('active');
     }
 
     function closeSheet() { document.getElementById('sheet').classList.remove('show'); }
 
     function save() {
+        ensureAppMeta();
         if(!appData[curMonth]) appData[curMonth]={};
-        appData[curMonth][editDay] = {...tempEdit};
-        if(tempPhotos.length > 0) {
-            appData[curMonth][editDay].photos = tempPhotos;
+        const cleaned = {};
+        for (const [k, v] of Object.entries(tempEdit || {})) {
+            if (typeof v === 'string' && v) cleaned[k] = v;
         }
+        const day = { u: cleaned };
+        if (tempPhotos.length > 0) day.photos = tempPhotos;
+        appData[curMonth][editDay] = day;
         closeSheet();
         render();
         renderReport();
@@ -1724,8 +2633,23 @@
             const j = await r.json();
             appData = j.record || {};
             if(appData.status==='start') appData={};
-            render(); 
+            hasPulled = true;
+
+            const usersChanged = reconcileUsersFromAppData({ preferCloud: false });
+            const migrated = migrateAppDataToV2();
+            ensureSelectionsValid();
+
+            render();
             renderReport();
+
+            if (usersChanged || migrated) {
+                pendingUserPush = false;
+                push();
+            } else if (pendingUserPush) {
+                pendingUserPush = false;
+                push();
+            }
+
             updSync('saved','已同步');
         } catch(e) { updSync('', '离线'); }
     }
@@ -1733,6 +2657,13 @@
     async function push() {
         updSync('saving', '保存中');
         try {
+            ensureAppMeta();
+            const ts = localUsersUpdatedAt && localUsersUpdatedAt > 0 ? localUsersUpdatedAt : Date.now();
+            if (!localUsersUpdatedAt || localUsersUpdatedAt === 0) {
+                localUsersUpdatedAt = ts;
+                writeUsersToLocal(ts);
+            }
+            syncUsersToAppMeta(ts);
             await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: 'PUT', headers: {'Content-Type':'application/json','X-Master-Key':API_KEY},
                 body: JSON.stringify(appData)
@@ -1747,6 +2678,8 @@
     
     // 导出数据
     function exportData() {
+        ensureAppMeta();
+        syncUsersToAppMeta(localUsersUpdatedAt);
         const dataStr = JSON.stringify(appData, null, 2);
         const blob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -1768,6 +2701,7 @@
             badge.className = oldClass;
             badge.innerText = oldText;
         }, 2000);
+        showToast('已导出');
     }
     
     // 导入数据
@@ -1783,7 +2717,12 @@
                 // 简单验证数据格式
                 if (typeof imported === 'object') {
                     appData = imported;
+                    hasPulled = true;
+                    reconcileUsersFromAppData({ preferCloud: true });
+                    migrateAppDataToV2();
+                    ensureSelectionsValid();
                     render();
+                    renderReport();
                     push(); // 同步到云端
                     
                     // 提示
@@ -1809,16 +2748,27 @@
     
     // 年度报告生成
     function renderReport() {
+        ensureSelectionsValid();
+        if (!reportUserId) {
+            document.getElementById('reportTabs').innerHTML = '';
+            document.getElementById('reportContent').innerHTML = '<p style="text-align:center; color:#999; padding:20px;">暂无成员</p>';
+            return;
+        }
+
         // 渲染用户标签
         const tabs = document.getElementById('reportTabs');
-        tabs.innerHTML = USERS.map((u, i) => {
-            return `<div class="report-tab ${reportUser === i ? 'active' : ''}" 
-                         style="${reportUser === i ? `border-color: ${u.color}; background: ${u.color}15; color: ${u.color};` : ''}"
-                         onclick="switchReport(${i})">${u.name}</div>`;
+        tabs.innerHTML = getUsersInPositionOrder().map((u) => {
+            return `<div class="report-tab ${reportUserId === u.id ? 'active' : ''}" 
+                         style="${reportUserId === u.id ? `border-color: ${u.color}; background: ${u.color}15; color: ${u.color};` : ''}"
+                         onclick="switchReport(${JSON.stringify(u.id)})">${u.name}</div>`;
         }).join('');
         
         // 统计当前用户的年度数据
-        const user = USERS[reportUser];
+        const user = USERS.find(x => x.id === reportUserId);
+        if (!user) {
+            reportUserId = USERS[0]?.id || null;
+            return renderReport();
+        }
         let totalDays = 0;
         let statusCount = { '微醺': 0, '刚刚好': 0, '醉了': 0 };
         let photos = [];
@@ -1830,18 +2780,17 @@
                 const dayData = appData[m][d];
                 if(!dayData) continue;
                 
-                const status = dayData[reportUser];
-                if(status && status !== '') {
+                const status = dayData?.u?.[user.id];
+                if(status) {
                     totalDays++;
                     monthlyCount[m]++;
                     if(statusCount[status] !== undefined) {
                         statusCount[status]++;
                     }
-                }
-                
-                // 收集照片
-                if(dayData.photos && dayData.photos.length > 0) {
-                    photos.push(...dayData.photos);
+
+                    if(dayData.photos && dayData.photos.length > 0) {
+                        photos.push(...dayData.photos);
+                    }
                 }
             }
         }
@@ -1910,8 +2859,8 @@
         `;
     }
     
-    window.switchReport = function(idx) {
-        reportUser = idx;
+    window.switchReport = function(userId) {
+        reportUserId = userId;
         renderReport();
     }
 </script>
