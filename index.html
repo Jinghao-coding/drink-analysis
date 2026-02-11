@@ -1458,8 +1458,8 @@
         <div class="card-title">月历概览</div>
         <div class="month-ctrl">
             <button class="m-btn" onclick="chMonth(-1)">‹</button>
-            <span class="m-txt" id="monthTxt" onclick="toggleMonthSelector()">1月</span>
-            <div class="month-selector" id="monthSelector"></div>
+            <span class="m-txt" id="monthTxt" onclick="toggleMonthSelector()" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleMonthSelector();}">1月</span>
+            <div class="month-selector" id="monthSelector" role="listbox"></div>
             <button class="m-btn" onclick="chMonth(1)">›</button>
         </div>
     </div>
@@ -2295,7 +2295,7 @@
         
         selector.innerHTML = months.map((month, index) => {
             const activeClass = index === curMonth ? 'active' : '';
-            return `<div class="month-selector-item ${activeClass}" onclick="selectMonth(${index})">${month}</div>`;
+            return `<div class="month-selector-item ${activeClass}" role="option" tabindex="0" onclick="selectMonth(${index})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMonth(${index});}">${month}</div>`;
         }).join('');
     }
 
@@ -2315,6 +2315,16 @@
             !monthTxt.contains(e.target) &&
             selector.classList.contains('show')) {
             selector.classList.remove('show');
+        }
+    });
+
+    // 按Escape键关闭月份选择器
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const selector = document.getElementById('monthSelector');
+            if (selector && selector.classList.contains('show')) {
+                selector.classList.remove('show');
+            }
         }
     });
 
