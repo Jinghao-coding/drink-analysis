@@ -2365,7 +2365,7 @@
         let filterHTML = `<div class="filter-btn filter-all ${filterUserId === null ? 'active' : ''}" onclick="setFilter(null)" style="border-color: #666; ${filterUserId === null ? 'background: #f0f0f0;' : ''}">全部显示</div>`;
         getUsersInPositionOrder().forEach((u) => {
             const active = filterUserId === u.id;
-            filterHTML += `<div class="filter-btn ${active ? 'active' : ''}" onclick="setFilter(${JSON.stringify(u.id)})" style="${active ? `border-color: ${u.color}; color: ${u.color}; background: ${u.color}15;` : ''}">
+            filterHTML += `<div class="filter-btn ${active ? 'active' : ''}" onclick='setFilter(${JSON.stringify(u.id)})' style="${active ? `border-color: ${u.color}; color: ${u.color}; background: ${u.color}15;` : ''}">
                 <div class="dot" style="background: ${u.color};"></div>${u.name}
             </div>`;
         });
@@ -2440,7 +2440,7 @@
             const isActive = filterUserId === item.id;
             const shouldExpand = filterUserId === null || isActive;
             return `
-                <div class="rank-row ${shouldExpand ? 'expanded' : ''}" onclick="toggleRankAndFilter(${JSON.stringify(item.id)}, this)">
+                <div class="rank-row ${shouldExpand ? 'expanded' : ''}" onclick='toggleRankAndFilter(${JSON.stringify(item.id)}, this)'>
                     <div style="width:100%; display:flex; align-items:center;">
                         <span class="rank-idx ${rCls}">${idx+1}</span>
                         <div class="rank-avatar" style="background:${item.color}">${item.short}</div>
@@ -2782,7 +2782,7 @@
         tabs.innerHTML = getUsersInPositionOrder().map((u) => {
             return `<div class="report-tab ${reportUserId === u.id ? 'active' : ''}" 
                          style="${reportUserId === u.id ? `border-color: ${u.color}; background: ${u.color}15; color: ${u.color};` : ''}"
-                         onclick="switchReport(${JSON.stringify(u.id)})">${u.name}</div>`;
+                         onclick='switchReport(${JSON.stringify(u.id)})'>${u.name}</div>`;
         }).join('');
         
         // 统计当前用户的年度数据
