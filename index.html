@@ -259,6 +259,60 @@
             min-width: 45px;
             text-align: center;
             color: var(--primary);
+            cursor: pointer;
+            position: relative;
+            padding: 6px 10px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .m-txt:hover {
+            background: rgba(44, 62, 80, 0.08);
+        }
+        
+        /* 月份选择器 */
+        .month-selector {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            padding: 12px;
+            display: none;
+            z-index: 1000;
+            min-width: 200px;
+        }
+        .month-selector.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        .month-item {
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            background: #f8f9fa;
+        }
+        .month-item:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(44, 62, 80, 0.2);
+        }
+        .month-item.active {
+            background: var(--primary);
+            color: white;
+            font-weight: 700;
         }
 
         /* 四宫格图例 */
@@ -1405,7 +1459,10 @@
         <div class="card-title">月历概览</div>
         <div class="month-ctrl">
             <button class="m-btn" onclick="chMonth(-1)">‹</button>
-            <span class="m-txt" id="monthTxt">1月</span>
+            <span class="m-txt" id="monthTxt" onclick="toggleMonthSelector()">1月</span>
+            <div class="month-selector" id="monthSelector">
+                <div class="month-grid" id="monthGrid"></div>
+            </div>
             <button class="m-btn" onclick="chMonth(1)">›</button>
         </div>
     </div>
@@ -2221,6 +2278,52 @@
         curMonth = n;
         render();
     }
+
+    // 月份跳转功能
+    function toggleMonthSelector() {
+        const selector = document.getElementById('monthSelector');
+        const isShowing = selector.classList.contains('show');
+        
+        if (isShowing) {
+            selector.classList.remove('show');
+        } else {
+            // 生成月份网格
+            renderMonthGrid();
+            selector.classList.add('show');
+        }
+    }
+
+    function renderMonthGrid() {
+        const monthGrid = document.getElementById('monthGrid');
+        const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        
+        let html = '';
+        monthNames.forEach((name, index) => {
+            const isActive = index === curMonth ? 'active' : '';
+            html += `<div class="month-item ${isActive}" onclick="jumpToMonth(${index})">${name}</div>`;
+        });
+        
+        monthGrid.innerHTML = html;
+    }
+
+    function jumpToMonth(monthIndex) {
+        curMonth = monthIndex;
+        render();
+        // 关闭选择器
+        document.getElementById('monthSelector').classList.remove('show');
+    }
+
+    // 点击外部关闭月份选择器
+    document.addEventListener('click', function(e) {
+        const selector = document.getElementById('monthSelector');
+        const monthTxt = document.getElementById('monthTxt');
+        
+        if (selector && monthTxt && 
+            !selector.contains(e.target) && 
+            !monthTxt.contains(e.target)) {
+            selector.classList.remove('show');
+        }
+    });
 
     const StatsUtils = {
         getDayRecordCount(month, day) {
