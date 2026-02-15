@@ -338,6 +338,7 @@
             padding: 6px 14px;
             border-radius: 24px;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            position: relative;
         }
         .m-btn {
             border: none;
@@ -378,85 +379,99 @@
             background: rgba(44, 62, 80, 0.08);
         }
         
-        /* 月份选择器 */
-        .month-selector {
-            position: absolute;
-            top: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            padding: 12px;
+        /* 月份选择器弹窗 - 固定定位避免超出范围 */
+        .month-selector-popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200;
             display: none;
-            z-index: 1000;
-            min-width: 220px;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
-        .month-selector.show {
-            display: block;
-            animation: fadeIn 0.3s ease-out forwards;
+        .month-selector-popup.show {
+            display: flex;
+            animation: fadeIn 0.2s ease-out forwards;
+        }
+        .month-selector-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            min-width: 300px;
+            animation: scaleIn 0.25s ease-out forwards;
+        }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
         .year-selector {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin-bottom: 12px;
+            gap: 16px;
+            margin-bottom: 16px;
             padding-bottom: 12px;
             border-bottom: 1px solid #e0e0e0;
         }
         .year-btn {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
             border: none;
             border-radius: 50%;
-            background: var(--bg-body);
-            color: var(--text-main);
-            font-size: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            font-size: 18px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.3);
         }
         .year-btn:hover {
-            background: var(--primary);
-            color: white;
             transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
         }
         .year-display {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: 800;
             color: var(--primary);
-            min-width: 60px;
+            min-width: 70px;
             text-align: center;
         }
         .month-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
         }
         .month-item {
-            padding: 10px;
+            padding: 12px 8px;
             text-align: center;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            font-weight: 500;
+            transition: all 0.25s ease;
+            font-size: 15px;
+            font-weight: 600;
             color: var(--text-main);
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border: 2px solid transparent;
         }
         .month-item:hover {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(44, 62, 80, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(44, 62, 80, 0.3);
+            border-color: var(--primary);
         }
         .month-item.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--c-tipsy) 0%, #229954 100%);
             color: white;
-            font-weight: 700;
+            font-weight: 800;
+            border-color: var(--c-tipsy);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
         }
 
         /* 四宫格图例 */
@@ -1478,43 +1493,92 @@
             }
         }
 
-        /* 统计概览卡片 */
+        /* 统计概览卡片 - 全新设计 */
         .stats-overview {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 14px;
+            margin-bottom: 18px;
         }
         .stats-overview-item {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            padding: 16px;
-            border-radius: 12px;
-            border: 2px solid #e0e0e0;
+            padding: 18px;
+            border-radius: 16px;
+            border: 2px solid transparent;
             transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .stats-overview-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         .stats-overview-item:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: #bbb;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(44, 62, 80, 0.15);
+            border-color: var(--primary);
         }
+        .stats-overview-item:hover::before {
+            opacity: 1;
+        }
+        .stats-overview-item:nth-child(1)::before { background: linear-gradient(90deg, #3498db 0%, #2980b9 100%); }
+        .stats-overview-item:nth-child(2)::before { background: linear-gradient(90deg, #9b59b6 0%, #8e44ad 100%); }
+        .stats-overview-item:nth-child(3)::before { background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%); }
+        .stats-overview-item:nth-child(4)::before { background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); }
+        
         .stats-overview-label {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--text-sub);
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .stats-overview-value {
-            font-size: 26px;
-            font-weight: 800;
-            color: var(--primary);
-            margin-bottom: 6px;
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            line-height: 1.2;
         }
+        .stats-overview-item:nth-child(1) .stats-overview-value { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); -webkit-background-clip: text; background-clip: text; }
+        .stats-overview-item:nth-child(2) .stats-overview-value { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); -webkit-background-clip: text; background-clip: text; }
+        .stats-overview-item:nth-child(3) .stats-overview-value { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); -webkit-background-clip: text; background-clip: text; }
+        .stats-overview-item:nth-child(4) .stats-overview-value { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); -webkit-background-clip: text; background-clip: text; }
+        
         .stats-overview-detail {
-            font-size: 11px;
+            font-size: 12px;
             color: #999;
             display: flex;
             gap: 8px;
+            font-weight: 500;
         }
+        .stats-overview-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            color: var(--primary);
+        }
+        .stats-overview-item:hover .stats-overview-arrow {
+            opacity: 1;
+            right: 16px;
+        }
+        
         @media (min-width: 768px) {
             .stats-overview {
                 grid-template-columns: repeat(4, 1fr);
@@ -2144,6 +2208,373 @@
             font-size: 12px;
             color: var(--text-sub);
         }
+        
+        /* 酒类统计列表 - 新设计 */
+        .drink-stats-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .drink-stat-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 12px;
+            border: 1px solid #eee;
+        }
+        .drink-stat-icon {
+            font-size: 28px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-body);
+            border-radius: 12px;
+        }
+        .drink-stat-info {
+            flex: 1;
+        }
+        .drink-stat-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .drink-stat-bar {
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .drink-stat-progress {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .drink-stat-num {
+            text-align: right;
+            min-width: 60px;
+        }
+        .drink-stat-count {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .drink-stat-amount {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        /* 统计详情弹窗 */
+        .stats-detail-popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 250;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .stats-detail-popup.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .stats-detail-content {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 520px;
+            width: 92%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .stats-detail-popup.show .stats-detail-content {
+            transform: scale(1);
+        }
+        .stats-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--bg-body);
+        }
+        .stats-detail-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .stats-detail-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 50%;
+            background: var(--bg-body);
+            color: var(--text-sub);
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stats-detail-close:hover {
+            background: var(--c-drunk);
+            color: white;
+            transform: rotate(90deg);
+        }
+        .stats-detail-section {
+            margin-bottom: 24px;
+        }
+        .stats-detail-section h4 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0 0 14px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        .stats-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .stats-detail-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #eee;
+            transition: all 0.2s ease;
+        }
+        .stats-detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .stats-detail-num {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .stats-detail-label {
+            font-size: 12px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+        .stats-user-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .stats-user-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 14px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #eee;
+            transition: all 0.2s ease;
+        }
+        .stats-user-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .stats-user-name {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 15px;
+        }
+        .stats-user-detail {
+            font-size: 12px;
+            color: var(--text-sub);
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 简化筛选栏 */
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stats-detail-close:hover {
+            background: var(--c-drunk);
+            color: white;
+        }
+        .stats-detail-section {
+            margin-bottom: 20px;
+        }
+        .stats-detail-section h4 {
+            margin: 0 0 12px 0;
+            font-size: 14px;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+        .stats-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .stats-detail-item {
+            background: var(--bg-body);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* 筛选容器 - 简洁设计 */
+        .filter-container {
+            margin-bottom: 16px;
+        }
+        .filter-dropdown {
+            position: relative;
+        }
+        .filter-dropdown select {
+            width: 100%;
+            padding: 16px 48px 16px 20px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        .filter-dropdown::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--text-sub);
+            pointer-events: none;
+        }
+        .filter-dropdown select:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(44, 62, 80, 0.2);
+            transform: translateY(-2px);
+        }
+        .filter-dropdown select:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+            color: var(--primary);
+        }
+        .filter-quick-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        /* 深色模式字体优化 */
+        [data-theme="dark"] .stats-overview-item,
+        [data-theme="dark"] .stats-overview-label,
+        [data-theme="dark"] .stats-overview-value,
+        [data-theme="dark"] .stats-overview-detail {
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .stats-overview-label {
+            color: var(--text-sub);
+        }
+        [data-theme="dark"] .stats-overview-detail span {
+            color: var(--text-sub);
+        }
+        [data-theme="dark"] .stat-item p {
+            color: var(--text-sub);
+        }
+        [data-theme="dark"] .rank-detail {
+            background: #1a1a2e;
+        }
+        [data-theme="dark"] .stats-detail-item {
+            background: #1a1a2e;
+        }
+        [data-theme="dark"] .stats-user-item {
+            background: #1a1a2e;
+        }
+        [data-theme="dark"] .filter-select {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border-color: #34495e;
+        }
+        [data-theme="dark"] .filter-select option {
+            background: #16213e;
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .filter-quick-btn {
+            background: var(--bg-card);
+            border-color: #34495e;
+            color: var(--text-sub);
+        }
+        [data-theme="dark"] .filter-quick-btn:hover,
+        [data-theme="dark"] .filter-quick-btn.active {
+            border-color: var(--primary);
+            color: white;
+        }
+        [data-theme="dark"] .filter-quick-btn.active {
+            background: var(--primary);
+        }
+        [data-theme="dark"] .card-title {
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .report-stat-box p {
+            color: var(--text-sub);
+        }
+        [data-theme="dark"] .drink-type-info h5 {
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .drink-type-info p {
+            color: var(--text-sub);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .stats-overview-item,
+            :root:not([data-theme="light"]) .stats-overview-label,
+            :root:not([data-theme="light"]) .stats-overview-value,
+            :root:not([data-theme="light"]) .stats-overview-detail {
+                color: var(--text-main);
+            }
+            :root:not([data-theme="light"]) .stats-overview-label {
+                color: var(--text-sub);
+            }
+            :root:not([data-theme="light"]) .stats-overview-detail span {
+                color: var(--text-sub);
+            }
+            :root:not([data-theme="light"]) .stat-item p {
+                color: var(--text-sub);
+            }
+            :root:not([data-theme="light"]) .rank-detail {
+                background: #1a1a2e;
+            }
+        }
+
+        /* 统计概览项可点击 */
+        .stats-overview-item {
+            cursor: pointer;
+        }
+        .stats-overview-item:active {
+            transform: scale(0.98);
+        }
 
     </style>
 </head>
@@ -2206,21 +2637,31 @@
             <button class="m-btn" onclick="chYear(-1)" title="上一年">«</button>
             <button class="m-btn" onclick="chMonth(-1)" title="上个月">‹</button>
             <span class="m-txt" id="monthTxt" onclick="toggleMonthSelector()">2025年1月</span>
-            <div class="month-selector" id="monthSelector">
-                <div class="year-selector">
-                    <button class="year-btn" onclick="chYearInSelector(-1)">‹</button>
-                    <span class="year-display" id="selectorYear">2025</span>
-                    <button class="year-btn" onclick="chYearInSelector(1)">›</button>
-                </div>
-                <div class="month-grid" id="monthGrid"></div>
-            </div>
             <button class="m-btn" onclick="chMonth(1)" title="下个月">›</button>
             <button class="m-btn" onclick="chYear(1)" title="下一年">»</button>
         </div>
     </div>
     
-    <!-- 筛选按钮 -->
-    <div class="filter-bar" id="filterBar"></div>
+    <!-- 月份选择器弹窗 -->
+    <div class="month-selector-popup" id="monthSelector">
+        <div class="month-selector-content">
+            <div class="year-selector">
+                <button class="year-btn" onclick="chYearInSelector(-1)">‹</button>
+                <span class="year-display" id="selectorYear">2025</span>
+                <button class="year-btn" onclick="chYearInSelector(1)">›</button>
+            </div>
+            <div class="month-grid" id="monthGrid"></div>
+        </div>
+    </div>
+    
+    <!-- 筛选区域 - 下拉列表 -->
+    <div class="filter-container">
+        <div class="filter-dropdown">
+            <select id="filterSelect" onchange="handleFilterChange(this.value)">
+                <option value="">👥 全部成员</option>
+            </select>
+        </div>
+    </div>
 
     <!-- 四宫格说明图例 -->
     <div class="grid-legend" id="gridLegend"></div>
@@ -2377,6 +2818,17 @@
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- 统计详情弹窗 -->
+<div class="stats-detail-popup" id="statsDetailPopup" onclick="if(event.target===this) closeStatsDetail()">
+    <div class="stats-detail-content">
+        <div class="stats-detail-header">
+            <div class="stats-detail-title" id="statsDetailTitle">📊 统计详情</div>
+            <button class="stats-detail-close" onclick="closeStatsDetail()">×</button>
+        </div>
+        <div id="statsDetailBody"></div>
+    </div>
+</div>
 
 <script>
     // 配置
@@ -3276,6 +3728,310 @@
     };
 
     // 渲染统计概览
+    // 统计详情弹窗函数
+    window.showStatsDetail = function(type) {
+        const popup = document.getElementById('statsDetailPopup');
+        const titleEl = document.getElementById('statsDetailTitle');
+        const bodyEl = document.getElementById('statsDetailBody');
+        
+        if (!popup || !titleEl || !bodyEl) return;
+        
+        const realNow = new Date();
+        const isCurrentMonth = realNow.getFullYear() === curYear && realNow.getMonth() === curMonth;
+        
+        let title = '';
+        let content = '';
+        
+        // 获取本月酒类统计
+        const getMonthDrinkStats = () => {
+            const drinkStats = {};
+            DRINK_TYPE_NAMES.forEach(t => drinkStats[t] = { count: 0, amount: 0 });
+            
+            const tDays = new Date(curYear, curMonth + 1, 0).getDate();
+            for (let d = 1; d <= tDays; d++) {
+                const dayData = appData?.[curMonth]?.[d];
+                if (!dayData?.drinks) continue;
+                
+                Object.entries(dayData.drinks).forEach(([userId, drinks]) => {
+                    if (Array.isArray(drinks)) {
+                        drinks.forEach(drink => {
+                            if (drink.type && drink.amount && drinkStats[drink.type]) {
+                                drinkStats[drink.type].count++;
+                                drinkStats[drink.type].amount += drink.amount;
+                            }
+                        });
+                    }
+                });
+            }
+            return drinkStats;
+        };
+        
+        // 获取所有用户的统计数据
+        const userStats = USERS.map(u => {
+            let stats;
+            if (type === 'month') {
+                stats = StatsUtils.getMonthStats(curYear, curMonth, u.id);
+            } else if (type === 'week') {
+                const today = realNow.getDate();
+                stats = StatsUtils.getWeekStats(curYear, curMonth, today, u.id);
+            } else if (type === 'today') {
+                const today = realNow.getDate();
+                const dayData = appData?.[curMonth]?.[today];
+                const status = dayData?.u?.[u.id];
+                stats = { total: status ? 1 : 0, details: { '微醺': 0, '刚刚好': 0, '醉了': 0 } };
+                if (status) stats.details[status] = 1;
+            } else if (type === 'active') {
+                const monthStats = StatsUtils.getMonthStats(curYear, curMonth, u.id);
+                stats = { total: monthStats.total, details: monthStats.details };
+            }
+            return { user: u, ...stats };
+        });
+        
+        if (type === 'month') {
+            title = `📊 ${curYear}年${curMonth + 1}月 统计详情`;
+            const totalRecords = userStats.reduce((sum, u) => sum + u.total, 0);
+            const statusCount = { '微醺': 0, '刚刚好': 0, '醉了': 0 };
+            userStats.forEach(u => {
+                statusCount['微醺'] += u.details['微醺'];
+                statusCount['刚刚好'] += u.details['刚刚好'];
+                statusCount['醉了'] += u.details['醉了'];
+            });
+            
+            // 获取酒类统计
+            const drinkStats = getMonthDrinkStats();
+            const totalDrinkCount = Object.values(drinkStats).reduce((sum, d) => sum + d.count, 0);
+            
+            content = `
+                <div class="stats-detail-section">
+                    <h4>📈 总体统计</h4>
+                    <div class="stats-detail-grid">
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${totalRecords}</div>
+                            <div class="stats-detail-label">总记录次数</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num" style="color:var(--c-tipsy);">${statusCount['微醺']}</div>
+                            <div class="stats-detail-label">微醺</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num" style="color:var(--c-good);">${statusCount['刚刚好']}</div>
+                            <div class="stats-detail-label">刚刚好</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num" style="color:var(--c-drunk);">${statusCount['醉了']}</div>
+                            <div class="stats-detail-label">醉了</div>
+                        </div>
+                    </div>
+                </div>
+                ${totalDrinkCount > 0 ? `
+                <div class="stats-detail-section">
+                    <h4>🍺 酒类分布</h4>
+                    <div class="drink-stats-list">
+                        ${Object.entries(drinkStats).filter(([_, d]) => d.count > 0).sort((a, b) => b[1].count - a[1].count).map(([type, stat]) => {
+                            const info = DRINK_TYPES[type] || DRINK_TYPES['其他'];
+                            const percentage = Math.round(stat.count / totalDrinkCount * 100);
+                            return `
+                                <div class="drink-stat-row">
+                                    <div class="drink-stat-icon">${info.icon}</div>
+                                    <div class="drink-stat-info">
+                                        <div class="drink-stat-name">${type}</div>
+                                        <div class="drink-stat-bar">
+                                            <div class="drink-stat-progress" style="width:${percentage}%;background:${info.color};"></div>
+                                        </div>
+                                    </div>
+                                    <div class="drink-stat-num">
+                                        <div class="drink-stat-count">${stat.count}</div>
+                                        <div class="drink-stat-amount">${stat.amount}${info.unit}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                <div class="stats-detail-section">
+                    <h4>👥 个人统计</h4>
+                    <div class="stats-user-list">
+                        ${userStats.map(u => `
+                            <div class="stats-user-item" style="border-left:3px solid ${u.user.color};">
+                                <div class="stats-user-name">${u.user.name}</div>
+                                <div class="stats-user-detail">
+                                    <span>${u.total}次</span>
+                                    <span style="color:var(--c-tipsy);">${u.details['微醺']}微醺</span>
+                                    <span style="color:var(--c-good);">${u.details['刚刚好']}刚好</span>
+                                    <span style="color:var(--c-drunk);">${u.details['醉了']}醉了</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (type === 'drinks') {
+            title = `🍺 ${curYear}年${curMonth + 1}月 酒类统计`;
+            const drinkStats = getMonthDrinkStats();
+            const totalDrinkCount = Object.values(drinkStats).reduce((sum, d) => sum + d.count, 0);
+            const totalAmount = Object.values(drinkStats).reduce((sum, d) => sum + d.amount, 0);
+            
+            content = `
+                <div class="stats-detail-section">
+                    <h4>📊 酒类概览</h4>
+                    <div class="stats-detail-grid">
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${totalDrinkCount}</div>
+                            <div class="stats-detail-label">饮酒次数</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${totalAmount}</div>
+                            <div class="stats-detail-label">饮酒总量</div>
+                        </div>
+                    </div>
+                </div>
+                ${totalDrinkCount > 0 ? `
+                <div class="stats-detail-section">
+                    <h4>🍶 各类酒品统计</h4>
+                    <div class="drink-stats-list">
+                        ${Object.entries(drinkStats).filter(([_, d]) => d.count > 0).sort((a, b) => b[1].count - a[1].count).map(([drinkType, stat]) => {
+                            const info = DRINK_TYPES[drinkType] || DRINK_TYPES['其他'];
+                            const percentage = Math.round(stat.count / totalDrinkCount * 100);
+                            return `
+                                <div class="drink-stat-row">
+                                    <div class="drink-stat-icon">${info.icon}</div>
+                                    <div class="drink-stat-info">
+                                        <div class="drink-stat-name">${drinkType}</div>
+                                        <div class="drink-stat-bar">
+                                            <div class="drink-stat-progress" style="width:${percentage}%;background:${info.color};"></div>
+                                        </div>
+                                    </div>
+                                    <div class="drink-stat-num">
+                                        <div class="drink-stat-count">${stat.count}</div>
+                                        <div class="drink-stat-amount">${stat.amount}${info.unit}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+                ` : '<p style="text-align:center;color:#999;padding:20px;">本月暂无酒类记录</p>'}
+            `;
+        } else if (type === 'week') {
+            title = `📅 本周统计详情`;
+            const totalRecords = userStats.reduce((sum, u) => sum + u.total, 0);
+            
+            content = `
+                <div class="stats-detail-section">
+                    <h4>📈 本周统计</h4>
+                    <div class="stats-detail-grid">
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${isCurrentMonth ? totalRecords : '—'}</div>
+                            <div class="stats-detail-label">本周记录</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${isCurrentMonth ? Math.round(totalRecords / 7) : '—'}</div>
+                            <div class="stats-detail-label">日均</div>
+                        </div>
+                    </div>
+                </div>
+                ${isCurrentMonth ? `
+                <div class="stats-detail-section">
+                    <h4>👥 个人统计</h4>
+                    <div class="stats-user-list">
+                        ${userStats.map(u => `
+                            <div class="stats-user-item" style="border-left:3px solid ${u.user.color};">
+                                <div class="stats-user-name">${u.user.name}</div>
+                                <div class="stats-user-detail">${u.total}次</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : '<p style="text-align:center;color:#999;padding:20px;">仅显示当月数据</p>'}
+            `;
+        } else if (type === 'today') {
+            title = `✨ 今日记录详情`;
+            const totalRecords = userStats.reduce((sum, u) => sum + u.total, 0);
+            const completed = totalRecords > 0;
+            
+            content = `
+                <div class="stats-detail-section">
+                    <h4>📝 今日状态</h4>
+                    <div class="stats-detail-grid">
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num" style="color:${completed ? 'var(--c-good)' : 'var(--text-sub)'};">${completed ? '已记录' : '待记录'}</div>
+                            <div class="stats-detail-label">状态</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${totalRecords}/${USERS.length}</div>
+                            <div class="stats-detail-label">已记录人数</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-detail-section">
+                    <h4>👥 今日情况</h4>
+                    <div class="stats-user-list">
+                        ${userStats.map(u => `
+                            <div class="stats-user-item" style="border-left:3px solid ${u.user.color};">
+                                <div class="stats-user-name">${u.user.name}</div>
+                                <div class="stats-user-detail">${u.total > 0 ? '✅ 已记录' : '⏳ 待记录'}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (type === 'active') {
+            title = `🔥 活跃度详情`;
+            const totalRecords = userStats.reduce((sum, u) => sum + u.total, 0);
+            const activeUsers = userStats.filter(u => u.total > 0).length;
+            
+            content = `
+                <div class="stats-detail-section">
+                    <h4>📊 活跃度统计</h4>
+                    <div class="stats-detail-grid">
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${activeUsers}</div>
+                            <div class="stats-detail-label">活跃人数</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${USERS.length}</div>
+                            <div class="stats-detail-label">总人数</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${totalRecords > 0 ? Math.round(totalRecords / activeUsers) : 0}</div>
+                            <div class="stats-detail-label">人均次数</div>
+                        </div>
+                        <div class="stats-detail-item">
+                            <div class="stats-detail-num">${Math.round(activeUsers / USERS.length * 100)}%</div>
+                            <div class="stats-detail-label">活跃率</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-detail-section">
+                    <h4>👥 个人活跃度</h4>
+                    <div class="stats-user-list">
+                        ${userStats.map(u => `
+                            <div class="stats-user-item" style="border-left:3px solid ${u.user.color};">
+                                <div class="stats-user-name">${u.user.name}</div>
+                                <div class="stats-user-detail">${u.total}天</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        titleEl.innerText = title;
+        bodyEl.innerHTML = content;
+        popup.classList.add('show');
+        hapticFeedback('light');
+    };
+    
+    window.closeStatsDetail = function() {
+        const popup = document.getElementById('statsDetailPopup');
+        if (popup) {
+            popup.classList.remove('show');
+            hapticFeedback('light');
+        }
+    };
+    
+    // 渲染统计概览
     function renderStatsOverview() {
         const realNow = new Date();
         const isCurrentMonth = realNow.getFullYear() === curYear && realNow.getMonth() === curMonth;
@@ -3311,35 +4067,63 @@
         const todayText = denom ? `${todayCount}/${denom}` : '—';
         const avgDays = denom ? Math.round(monthTotal / denom) : 0;
 
+        // 计算本月酒类统计
+        let drinkStats = {};
+        DRINK_TYPE_NAMES.forEach(t => drinkStats[t] = 0);
+        let totalDrinkCount = 0;
+        for (let d = 1; d <= tDays; d++) {
+            const dayData = appData?.[curMonth]?.[d];
+            if (!dayData?.drinks) continue;
+            Object.values(dayData.drinks).forEach(drinks => {
+                if (Array.isArray(drinks)) {
+                    drinks.forEach(drink => {
+                        if (drink.type && drink.amount && drinkStats[drink.type] !== undefined) {
+                            drinkStats[drink.type] += drink.amount;
+                            totalDrinkCount++;
+                        }
+                    });
+                }
+            });
+        }
+        // 获取最常喝的酒类
+        const topDrink = Object.entries(drinkStats).sort((a, b) => b[1] - a[1])[0];
+        const topDrinkName = topDrink && topDrink[1] > 0 ? topDrink[0] : '';
+        const topDrinkInfo = DRINK_TYPES[topDrinkName] || {};
+        const drinkText = topDrinkName ? `${topDrinkInfo.icon}${topDrinkName}` : '暂无';
+
         const overview = document.getElementById('statsOverview');
         overview.innerHTML = `
-            <div class="stats-overview-item">
+            <div class="stats-overview-item" onclick="showStatsDetail('month')">
                 <div class="stats-overview-label">📊 本月总计</div>
                 <div class="stats-overview-value">${monthTotal}</div>
                 <div class="stats-overview-detail">
                     <span>${activeUsers}人活跃</span>
                 </div>
+                <div class="stats-overview-arrow">›</div>
             </div>
-            <div class="stats-overview-item">
-                <div class="stats-overview-label">📅 本周记录</div>
-                <div class="stats-overview-value">${isCurrentMonth ? weekTotal : '—'}</div>
+            <div class="stats-overview-item" onclick="showStatsDetail('drinks')">
+                <div class="stats-overview-label">🍺 酒类统计</div>
+                <div class="stats-overview-value">${drinkText}</div>
                 <div class="stats-overview-detail">
-                    <span>${isCurrentMonth ? '周一至周日' : '非本月'}</span>
+                    <span>${totalDrinkCount}次饮酒</span>
                 </div>
+                <div class="stats-overview-arrow">›</div>
             </div>
-            <div class="stats-overview-item">
+            <div class="stats-overview-item" onclick="showStatsDetail('today')">
                 <div class="stats-overview-label">✨ 今日记录</div>
                 <div class="stats-overview-value">${isCurrentMonth ? todayText : '—'}</div>
                 <div class="stats-overview-detail">
                     <span>${isCurrentMonth ? (denom && todayCount === denom ? '已全员!' : '待记录') : '非本月'}</span>
                 </div>
+                <div class="stats-overview-arrow">›</div>
             </div>
-            <div class="stats-overview-item">
+            <div class="stats-overview-item" onclick="showStatsDetail('active')">
                 <div class="stats-overview-label">🔥 活跃度</div>
                 <div class="stats-overview-value">${avgDays}天</div>
                 <div class="stats-overview-detail">
                     <span>平均每人</span>
                 </div>
+                <div class="stats-overview-arrow">›</div>
             </div>
         `;
     }
@@ -3360,16 +4144,14 @@
         const gridClass = getGridClass(userCount);
         const sizeClass = getSizeClass(userCount);
 
-        // 0. 筛选按钮
-        const filterBar = document.getElementById('filterBar');
-        let filterHTML = `<div class="filter-btn filter-all ${filterUserId === null ? 'active' : ''}" onclick="setFilter(null)" style="border-color: #666; ${filterUserId === null ? 'background: var(--bg-card);' : ''}">全部显示</div>`;
+        // 筛选下拉列表 - 显示所有成员
+        const filterSelect = document.getElementById('filterSelect');
+        let selectOptions = `<option value="">👥 全部成员</option>`;
         usersList.forEach((u) => {
-            const active = filterUserId === u.id;
-            filterHTML += `<div class="filter-btn ${active ? 'active' : ''}" onclick='setFilter(${JSON.stringify(u.id)})' style="${active ? `border-color: ${u.color}; color: ${u.color}; background: ${u.color}15;` : ''}">
-                <div class="dot" style="background: ${u.color};"></div>${u.name}
-            </div>`;
+            const selected = filterUserId === u.id ? 'selected' : '';
+            selectOptions += `<option value="${u.id}" ${selected}>${u.name}</option>`;
         });
-        filterBar.innerHTML = filterHTML;
+        filterSelect.innerHTML = selectOptions;
 
         // 图例 - 动态根据用户数量显示
         const legend = document.getElementById('gridLegend');
@@ -3464,6 +4246,14 @@
     // 筛选功能
     window.setFilter = function(userId) {
         filterUserId = userId || null;
+        render();
+        // 滚动到日历区域
+        document.querySelector('.cal-body').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    // 下拉列表筛选
+    window.handleFilterChange = function(value) {
+        filterUserId = value || null;
         render();
         // 滚动到日历区域
         document.querySelector('.cal-body').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
