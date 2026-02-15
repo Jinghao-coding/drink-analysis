@@ -3435,8 +3435,20 @@
                 const alreadyV2 = dayData.u && typeof dayData.u === 'object';
                 const normalized = normalizeDayData(dayData);
 
-                const hadSomething = alreadyV2 || [0, 1, 2, 3].some(i => typeof dayData[i] === 'string') || Array.isArray(dayData.photos);
-                const isEmpty = Object.keys(normalized.u).length === 0 && (!normalized.photos || normalized.photos.length === 0);
+                // 检查是否有任何数据（包括人员状态、照片、酒类记录、费用信息）
+                const hadSomething = alreadyV2 || 
+                    [0, 1, 2, 3].some(i => typeof dayData[i] === 'string') || 
+                    Array.isArray(dayData.photos) ||
+                    (dayData.drinks && typeof dayData.drinks === 'object' && Object.keys(dayData.drinks).length > 0) ||
+                    (dayData.extra && typeof dayData.extra === 'object' && Object.keys(dayData.extra).length > 0);
+                
+                // 判断是否为空：检查人员状态、照片、酒类记录、费用信息
+                const hasDrinks = normalized.drinks && Object.keys(normalized.drinks).length > 0;
+                const hasExtra = normalized.extra && Object.keys(normalized.extra).length > 0;
+                const isEmpty = Object.keys(normalized.u).length === 0 && 
+                               (!normalized.photos || normalized.photos.length === 0) &&
+                               !hasDrinks && !hasExtra;
+                
                 if (hadSomething) {
                     if (isEmpty) {
                         delete monthData[d];
