@@ -1,0 +1,4 @@
+interface:
+  display_name: "Drink Analysis Maintainer"
+  short_description: "Maintain, verify, and publish drink app updates."
+  default_prompt: "Use $drink-analysis-maintainer to update this drink-analysis project, verify changes, and publish safely."

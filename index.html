@@ -2812,7 +2812,16 @@
 <div class="tab-content" id="tab-stats">
 <!-- 2. 排行榜卡片 -->
 <div class="card">
-    <div class="card-header"><div class="card-title">统计排行 (点击筛选)</div></div>
+    <div class="card-header">
+        <div class="card-title">统计排行 (点击筛选)</div>
+        <div class="month-ctrl">
+            <button class="m-btn" onclick="chYear(-1)" title="上一年">«</button>
+            <button class="m-btn" onclick="chMonth(-1)" title="上个月">‹</button>
+            <span class="m-txt" id="statsMonthTxt">2025年1月</span>
+            <button class="m-btn" onclick="chMonth(1)" title="下个月">›</button>
+            <button class="m-btn" onclick="chYear(1)" title="下一年">»</button>
+        </div>
+    </div>
     <div id="rankList"></div>
 </div>
 </div>
@@ -2968,7 +2977,7 @@
     const BIN_ID = "697e0a63d0ea881f40962da0";
     const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
 
-    const APP_SCHEMA_VERSION = 3; // 升级版本支持新字段
+    const APP_SCHEMA_VERSION = 3;
     const USERS_STORAGE_KEY = 'drinkCalendarUsers';
     const THEME_STORAGE_KEY = 'drinkCalendarTheme';
 
@@ -3392,33 +3401,39 @@
         }
 
         const photos = Array.isArray(dayData?.photos) ? dayData.photos : [];
-        return { u, photos };
+        // 保留原始的 drinks 和 extra 数据
+        const drinks = dayData?.drinks && typeof dayData.drinks === 'object' ? dayData.drinks : {};
+        const extra = dayData?.extra && typeof dayData.extra === 'object' ? dayData.extra : {};
+        const note = typeof dayData?.note === 'string' ? dayData.note : '';
+        return note ? { u, photos, drinks, extra, note } : { u, photos, drinks, extra };
     }
 
     function normalizeDayData(dayData) {
         if (!dayData || typeof dayData !== 'object') return { u: {}, photos: [], drinks: {}, extra: {} };
+
+        const drinks = dayData.drinks && typeof dayData.drinks === 'object' ? dayData.drinks : {};
+        const extra = dayData.extra && typeof dayData.extra === 'object' ? dayData.extra : {};
+        const note = typeof dayData.note === 'string' ? dayData.note : '';
+        const photos = Array.isArray(dayData.photos) ? dayData.photos : [];
 
         if (dayData.u && typeof dayData.u === 'object') {
             const u = {};
             for (const [k, v] of Object.entries(dayData.u)) {
                 if (typeof v === 'string' && v) u[k] = v;
             }
-            const photos = Array.isArray(dayData.photos) ? dayData.photos : [];
-            // 返回 drinks 和 extra 数据
-            const drinks = dayData.drinks && typeof dayData.drinks === 'object' ? dayData.drinks : {};
-            const extra = dayData.extra && typeof dayData.extra === 'object' ? dayData.extra : {};
-            return { u, photos, drinks, extra };
+            return note ? { u, photos, drinks, extra, note } : { u, photos, drinks, extra };
         }
 
         const hasLegacy = [0, 1, 2, 3].some(i => typeof dayData[i] === 'string');
         if (hasLegacy || Array.isArray(dayData.photos)) {
-            const migrated = migrateLegacyDayData(dayData);
-            migrated.drinks = {};
-            migrated.extra = {};
-            return migrated;
+            // migrateLegacyDayData 现在会保留 drinks 和 extra 数据
+            return migrateLegacyDayData(dayData);
         }
 
-        return { u: {}, photos: [], drinks: {}, extra: {} };
+        // 无人员状态/照片时，也要保留 drinks/extra/note，避免迁移时被误删
+        const normalized = { u: {}, photos, drinks, extra };
+        if (note) normalized.note = note;
+        return normalized;
     }
 
     function migrateAppDataToV2() {
@@ -3440,14 +3455,16 @@
                     [0, 1, 2, 3].some(i => typeof dayData[i] === 'string') || 
                     Array.isArray(dayData.photos) ||
                     (dayData.drinks && typeof dayData.drinks === 'object' && Object.keys(dayData.drinks).length > 0) ||
-                    (dayData.extra && typeof dayData.extra === 'object' && Object.keys(dayData.extra).length > 0);
+                    (dayData.extra && typeof dayData.extra === 'object' && Object.keys(dayData.extra).length > 0) ||
+                    (typeof dayData.note === 'string' && dayData.note.trim().length > 0);
                 
                 // 判断是否为空：检查人员状态、照片、酒类记录、费用信息
                 const hasDrinks = normalized.drinks && Object.keys(normalized.drinks).length > 0;
                 const hasExtra = normalized.extra && Object.keys(normalized.extra).length > 0;
+                const hasNote = typeof normalized.note === 'string' && normalized.note.trim().length > 0;
                 const isEmpty = Object.keys(normalized.u).length === 0 && 
                                (!normalized.photos || normalized.photos.length === 0) &&
-                               !hasDrinks && !hasExtra;
+                               !hasDrinks && !hasExtra && !hasNote;
                 
                 if (hadSomething) {
                     if (isEmpty) {
@@ -3480,15 +3497,15 @@
             const cloudNeedsPush = cloudUsersSerialized !== cloudNormalizedSerialized;
 
             if (preferCloud || cloudUpdatedAt >= localUpdatedAt) {
-                USERS = cloudUsersNormalized;
+                USERS = mergeUsers(cloudUsersNormalized, localUsersRaw);
                 localUsersUpdatedAt = cloudUpdatedAt;
                 writeUsersToLocal(localUsersUpdatedAt);
                 meta.users = USERS;
                 meta.usersUpdatedAt = localUsersUpdatedAt;
-                return cloudNeedsPush || cloudUpdatedAt === 0;
+                return cloudNeedsPush || cloudUpdatedAt === 0 || JSON.stringify(cloudUsersNormalized) !== JSON.stringify(USERS);
             }
 
-            USERS = normalizeUsers(localUsersRaw);
+            USERS = mergeUsers(localUsersRaw, cloudUsersNormalized);
             const now = localUpdatedAt || Date.now();
             writeUsersToLocal(now);
             meta.users = USERS;
@@ -3502,6 +3519,32 @@
         meta.users = USERS;
         meta.usersUpdatedAt = now;
         return true;
+    }
+
+    function mergeUsers(primary, secondary) {
+        const merged = normalizeUsers(primary);
+        const primaryIds = new Set(merged.map(u => u.id));
+        
+        for (const user of secondary) {
+            if (!primaryIds.has(user.id)) {
+                merged.push(normalizeUser(user));
+            }
+        }
+        
+        return merged;
+    }
+
+    function normalizeUser(user) {
+        if (!user || typeof user !== 'object') {
+            return { id: genId(), name: '未知', short: '?', color: '#888888', pos: '位置1' };
+        }
+        return {
+            id: String(user.id) || genId(),
+            name: String(user.name || '').slice(0, 20) || '未知',
+            short: String(user.short || '').slice(0, 2) || '?',
+            color: String(user.color || '#888888'),
+            pos: String(user.pos || '位置1')
+        };
     }
 
     // ==================== 日期/农历 ====================
@@ -3687,7 +3730,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        // 初始化主题
         initTheme();
 
         const local = readUsersFromLocal();
@@ -3707,19 +3749,22 @@
         renderReport();
         pull();
 
-        // 自动刷新机制 - 每30秒同步一次数据
+        let lastPullTime = Date.now();
         setInterval(() => {
-            pull();
-        }, 30000);
+            const now = Date.now();
+            if (now - lastPullTime >= 30000) {
+                lastPullTime = now;
+                pull();
+            }
+        }, 10000);
 
-        // 页面可见性变化时立即同步
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
                 pull();
+                lastPullTime = Date.now();
             }
         });
 
-        // 添加全局事件委托处理选项按钮点击
         document.addEventListener('click', (e) => {
             const btn = e.target.closest('.opt-btn');
             if (btn) {
@@ -4523,6 +4568,8 @@
     function render() {
         // 更新标题显示年份
         document.getElementById('monthTxt').innerText = `${curYear}年${curMonth+1}月`;
+        const statsMonthTxt = document.getElementById('statsMonthTxt');
+        if (statsMonthTxt) statsMonthTxt.innerText = `${curYear}年${curMonth+1}月`;
         document.getElementById('yearDisplay').innerText = curYear;
         document.getElementById('reportYearTitle').innerText = `${curYear}年度`;
         document.title = `${curYear} 喝酒记录日历`;
@@ -5002,10 +5049,34 @@
     async function pull() {
         updSync('saving', '同步中');
         try {
-            const r = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: {'X-Master-Key': API_KEY}});
-            const j = await r.json();
-            appData = j.record || {};
-            if(appData.status==='start') appData={};
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, { headers: {'X-Master-Key': API_KEY}});
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const j = await response.json();
+            
+            let cloudData = null;
+            if (j.record) {
+                cloudData = j.record;
+            } else if (j !== null && typeof j === 'object') {
+                const keys = Object.keys(j);
+                if (keys.length > 0 && keys[0] !== 'record') {
+                    cloudData = j;
+                }
+            }
+            
+            if (!cloudData || typeof cloudData !== 'object') {
+                cloudData = {};
+            }
+            
+            appData = cloudData;
+            
+            if (appData.status === 'start') {
+                appData = {};
+            }
+            
             hasPulled = true;
 
             const usersChanged = reconcileUsersFromAppData({ preferCloud: false });
@@ -5024,7 +5095,10 @@
             }
 
             updSync('saved','已同步');
-        } catch(e) { updSync('', '离线'); }
+        } catch(e) { 
+            console.error('Pull failed:', e);
+            updSync('', '离线');
+        }
     }
 
     async function push() {
@@ -5037,12 +5111,22 @@
                 writeUsersToLocal(ts);
             }
             syncUsersToAppMeta(ts);
-            await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            
+            const response = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
                 method: 'PUT', headers: {'Content-Type':'application/json','X-Master-Key':API_KEY},
                 body: JSON.stringify(appData)
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
             updSync('saved','已保存');
-        } catch(e) {}
+        } catch(e) { 
+            console.error('Push failed:', e);
+            updSync('', '保存失败');
+            showToast('保存失败，请检查网络后重试');
+        }
     }
 
     function updSync(c,t) { 
