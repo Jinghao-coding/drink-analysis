@@ -62,3 +62,6 @@ The publish script:
 - pushes current branch to `origin`.
 
 If `git push` fails, surface the exact failure and do not claim publish success.
+
+If push fails with network errors (for example timeout to github.com:443), load proxy settings from `~/.zshrc` and retry.
+This repository's environment defines `proxy_on` and `PROXY_ADDR` in `~/.zshrc`.
