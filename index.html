@@ -770,27 +770,88 @@
         }
         
         /* 排行榜 */
+        .stats-spotlight {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .stats-spotlight-card {
+            position: relative;
+            overflow: hidden;
+            padding: 18px;
+            border-radius: 20px;
+            border: 1px solid rgba(33,43,54,0.08);
+            background: linear-gradient(160deg, #ffffff 0%, #f6f8fb 100%);
+            box-shadow: 0 12px 28px rgba(25, 34, 45, 0.08);
+        }
+        .stats-spotlight-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.55), transparent 42%);
+            pointer-events: none;
+        }
+        .stats-spotlight-card h4 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: var(--text-sub);
+            font-weight: 700;
+        }
+        .stats-spotlight-value {
+            font-size: 34px;
+            font-weight: 900;
+            line-height: 1;
+            color: var(--text-main);
+            letter-spacing: -0.04em;
+        }
+        .stats-spotlight-note {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #687684;
+            line-height: 1.5;
+        }
+        .stats-spotlight-card[data-tone="gold"] {
+            background: linear-gradient(160deg, #fff8e9 0%, #ffe9c8 100%);
+        }
+        .stats-spotlight-card[data-tone="blue"] {
+            background: linear-gradient(160deg, #eef7ff 0%, #dbeeff 100%);
+        }
+        .stats-spotlight-card[data-tone="mint"] {
+            background: linear-gradient(160deg, #effbf3 0%, #dcf6e6 100%);
+        }
+        .rank-list {
+            display: grid;
+            gap: 14px;
+        }
         .rank-row {
             display: flex;
-            align-items: center;
-            padding: 16px 12px;
-            border-bottom: 1px solid #f0f0f0;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 14px;
+            padding: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            margin-bottom: 4px;
+            transition: all 0.28s ease;
+            border-radius: 20px;
+            margin-bottom: 0;
+            border: 1px solid rgba(33,43,54,0.08);
+            background: linear-gradient(160deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 10px 22px rgba(25, 34, 45, 0.06);
         }
         .rank-row:hover {
-            background: linear-gradient(135deg, #fafafa 0%, #f5f7fa 100%);
-            transform: translateX(4px);
-            box-shadow: var(--shadow-sm);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 30px rgba(25, 34, 45, 0.12);
+        }
+        .rank-row.expanded {
+            border-color: rgba(44, 62, 80, 0.16);
+            box-shadow: 0 18px 36px rgba(25, 34, 45, 0.12);
         }
         .rank-idx {
-            width: 30px;
+            width: 34px;
             font-weight: 800;
             font-style: italic;
             color: #ddd;
-            font-size: 18px;
+            font-size: 20px;
         }
         .rank-idx.top-1 {
             color: #f39c12;
@@ -805,61 +866,117 @@
             text-shadow: 0 2px 4px rgba(205, 127, 50, 0.3);
         }
         .rank-avatar {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
             color: white;
             display: flex;
             justify-content: center;
             align-items: center;
             font-weight: 700;
-            font-size: 16px;
-            margin-right: 14px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-size: 18px;
+            margin-right: 0;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
             transition: all 0.3s ease;
         }
         .rank-row:hover .rank-avatar {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+            transform: scale(1.06) rotate(3deg);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+        }
+        .rank-head {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 14px;
         }
         .rank-info {
             flex: 1;
+            min-width: 0;
+        }
+        .rank-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .rank-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .rank-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .rank-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(44,62,80,0.08);
+            color: #50606e;
+        }
+        .rank-total {
+            min-width: 92px;
+            text-align: right;
+        }
+        .rank-total strong {
+            display: block;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text-main);
+            line-height: 1;
+        }
+        .rank-total span {
+            font-size: 12px;
+            color: var(--text-sub);
         }
         .rank-bar-bg {
-            height: 6px;
-            background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
-            border-radius: 3px;
-            margin-top: 8px;
+            height: 10px;
+            background: linear-gradient(135deg, #edf1f5 0%, #dfe6ec 100%);
+            border-radius: 999px;
+            margin-top: 10px;
             width: 100%;
             overflow: hidden;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.08);
         }
         .rank-bar-fill {
             height: 100%;
-            border-radius: 3px;
+            border-radius: 999px;
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
         }
-        
         .rank-detail {
             max-height: 0;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 10px;
+            background: linear-gradient(160deg, #f6f9fc 0%, #ffffff 100%);
+            border-radius: 16px;
             margin-top: 0;
+            width: 100%;
         }
         .expanded .rank-detail {
-            max-height: 150px;
-            margin-top: 12px;
+            max-height: 220px;
+            margin-top: 2px;
             padding: 16px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
         }
-
         .stat-flex {
             display: flex;
             justify-content: space-around;
+            gap: 10px;
             text-align: center;
+        }
+        .stat-item {
+            flex: 1;
+            padding: 10px 8px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.9);
         }
         .stat-item h4 {
             margin: 0;
@@ -1390,33 +1507,49 @@
             margin-top: 24px;
         }
         .report-user-tabs {
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
             margin-bottom: 18px;
-            flex-wrap: wrap;
         }
         .report-tab {
-            flex: 1;
-            min-width: calc(25% - 8px);
-            padding: 14px;
-            border-radius: 12px;
-            border: 2px solid #e0e0e0;
-            background: white;
+            position: relative;
+            overflow: hidden;
+            padding: 16px 14px;
+            border-radius: 18px;
+            border: 1px solid rgba(33,43,54,0.08);
+            background: linear-gradient(160deg, #ffffff 0%, #f7f9fb 100%);
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+            transition: all 0.28s ease;
+            text-align: left;
+            box-shadow: 0 8px 20px rgba(20, 28, 38, 0.06);
+        }
+        .report-tab::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.5), transparent 44%);
+            pointer-events: none;
         }
         .report-tab:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: #bbb;
+            transform: translateY(-3px);
+            box-shadow: 0 14px 26px rgba(20, 28, 38, 0.12);
+            border-color: rgba(33,43,54,0.14);
         }
         .report-tab.active {
-            border-width: 3px;
+            border-width: 1px;
             transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 16px 28px rgba(20, 28, 38, 0.16);
+        }
+        .report-tab-name {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .report-tab-meta {
+            font-size: 12px;
+            color: var(--text-sub);
         }
         .report-content {
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -2147,53 +2280,99 @@
 
         /* Tab 导航样式 */
         .main-tabs {
-            display: flex;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
             margin: 0 15px;
-            background: var(--bg-card);
-            padding: 8px;
-            border-radius: 16px;
-            box-shadow: var(--shadow-md);
+            background: linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(246,248,251,0.98) 100%);
+            padding: 10px;
+            border-radius: 22px;
+            box-shadow: 0 16px 34px rgba(20, 28, 38, 0.08);
             position: sticky;
             top: 60px;
             z-index: 50;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
         .main-tab {
-            flex: 1;
-            min-width: 70px;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: none;
-            background: transparent;
-            font-size: 13px;
-            font-weight: 700;
+            position: relative;
+            overflow: hidden;
+            min-width: 0;
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(33,43,54,0.06);
+            background: rgba(255,255,255,0.72);
             color: var(--text-sub);
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.28s ease;
             white-space: nowrap;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 6px;
+            gap: 12px;
+            text-align: left;
         }
         .main-tab:hover {
-            background: var(--bg-body);
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.98);
             color: var(--text-main);
+            box-shadow: 0 10px 22px rgba(20, 28, 38, 0.08);
+        }
+        .main-tab-index {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            background: rgba(44,62,80,0.08);
+            color: inherit;
+        }
+        .main-tab-copy {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-tab-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: inherit;
+            line-height: 1.2;
+        }
+        .main-tab-subtitle {
+            font-size: 11px;
+            color: #7a8794;
+            margin-top: 2px;
         }
         .main-tab.active {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
+            box-shadow: 0 14px 28px rgba(44, 62, 80, 0.24);
+            border-color: transparent;
         }
-        .main-tab.active:hover {
-            transform: translateY(-2px);
+        .main-tab.active .main-tab-index {
+            background: rgba(255,255,255,0.2);
+        }
+        .main-tab.active .main-tab-subtitle {
+            color: rgba(255,255,255,0.76);
         }
         @media (min-width: 768px) {
             .main-tabs {
                 max-width: 1200px;
                 margin: 0 auto;
+            }
+        }
+        @media (max-width: 900px) {
+            .main-tabs {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 640px) {
+            .main-tabs {
+                grid-template-columns: 1fr;
+            }
+            .main-tab {
+                padding: 12px 14px;
             }
         }
 
@@ -2745,63 +2924,85 @@
             text-align: center;
         }
 
-        /* 筛选容器 - 响应式设计 */
+        /* 成员筛选 */
         .filter-container {
             display: flex;
             justify-content: center;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
-        .filter-dropdown {
-            position: relative;
+        .member-filter-bar {
             width: 100%;
-            max-width: 320px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 4px 2px 8px;
+            scrollbar-width: none;
         }
-        .filter-dropdown select {
-            width: 100%;
-            padding: 14px 44px 14px 18px;
-            border: 2px solid #e8e8e8;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-main);
-            background: var(--bg-card);
+        .member-filter-bar::-webkit-scrollbar {
+            display: none;
+        }
+        .member-filter-chip {
+            flex: 0 0 auto;
+            min-width: 110px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 18px;
+            border: 1px solid rgba(33,43,54,0.08);
+            background: linear-gradient(160deg, #ffffff 0%, #f7f9fb 100%);
+            box-shadow: 0 8px 18px rgba(20, 28, 38, 0.06);
             cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
+            transition: all 0.24s ease;
         }
-        .filter-dropdown::after {
-            content: '';
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-left: 6px solid transparent;
-            border-right: 6px solid transparent;
-            border-top: 7px solid var(--text-sub);
-            pointer-events: none;
+        .member-filter-chip:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 22px rgba(20, 28, 38, 0.1);
         }
-        .filter-dropdown select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 4px 16px rgba(44, 62, 80, 0.15);
+        .member-filter-chip.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 14px 26px rgba(44, 62, 80, 0.2);
         }
-        .filter-dropdown select:hover {
-            border-color: #ccc;
+        .member-filter-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            flex-shrink: 0;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.16);
         }
-        
-        /* 桌面端更宽的下拉列表 */
-        @media (min-width: 768px) {
-            .filter-dropdown {
-                max-width: 400px;
-            }
-            .filter-dropdown select {
-                padding: 16px 50px 16px 20px;
-                font-size: 16px;
-            }
+        .member-filter-chip.active .member-filter-avatar {
+            background: rgba(255,255,255,0.22) !important;
+            box-shadow: none;
+        }
+        .member-filter-meta {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .member-filter-name {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+        .member-filter-chip.active .member-filter-name {
+            color: white;
+        }
+        .member-filter-note {
+            margin-top: 2px;
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+        .member-filter-chip.active .member-filter-note {
+            color: rgba(255,255,255,0.78);
         }
 
         /* 深色模式字体优化 */
@@ -2841,8 +3042,60 @@
         [data-theme="dark"] .stats-overview-detail span {
             color: var(--text-sub);
         }
+        [data-theme="dark"] .main-tabs {
+            background: linear-gradient(160deg, #121d28 0%, #0f1720 100%);
+        }
+        [data-theme="dark"] .main-tab {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.06);
+        }
+        [data-theme="dark"] .main-tab-subtitle,
+        [data-theme="dark"] .member-filter-note,
+        [data-theme="dark"] .stats-spotlight-note,
+        [data-theme="dark"] .rank-total span,
+        [data-theme="dark"] .report-tab-meta {
+            color: var(--text-sub);
+        }
+        [data-theme="dark"] .main-tab-index,
+        [data-theme="dark"] .rank-pill,
+        [data-theme="dark"] .stat-item {
+            background: rgba(255,255,255,0.08);
+        }
+        [data-theme="dark"] .member-filter-chip {
+            background: linear-gradient(160deg, #182330 0%, #101a24 100%);
+            border-color: rgba(255,255,255,0.06);
+            box-shadow: none;
+        }
+        [data-theme="dark"] .member-filter-name,
+        [data-theme="dark"] .stats-spotlight-value,
+        [data-theme="dark"] .rank-name,
+        [data-theme="dark"] .rank-total strong,
+        [data-theme="dark"] .report-tab-name {
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .stats-spotlight-card {
+            border-color: rgba(255,255,255,0.06);
+            box-shadow: none;
+        }
+        [data-theme="dark"] .stats-spotlight-card[data-tone="gold"] {
+            background: linear-gradient(160deg, #332611 0%, #241b0d 100%);
+        }
+        [data-theme="dark"] .stats-spotlight-card[data-tone="blue"] {
+            background: linear-gradient(160deg, #16283d 0%, #102030 100%);
+        }
+        [data-theme="dark"] .stats-spotlight-card[data-tone="mint"] {
+            background: linear-gradient(160deg, #143126 0%, #10241c 100%);
+        }
         [data-theme="dark"] .stat-item p {
             color: var(--text-sub);
+        }
+        [data-theme="dark"] .rank-row {
+            background: linear-gradient(160deg, #182330 0%, #101a24 100%);
+            border-color: rgba(255,255,255,0.06);
+            box-shadow: none;
+        }
+        [data-theme="dark"] .rank-bar-bg {
+            background: linear-gradient(135deg, #243341 0%, #1b2732 100%);
         }
         [data-theme="dark"] .rank-detail {
             background: #1a1a2e;
@@ -2898,6 +3151,11 @@
         }
         [data-theme="dark"] .drink-type-info p {
             color: var(--text-sub);
+        }
+        [data-theme="dark"] .report-tab {
+            background: linear-gradient(160deg, #182330 0%, #101a24 100%);
+            border-color: rgba(255,255,255,0.06);
+            box-shadow: none;
         }
         @media (prefers-color-scheme: dark) {
             :root:not([data-theme="light"]) .stats-overview-item,
@@ -2963,16 +3221,32 @@
 <!-- Tab 导航 -->
 <div class="main-tabs">
     <button class="main-tab active" onclick="switchMainTab('calendar')" data-tab="calendar">
-        <span>📅</span><span>月历</span>
+        <span class="main-tab-index">01</span>
+        <span class="main-tab-copy">
+            <span class="main-tab-title">月历</span>
+            <span class="main-tab-subtitle">记录与筛选</span>
+        </span>
     </button>
     <button class="main-tab" onclick="switchMainTab('stats')" data-tab="stats">
-        <span>📊</span><span>统计</span>
-    </button>
-    <button class="main-tab" onclick="switchMainTab('data')" data-tab="data">
-        <span>📦</span><span>数据</span>
+        <span class="main-tab-index">02</span>
+        <span class="main-tab-copy">
+            <span class="main-tab-title">统计</span>
+            <span class="main-tab-subtitle">排行与趋势</span>
+        </span>
     </button>
     <button class="main-tab" onclick="switchMainTab('report')" data-tab="report">
-        <span>📋</span><span>报告</span>
+        <span class="main-tab-index">03</span>
+        <span class="main-tab-copy">
+            <span class="main-tab-title">报告</span>
+            <span class="main-tab-subtitle">年度回顾</span>
+        </span>
+    </button>
+    <button class="main-tab" onclick="switchMainTab('data')" data-tab="data">
+        <span class="main-tab-index">04</span>
+        <span class="main-tab-copy">
+            <span class="main-tab-title">数据</span>
+            <span class="main-tab-subtitle">备份与同步</span>
+        </span>
     </button>
 </div>
 
@@ -3006,13 +3280,9 @@
         </div>
     </div>
     
-    <!-- 筛选区域 - 下拉列表 -->
+    <!-- 成员筛选 -->
     <div class="filter-container">
-        <div class="filter-dropdown">
-            <select id="filterSelect" onchange="handleFilterChange(this.value)">
-                <option value="">👥 全部成员</option>
-            </select>
-        </div>
+        <div class="member-filter-bar" id="memberFilterBar"></div>
     </div>
 
     <!-- 四宫格说明图例 -->
@@ -3032,20 +3302,33 @@
 <!-- 2. 排行榜卡片 -->
 <div class="card">
     <div class="card-header">
-        <div class="card-title">统计排行 (点击筛选)</div>
+        <div class="card-title">统计驾驶舱</div>
         <div class="month-ctrl">
             <button class="m-btn" onclick="chYear(-1)" title="上一年">«</button>
             <button class="m-btn" onclick="chMonth(-1)" title="上个月">‹</button>
-            <span class="m-txt" id="statsMonthTxt">2025年1月</span>
+            <span class="m-txt" id="statsMonthTxt" onclick="toggleMonthSelector()">2025年1月</span>
             <button class="m-btn" onclick="chMonth(1)" title="下个月">›</button>
             <button class="m-btn" onclick="chYear(1)" title="下一年">»</button>
         </div>
     </div>
-    <div id="rankList"></div>
+    <div class="stats-spotlight" id="statsSpotlight"></div>
+    <div class="rank-list" id="rankList"></div>
 </div>
 </div>
 
-<!-- Tab 3: 数据管理 -->
+<!-- Tab 3: 年度报告 -->
+<div class="tab-content" id="tab-report">
+<!-- 4. 年度报告卡片 -->
+<div class="card">
+    <div class="card-header"><div class="card-title">📊 <span id="reportYearTitle">年度</span>喝酒报告</div></div>
+    <div class="report-section">
+        <div class="report-user-tabs" id="reportTabs"></div>
+        <div class="report-content" id="reportContent"></div>
+    </div>
+</div>
+</div>
+
+<!-- Tab 4: 数据管理 -->
 <div class="tab-content" id="tab-data">
 <!-- 3. 数据管理卡片 -->
 <div class="card">
@@ -3061,18 +3344,6 @@
             </button>
         </div>
         <input type="file" id="fileInput" accept=".json" onchange="importData(event)">
-    </div>
-</div>
-</div>
-
-<!-- Tab 4: 年度报告 -->
-<div class="tab-content" id="tab-report">
-<!-- 4. 年度报告卡片 -->
-<div class="card">
-    <div class="card-header"><div class="card-title">📊 <span id="reportYearTitle">年度</span>喝酒报告</div></div>
-    <div class="report-section">
-        <div class="report-user-tabs" id="reportTabs"></div>
-        <div class="report-content" id="reportContent"></div>
     </div>
 </div>
 </div>
@@ -4825,14 +5096,28 @@
         const gridClass = getGridClass(userCount);
         const sizeClass = getSizeClass(userCount);
 
-        // 筛选下拉列表 - 显示所有成员
-        const filterSelect = document.getElementById('filterSelect');
-        let selectOptions = `<option value="">👥 全部成员</option>`;
-        usersList.forEach((u) => {
-            const selected = filterUserId === u.id ? 'selected' : '';
-            selectOptions += `<option value="${u.id}" ${selected}>${u.name}</option>`;
-        });
-        filterSelect.innerHTML = selectOptions;
+        const memberFilterBar = document.getElementById('memberFilterBar');
+        if (memberFilterBar) {
+            const allActive = filterUserId === null;
+            memberFilterBar.innerHTML = `
+                <button class="member-filter-chip ${allActive ? 'active' : ''}" onclick="setFilter('')">
+                    <span class="member-filter-avatar" style="background:linear-gradient(135deg,#34495e 0%,#5d6d7e 100%);">全</span>
+                    <span class="member-filter-meta">
+                        <span class="member-filter-name">全部成员</span>
+                        <span class="member-filter-note">${userCount} 人视图</span>
+                    </span>
+                </button>
+                ${usersList.map((u) => `
+                    <button class="member-filter-chip ${filterUserId === u.id ? 'active' : ''}" onclick="setFilter('${u.id}')">
+                        <span class="member-filter-avatar" style="background:${u.color};">${u.short}</span>
+                        <span class="member-filter-meta">
+                            <span class="member-filter-name">${u.name}</span>
+                            <span class="member-filter-note">${filterUserId === u.id ? '当前筛选中' : `查看${u.short}的记录`}</span>
+                        </span>
+                    </button>
+                `).join('')}
+            `;
+        }
 
         // 图例 - 动态根据用户数量显示
         const legend = document.getElementById('gridLegend');
@@ -4879,6 +5164,7 @@
         }
 
         // 2. 排行榜
+        const statsSpotlight = document.getElementById('statsSpotlight');
         const list = document.getElementById('rankList');
         let stats = getUsersInPositionOrder().map((u) => {
             let t = 0;
@@ -4892,6 +5178,30 @@
         
         stats.sort((a,b) => b.total - a.total);
         const max = stats[0]?.total || 1;
+        const totalRecords = stats.reduce((sum, item) => sum + item.total, 0);
+        const leader = stats[0];
+        const activeStatsUsers = stats.filter(item => item.total > 0).length;
+        const consistency = userCount ? Math.round(totalRecords / userCount) : 0;
+
+        if (statsSpotlight) {
+            statsSpotlight.innerHTML = `
+                <div class="stats-spotlight-card" data-tone="gold">
+                    <h4>本月记录总数</h4>
+                    <div class="stats-spotlight-value">${totalRecords}</div>
+                    <div class="stats-spotlight-note">${activeStatsUsers} 人有记录，当前榜单随月份联动</div>
+                </div>
+                <div class="stats-spotlight-card" data-tone="blue">
+                    <h4>本月领跑成员</h4>
+                    <div class="stats-spotlight-value">${leader ? leader.short : '—'}</div>
+                    <div class="stats-spotlight-note">${leader ? `${leader.name} 已记录 ${leader.total} 天` : '暂无数据'}</div>
+                </div>
+                <div class="stats-spotlight-card" data-tone="mint">
+                    <h4>人均活跃天数</h4>
+                    <div class="stats-spotlight-value">${consistency}</div>
+                    <div class="stats-spotlight-note">${filterUserId ? '当前已按成员筛选月历' : '点击榜单可联动筛选月历'}</div>
+                </div>
+            `;
+        }
 
         list.innerHTML = stats.map((item, idx) => {
             const pct = (item.total/max)*100;
@@ -4900,19 +5210,27 @@
             const shouldExpand = filterUserId === null || isActive;
             return `
                 <div class="rank-row ${shouldExpand ? 'expanded' : ''}" onclick='toggleRankAndFilter(${JSON.stringify(item.id)}, this)'>
-                    <div style="width:100%; display:flex; align-items:center;">
+                    <div class="rank-head">
                         <span class="rank-idx ${rCls}">${idx+1}</span>
                         <div class="rank-avatar" style="background:${item.color}">${item.short}</div>
                         <div class="rank-info">
-                            <div style="display:flex;justify-content:space-between;">
-                                <b>${item.name} ${isActive ? '✓' : ''}</b>
-                                <b>${item.total} 天</b>
+                            <div class="rank-name-row">
+                                <div>
+                                    <div class="rank-name">${item.name} ${isActive ? '✓' : ''}</div>
+                                    <div class="rank-meta">
+                                        <span class="rank-pill">本月 ${item.total} 天</span>
+                                        <span class="rank-pill">峰值 ${Math.max(item.details['微醺'], item.details['刚刚好'], item.details['醉了'])} 次</span>
+                                    </div>
+                                </div>
+                                <div class="rank-total">
+                                    <strong>${item.total}</strong>
+                                    <span>记录天数</span>
+                                </div>
                             </div>
                             <div class="rank-bar-bg"><div class="rank-bar-fill" style="width:${pct}%;background:${item.color}"></div></div>
                         </div>
                     </div>
-                    <!-- 详情折叠 -->
-                    <div style="flex-basis:100%;" class="rank-detail">
+                    <div class="rank-detail">
                         <div class="stat-flex">
                             <div class="stat-item"><h4 style="color:var(--c-tipsy)">${item.details['微醺']}</h4><p>微醺</p></div>
                             <div class="stat-item"><h4 style="color:var(--c-good)">${item.details['刚刚好']}</h4><p>刚好</p></div>
@@ -5525,7 +5843,10 @@
         tabs.innerHTML = getUsersInPositionOrder().map((u) => {
             return `<div class="report-tab ${reportUserId === u.id ? 'active' : ''}" 
                          style="${reportUserId === u.id ? `border-color: ${u.color}; background: ${u.color}15; color: ${u.color};` : ''}"
-                         onclick='switchReport(${JSON.stringify(u.id)})'>${u.name}</div>`;
+                         onclick='switchReport(${JSON.stringify(u.id)})'>
+                         <div class="report-tab-name">${u.name}</div>
+                         <div class="report-tab-meta">${u.short} · ${u.pos || '成员'}</div>
+                         </div>`;
         }).join('');
         
         // 统计当前用户的年度数据
