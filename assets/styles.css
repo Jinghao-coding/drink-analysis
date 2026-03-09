@@ -69,9 +69,7 @@
         }
 
         /* 深色模式背景 */
-        [data-theme="dark"] body {
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-        }
+        [data-theme="dark"] body,
         @media (prefers-color-scheme: dark) {
             :root:not([data-theme="light"]) body {
                 background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
@@ -2914,6 +2912,17 @@
         }
 
         /* 简化筛选栏 */
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .stats-detail-close:hover {
+            background: var(--c-drunk);
+            color: white;
+        }
         .stats-detail-section {
             margin-bottom: 20px;
         }
@@ -3196,3 +3205,4 @@
         .stats-overview-item:active {
             transform: scale(0.98);
         }
+

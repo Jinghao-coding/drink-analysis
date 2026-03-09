@@ -17,18 +17,11 @@ pass() {
 [[ -f README.md ]] || fail "Missing README.md"
 
 APP_SOURCE="index.html"
-if [[ -f src/main.ts ]]; then
-  APP_SOURCE="src/main.ts"
-elif [[ -f assets/app.js ]]; then
+if [[ -f assets/app.js ]]; then
   APP_SOURCE="assets/app.js"
 fi
 
-if [[ "$APP_SOURCE" == "src/main.ts" ]]; then
-  rg -Fq 'src="/src/main.ts"' index.html || fail 'index.html missing Vite module entry: /src/main.ts'
-  rg -Fq "import './styles.css';" src/main.ts || fail "src/main.ts missing styles import"
-  [[ -f src/styles.css ]] || fail "Missing src/styles.css"
-  pass "Vite entry and stylesheet wiring look correct"
-elif [[ "$APP_SOURCE" == "assets/app.js" ]]; then
+if [[ "$APP_SOURCE" == "assets/app.js" ]]; then
   rg -Fq 'href="assets/styles.css"' index.html || fail 'index.html missing stylesheet reference: assets/styles.css'
   rg -Fq 'src="assets/app.js"' index.html || fail 'index.html missing script reference: assets/app.js'
   pass "index.html references split assets correctly"

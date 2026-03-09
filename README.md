@@ -27,10 +27,10 @@
 
 ## 🛠️ 技术栈
 
-- **纯前端** — HTML5 / CSS3 / TypeScript (Vanilla)
+- **纯前端** — HTML5 / CSS3 / JavaScript (ES6+)
 - **存储方案** — JSONBin.io REST API（数据持久化） + LocalStorage（本地用户配置）
 - **国际化** — Intl.DateTimeFormat 农历支持（含备查表）
-- **工程化** — Vite 7 + TypeScript 5（构建产物为纯静态文件）
+- **构建** — 零依赖，静态资源即开即用（`index.html` + `assets/*`）
 
 ---
 
@@ -41,36 +41,26 @@
 git clone https://github.com/jinghao-coding/drink-analysis.git
 ```
 
-### 2. 安装依赖
+### 2. 打开页面
+直接双击 `index.html` 或在本地启动一个静态服务器：
 ```bash
-npm install
+npx http-server .
 ```
 
-### 3. 启动开发环境
-```bash
-npm run dev
-```
-
-### 4. 配置你自己的 JSONBin 密钥（可选，如需云端同步）
+### 3. 配置你自己的 JSONBin 密钥（可选，如需云端同步）
 
 > ⚠️ 代码中内置了演示用的 `BIN_ID` 和 `API_KEY`，**多人同时使用会互相覆盖**。强烈建议你免费注册 [JSONBin.io](https://jsonbin.io/)，创建自己的 Bin 并替换密钥。
 
 1. 注册 JSONBin.io，创建一个私有 Bin。
 2. 获取你的 `BIN_ID`（URL 中的 ID）和 `API_KEY`（X-Master-Key）。
-3. 在 `src/main.ts` 中找到以下两行并替换：
+3. 在 `assets/app.js` 中找到以下两行并替换：
 
 ```javascript
 const BIN_ID = "你的BIN_ID";
 const API_KEY = "你的X-Master-Key";
 ```
 
-4. 保存后刷新页面，数据将同步到你的私有 Bin。
-
-### 5. 构建静态产物
-```bash
-npm run build
-```
-构建产物在 `dist/`，可直接部署到 GitHub Pages 或任意静态托管平台。
+4. 再次刷新页面，数据将同步到你的私有 Bin。
 
 ---
 
@@ -96,7 +86,7 @@ npm run build
 
 仓库内提供了可复用 skill：`skills/drink-analysis-maintainer/`，用于让 Codex 在每次改动后完成以下流程：
 
-1. 理解并修改 `index.html` / `src/main.ts` / `src/styles.css` / `README.md`
+1. 理解并修改 `index.html` / `README.md`
 2. 运行校验脚本
 3. 提交并推送到远程（用于 GitHub Pages 发布）
 

@@ -1,5 +1,3 @@
-// @ts-nocheck
-import './styles.css';
     // 配置
     const BIN_ID = "697e0a63d0ea881f40962da0";
     const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
@@ -2696,3 +2694,4 @@ import './styles.css';
             yearPopup.classList.remove('show');
         }
     });
+
