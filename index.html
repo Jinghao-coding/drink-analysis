@@ -1493,97 +1493,201 @@
             }
         }
 
-        /* 统计概览卡片 - 全新设计 */
+        /* 统计概览卡片 */
         .stats-overview {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
             margin-bottom: 18px;
         }
         .stats-overview-item {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            padding: 18px;
-            border-radius: 16px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            cursor: pointer;
             position: relative;
             overflow: hidden;
+            border-radius: 22px;
+            padding: 18px;
+            cursor: pointer;
+            border: 1px solid rgba(33, 43, 54, 0.08);
+            background: linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(247,249,252,0.98) 100%);
+            box-shadow: 0 12px 28px rgba(26, 39, 53, 0.08);
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
         }
         .stats-overview-item::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.28), transparent 42%);
+            pointer-events: none;
         }
         .stats-overview-item:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(44, 62, 80, 0.15);
-            border-color: var(--primary);
+            box-shadow: 0 18px 36px rgba(26, 39, 53, 0.14);
+            border-color: rgba(33, 43, 54, 0.14);
         }
-        .stats-overview-item:hover::before {
-            opacity: 1;
+        .stats-overview-hero {
+            grid-column: 1 / -1;
+            padding: 22px;
+            color: #fff;
+            border: none;
+            background:
+                radial-gradient(circle at top left, rgba(255,255,255,0.24), transparent 34%),
+                linear-gradient(135deg, #1f5f8b 0%, #2f80c7 48%, #5dade2 100%);
+            box-shadow: 0 20px 44px rgba(41, 128, 185, 0.28);
         }
-        /* 四个统计项的颜色：本月总计、酒类统计、今日记录、活跃度 */
-        .stats-overview-item:nth-child(1)::before { background: linear-gradient(90deg, #3498db 0%, #2980b9 100%); }
-        .stats-overview-item:nth-child(2)::before { background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%); }
-        .stats-overview-item:nth-child(3)::before { background: linear-gradient(90deg, #27ae60 0%, #229954 100%); }
-        .stats-overview-item:nth-child(4)::before { background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%); }
-        
-        .stats-overview-label {
-            font-size: 12px;
-            color: var(--text-sub);
-            font-weight: 600;
-            margin-bottom: 8px;
+        .stats-overview-hero:hover {
+            border: none;
+            box-shadow: 0 24px 48px rgba(41, 128, 185, 0.34);
+        }
+        .stats-overview-item[data-tone="amber"] {
+            background: linear-gradient(160deg, #fff9ef 0%, #fff3d9 100%);
+        }
+        .stats-overview-item[data-tone="green"] {
+            background: linear-gradient(160deg, #f2fcf7 0%, #e2f7eb 100%);
+        }
+        .stats-overview-item[data-tone="rose"] {
+            background: linear-gradient(160deg, #fff4f2 0%, #ffe5e0 100%);
+        }
+        .stats-overview-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            background: rgba(255,255,255,0.18);
+            color: inherit;
+        }
+        .stats-overview-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .stats-overview-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.16);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+        }
+        .stats-overview-item:not(.stats-overview-hero) .stats-overview-icon {
+            background: rgba(255,255,255,0.72);
+            box-shadow: inset 0 0 0 1px rgba(33,43,54,0.06);
+        }
+        .stats-overview-meta {
+            flex: 1;
+            min-width: 0;
+        }
+        .stats-overview-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.84);
+            margin-bottom: 6px;
+        }
+        .stats-overview-item:not(.stats-overview-hero) .stats-overview-label {
+            color: var(--text-sub);
+        }
+        .stats-overview-caption {
+            font-size: 12px;
+            color: rgba(255,255,255,0.74);
+            line-height: 1.5;
+        }
+        .stats-overview-item:not(.stats-overview-hero) .stats-overview-caption {
+            color: #6d7a88;
+        }
+        .stats-overview-main {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 18px;
         }
         .stats-overview-value {
-            font-size: 28px;
+            font-size: 36px;
+            line-height: 1;
             font-weight: 900;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 6px;
-            line-height: 1.2;
+            letter-spacing: -0.04em;
+            color: inherit;
         }
-        .stats-overview-item:nth-child(1) .stats-overview-value { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); -webkit-background-clip: text; background-clip: text; }
-        .stats-overview-item:nth-child(2) .stats-overview-value { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); -webkit-background-clip: text; background-clip: text; }
-        .stats-overview-item:nth-child(3) .stats-overview-value { background: linear-gradient(135deg, #27ae60 0%, #229954 100%); -webkit-background-clip: text; background-clip: text; }
-        .stats-overview-item:nth-child(4) .stats-overview-value { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); -webkit-background-clip: text; background-clip: text; }
-        
-        .stats-overview-detail {
-            font-size: 11px;
-            color: #999;
+        .stats-overview-item:not(.stats-overview-hero) .stats-overview-value {
+            color: #1c2b36;
+        }
+        .stats-overview-subvalue {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.78);
+            text-align: right;
+        }
+        .stats-overview-item:not(.stats-overview-hero) .stats-overview-subvalue {
+            color: #6d7a88;
+        }
+        .stats-overview-footer {
             display: flex;
-            gap: 6px;
-            font-weight: 500;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 18px;
+        }
+        .stats-overview-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.16);
+            color: inherit;
+        }
+        .stats-overview-item:not(.stats-overview-hero) .stats-overview-chip {
+            background: rgba(255,255,255,0.76);
+            color: #2b3a45;
         }
         .stats-overview-arrow {
             position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0;
-            transition: all 0.3s ease;
-            color: var(--primary);
+            right: 18px;
+            bottom: 16px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 18px;
+            color: inherit;
+            background: rgba(255,255,255,0.14);
+            opacity: 0.8;
+            transition: transform 0.28s ease, opacity 0.28s ease;
+        }
+        .stats-overview-item:not(.stats-overview-hero) .stats-overview-arrow {
+            background: rgba(28, 43, 54, 0.08);
         }
         .stats-overview-item:hover .stats-overview-arrow {
+            transform: translateX(3px);
             opacity: 1;
-            right: 14px;
         }
-        
-        @media (min-width: 768px) {
+        @media (min-width: 900px) {
             .stats-overview {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+            .stats-overview-hero {
+                grid-column: span 2;
+            }
+        }
+        @media (max-width: 767px) {
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+            .stats-overview-item,
+            .stats-overview-hero {
+                grid-column: auto;
             }
         }
 
@@ -2328,10 +2432,16 @@
             border: 1px solid #eee;
             margin-bottom: 10px;
             transition: all 0.2s ease;
+            cursor: pointer;
         }
         .drink-person-row:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .drink-person-row.active {
+            border-color: rgba(39, 174, 96, 0.45);
+            box-shadow: 0 10px 24px rgba(39, 174, 96, 0.16);
+            background: linear-gradient(135deg, #f3fcf7 0%, #ffffff 100%);
         }
         .drink-person-avatar {
             width: 44px;
@@ -2391,6 +2501,79 @@
             padding: 30px;
             color: var(--text-sub);
             font-size: 14px;
+        }
+        .drink-person-panel {
+            margin-top: 16px;
+            padding: 16px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, rgba(248,250,252,0.98) 0%, rgba(255,255,255,0.98) 100%);
+            border: 1px solid rgba(33,43,54,0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+        }
+        .drink-person-panel-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .drink-person-panel-title {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .drink-person-panel-subtitle {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+        .drink-person-detail-empty {
+            padding: 18px 12px;
+            text-align: center;
+            color: var(--text-sub);
+            font-size: 13px;
+        }
+        .drink-person-detail-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .drink-person-detail-entry {
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: var(--bg-card);
+            border: 1px solid rgba(33,43,54,0.07);
+        }
+        .drink-person-detail-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        .drink-person-detail-date {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+        .drink-person-detail-total {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--c-tipsy);
+        }
+        .drink-person-detail-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .drink-person-detail-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: var(--bg-body);
+            font-size: 12px;
+            color: var(--text-sub);
         }
 
         /* 统计详情弹窗 */
@@ -2628,8 +2811,32 @@
         [data-theme="dark"] .stats-overview-detail {
             color: var(--text-main);
         }
+        [data-theme="dark"] .stats-overview-item:not(.stats-overview-hero) {
+            background: linear-gradient(160deg, #182330 0%, #101a24 100%);
+            border-color: rgba(255,255,255,0.06);
+        }
+        [data-theme="dark"] .stats-overview-item[data-tone="amber"] {
+            background: linear-gradient(160deg, #342716 0%, #22190e 100%);
+        }
+        [data-theme="dark"] .stats-overview-item[data-tone="green"] {
+            background: linear-gradient(160deg, #153126 0%, #0f221b 100%);
+        }
+        [data-theme="dark"] .stats-overview-item[data-tone="rose"] {
+            background: linear-gradient(160deg, #331d1a 0%, #241210 100%);
+        }
         [data-theme="dark"] .stats-overview-label {
             color: var(--text-sub);
+        }
+        [data-theme="dark"] .stats-overview-caption,
+        [data-theme="dark"] .stats-overview-subvalue,
+        [data-theme="dark"] .stats-overview-chip,
+        [data-theme="dark"] .stats-overview-item:not(.stats-overview-hero) .stats-overview-value {
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .stats-overview-item:not(.stats-overview-hero) .stats-overview-chip,
+        [data-theme="dark"] .stats-overview-item:not(.stats-overview-hero) .stats-overview-icon,
+        [data-theme="dark"] .stats-overview-item:not(.stats-overview-hero) .stats-overview-arrow {
+            background: rgba(255,255,255,0.08);
         }
         [data-theme="dark"] .stats-overview-detail span {
             color: var(--text-sub);
@@ -2645,6 +2852,18 @@
         }
         [data-theme="dark"] .stats-user-item {
             background: #1a1a2e;
+        }
+        [data-theme="dark"] .drink-person-row,
+        [data-theme="dark"] .drink-person-panel,
+        [data-theme="dark"] .drink-person-detail-entry {
+            background: #1a1a2e;
+            border-color: rgba(255,255,255,0.06);
+        }
+        [data-theme="dark"] .drink-person-row.active {
+            background: #143126;
+        }
+        [data-theme="dark"] .drink-person-detail-item {
+            background: #16213e;
         }
         [data-theme="dark"] .filter-select {
             background: var(--bg-card);
@@ -3937,68 +4156,158 @@
         }
     };
 
+    function getMonthDrinkStatsSummary() {
+        const drinkStats = {};
+        DRINK_TYPE_NAMES.forEach(t => drinkStats[t] = { count: 0, amount: 0 });
+
+        const personStats = {};
+        USERS.forEach(u => {
+            personStats[u.id] = {
+                user: u,
+                totalCount: 0,
+                totalAmount: 0,
+                byType: {},
+                entries: []
+            };
+            DRINK_TYPE_NAMES.forEach(t => personStats[u.id].byType[t] = { count: 0, amount: 0 });
+        });
+
+        const tDays = new Date(curYear, curMonth + 1, 0).getDate();
+        for (let d = 1; d <= tDays; d++) {
+            const dayData = normalizeDayData(appData?.[curMonth]?.[d]);
+            if (!dayData?.drinks) continue;
+
+            Object.entries(dayData.drinks).forEach(([userId, drinks]) => {
+                if (!Array.isArray(drinks) || !personStats[userId]) return;
+
+                const validDrinks = drinks.filter(drink =>
+                    drink &&
+                    typeof drink.type === 'string' &&
+                    drink.type &&
+                    Number(drink.amount) > 0 &&
+                    drinkStats[drink.type]
+                ).map(drink => ({
+                    type: drink.type,
+                    amount: Number(drink.amount)
+                }));
+
+                if (validDrinks.length === 0) return;
+
+                let dayTotalAmount = 0;
+                validDrinks.forEach(drink => {
+                    drinkStats[drink.type].count++;
+                    drinkStats[drink.type].amount += drink.amount;
+                    personStats[userId].totalCount++;
+                    personStats[userId].totalAmount += drink.amount;
+                    dayTotalAmount += drink.amount;
+
+                    if (personStats[userId].byType[drink.type]) {
+                        personStats[userId].byType[drink.type].count++;
+                        personStats[userId].byType[drink.type].amount += drink.amount;
+                    }
+                });
+
+                personStats[userId].entries.push({
+                    day: d,
+                    dateLabel: `${curMonth + 1}月${d}日`,
+                    totalAmount: dayTotalAmount,
+                    drinks: validDrinks
+                });
+            });
+        }
+
+        Object.values(personStats).forEach(person => {
+            person.entries.sort((a, b) => b.day - a.day);
+        });
+
+        return { drinkStats, personStats };
+    }
+
+    function renderDrinkPersonStatsHTML(contentId, persons, selectedUserId, sortBy = 'count', filterBy = 'all') {
+        let filteredPersons = [...persons];
+        if (filterBy !== 'all') {
+            filteredPersons = filteredPersons.filter(p => p.user.id === filterBy);
+        }
+
+        filteredPersons.sort((a, b) => {
+            if (sortBy === 'count') return b.totalCount - a.totalCount;
+            if (sortBy === 'amount') return b.totalAmount - a.totalAmount;
+            if (sortBy === 'name') return a.user.name.localeCompare(b.user.name, 'zh-CN');
+            return 0;
+        });
+
+        if (filteredPersons.length === 0) {
+            return '<div class="drink-person-empty">暂无匹配的人员数据</div>';
+        }
+
+        return filteredPersons.map(p => {
+            const drinkTags = Object.entries(p.byType)
+                .filter(([_, s]) => s.count > 0)
+                .sort((a, b) => b[1].count - a[1].count)
+                .slice(0, 3)
+                .map(([type, s]) => {
+                    const info = DRINK_TYPES[type] || DRINK_TYPES['其他'];
+                    return `<span class="drink-person-tag"><span class="icon">${info.icon}</span>${type} ${s.count}次 ${s.amount}${info.unit}</span>`;
+                }).join('');
+
+            return `
+                <div class="drink-person-row ${selectedUserId === p.user.id ? 'active' : ''}" onclick="selectDrinkPersonDetail('${contentId}', '${p.user.id}')">
+                    <div class="drink-person-avatar" style="background:${p.user.color};">${p.user.name[0]}</div>
+                    <div class="drink-person-info">
+                        <div class="drink-person-name">${p.user.name}</div>
+                        <div class="drink-person-details">
+                            ${drinkTags || '<span class="drink-person-tag">暂无分类</span>'}
+                        </div>
+                    </div>
+                    <div class="drink-person-total">
+                        <div class="drink-person-count">${p.totalCount}</div>
+                        <div class="drink-person-count-label">饮酒次数</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function renderDrinkPersonDetailHTML(person) {
+        if (!person || !Array.isArray(person.entries) || person.entries.length === 0) {
+            return '<div class="drink-person-detail-empty">这个月还没有酒类明细</div>';
+        }
+
+        return `
+            <div class="drink-person-detail-list">
+                ${person.entries.map(entry => `
+                    <div class="drink-person-detail-entry">
+                        <div class="drink-person-detail-head">
+                            <div class="drink-person-detail-date">${entry.dateLabel}</div>
+                            <div class="drink-person-detail-total">共 ${entry.totalAmount}</div>
+                        </div>
+                        <div class="drink-person-detail-items">
+                            ${entry.drinks.map(drink => {
+                                const info = DRINK_TYPES[drink.type] || DRINK_TYPES['其他'];
+                                return `<span class="drink-person-detail-item">${info.icon} ${drink.type} ${drink.amount}${info.unit}</span>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
     // 渲染统计概览
     // 统计详情弹窗函数
     window.showStatsDetail = function(type) {
         const popup = document.getElementById('statsDetailPopup');
         const titleEl = document.getElementById('statsDetailTitle');
         const bodyEl = document.getElementById('statsDetailBody');
-        
+
         if (!popup || !titleEl || !bodyEl) return;
-        
+
         const realNow = new Date();
         const isCurrentMonth = realNow.getFullYear() === curYear && realNow.getMonth() === curMonth;
-        
+
         let title = '';
         let content = '';
-        
-        // 获取本月酒类统计（包含按人员统计）
-        const getMonthDrinkStats = () => {
-            const drinkStats = {};
-            DRINK_TYPE_NAMES.forEach(t => drinkStats[t] = { count: 0, amount: 0 });
-            
-            // 按人员统计：userId -> { totalCount, totalAmount, byType: { type: { count, amount } } }
-            const personStats = {};
-            USERS.forEach(u => {
-                personStats[u.id] = {
-                    user: u,
-                    totalCount: 0,
-                    totalAmount: 0,
-                    byType: {}
-                };
-                DRINK_TYPE_NAMES.forEach(t => personStats[u.id].byType[t] = { count: 0, amount: 0 });
-            });
-            
-            const tDays = new Date(curYear, curMonth + 1, 0).getDate();
-            for (let d = 1; d <= tDays; d++) {
-                const dayData = appData?.[curMonth]?.[d];
-                if (!dayData?.drinks) continue;
-                
-                Object.entries(dayData.drinks).forEach(([userId, drinks]) => {
-                    if (Array.isArray(drinks)) {
-                        drinks.forEach(drink => {
-                            if (drink.type && drink.amount && drinkStats[drink.type]) {
-                                drinkStats[drink.type].count++;
-                                drinkStats[drink.type].amount += drink.amount;
-                                
-                                // 更新人员统计
-                                if (personStats[userId]) {
-                                    personStats[userId].totalCount++;
-                                    personStats[userId].totalAmount += drink.amount;
-                                    if (personStats[userId].byType[drink.type]) {
-                                        personStats[userId].byType[drink.type].count++;
-                                        personStats[userId].byType[drink.type].amount += drink.amount;
-                                    }
-                                }
-                            }
-                        });
-                    }
-                });
-            }
-            return { drinkStats, personStats };
-        };
-        
-        // 获取所有用户的统计数据
+
         const userStats = USERS.map(u => {
             let stats;
             if (type === 'month') {
@@ -4018,7 +4327,7 @@
             }
             return { user: u, ...stats };
         });
-        
+
         if (type === 'month') {
             title = `📊 ${curYear}年${curMonth + 1}月 统计详情`;
             const totalRecords = userStats.reduce((sum, u) => sum + u.total, 0);
@@ -4028,9 +4337,8 @@
                 statusCount['刚刚好'] += u.details['刚刚好'];
                 statusCount['醉了'] += u.details['醉了'];
             });
-            
-            // 获取酒类统计
-            const { drinkStats } = getMonthDrinkStats();
+
+            const { drinkStats } = getMonthDrinkStatsSummary();
             const totalDrinkCount = Object.values(drinkStats).reduce((sum, d) => sum + d.count, 0);
 
             content = `
@@ -4099,68 +4407,24 @@
                 </div>
             `;
         } else if (type === 'drinks') {
-            const { drinkStats, personStats } = getMonthDrinkStats();
+            const { drinkStats, personStats } = getMonthDrinkStatsSummary();
             const totalDrinkCount = Object.values(drinkStats).reduce((sum, d) => sum + d.count, 0);
             const totalAmount = Object.values(drinkStats).reduce((sum, d) => sum + d.amount, 0);
-            
-            // 准备人员数据（有过记录的人员）
             const activePersons = Object.values(personStats).filter(p => p.totalCount > 0);
-            
-            // 生成唯一的内容ID用于后续筛选排序
             const contentId = 'drink-stats-content-' + Date.now();
-            
-            title = `🍺 ${curYear}年${curMonth + 1}月 酒类统计`;
-            
-            // 生成人员统计HTML的函数
-            const generatePersonStatsHTML = (persons, sortBy = 'count', filterBy = 'all') => {
-                let filteredPersons = [...persons];
-                
-                // 筛选
-                if (filterBy !== 'all') {
-                    filteredPersons = filteredPersons.filter(p => p.user.id === filterBy);
-                }
-                
-                // 排序
-                filteredPersons.sort((a, b) => {
-                    if (sortBy === 'count') return b.totalCount - a.totalCount;
-                    if (sortBy === 'amount') return b.totalAmount - a.totalAmount;
-                    if (sortBy === 'name') return a.user.name.localeCompare(b.user.name, 'zh-CN');
-                    return 0;
-                });
-                
-                if (filteredPersons.length === 0) {
-                    return '<div class="drink-person-empty">暂无匹配的人员数据</div>';
-                }
-                
-                return filteredPersons.map(p => {
-                    // 生成该人员的酒类详情标签
-                    const drinkTags = Object.entries(p.byType)
-                        .filter(([_, s]) => s.count > 0)
-                        .sort((a, b) => b[1].count - a[1].count)
-                        .slice(0, 3) // 最多显示3种
-                        .map(([type, s]) => {
-                            const info = DRINK_TYPES[type] || DRINK_TYPES['其他'];
-                            return `<span class="drink-person-tag"><span class="icon">${info.icon}</span>${type} ${s.count}次${s.amount}${info.unit}</span>`;
-                        }).join('');
-                    
-                    return `
-                        <div class="drink-person-row">
-                            <div class="drink-person-avatar" style="background:${p.user.color};">${p.user.name[0]}</div>
-                            <div class="drink-person-info">
-                                <div class="drink-person-name">${p.user.name}</div>
-                                <div class="drink-person-details">
-                                    ${drinkTags}
-                                </div>
-                            </div>
-                            <div class="drink-person-total">
-                                <div class="drink-person-count">${p.totalCount}</div>
-                                <div class="drink-person-count-label">饮酒次数</div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+            const filterId = `${contentId}-filter`;
+            const detailId = `${contentId}-detail`;
+            const initialUserId = activePersons[0]?.user.id || null;
+
+            drinkStatsState[contentId] = {
+                sortBy: 'count',
+                selectedUserId: initialUserId,
+                filterId,
+                detailId
             };
-            
+
+            title = `🍺 ${curYear}年${curMonth + 1}月 酒类统计`;
+
             content = `
                 <div class="stats-detail-section">
                     <h4>📊 酒类概览</h4>
@@ -4203,7 +4467,7 @@
                 <div class="stats-detail-section">
                     <h4>👥 人员酒类详情</h4>
                     <div class="drink-stats-filter">
-                        <select class="drink-filter-select" id="drinkPersonFilter" onchange="updateDrinkPersonStats('${contentId}')">
+                        <select class="drink-filter-select" id="${filterId}" onchange="updateDrinkPersonStats('${contentId}')">
                             <option value="all">全部人员</option>
                             ${activePersons.map(p => `<option value="${p.user.id}">${p.user.name}</option>`).join('')}
                         </select>
@@ -4214,7 +4478,18 @@
                         </div>
                     </div>
                     <div class="drink-person-list" id="${contentId}">
-                        ${generatePersonStatsHTML(activePersons, 'count', 'all')}
+                        ${renderDrinkPersonStatsHTML(contentId, activePersons, initialUserId, 'count', 'all')}
+                    </div>
+                    <div class="drink-person-panel" id="${detailId}">
+                        ${initialUserId ? `
+                            <div class="drink-person-panel-head">
+                                <div>
+                                    <div class="drink-person-panel-title">${personStats[initialUserId].user.name} 的本月明细</div>
+                                    <div class="drink-person-panel-subtitle">点击成员可查看具体日期与酒类</div>
+                                </div>
+                            </div>
+                            ${renderDrinkPersonDetailHTML(personStats[initialUserId])}
+                        ` : '<div class="drink-person-detail-empty">本月暂无酒类记录</div>'}
                     </div>
                 </div>
                 ` : '<p style="text-align:center;color:#999;padding:20px;">本月暂无酒类记录</p>'}
@@ -4222,7 +4497,7 @@
         } else if (type === 'week') {
             title = `📅 本周统计详情`;
             const totalRecords = userStats.reduce((sum, u) => sum + u.total, 0);
-            
+
             content = `
                 <div class="stats-detail-section">
                     <h4>📈 本周统计</h4>
@@ -4255,7 +4530,7 @@
             title = `✨ 今日记录详情`;
             const totalRecords = userStats.reduce((sum, u) => sum + u.total, 0);
             const completed = totalRecords > 0;
-            
+
             content = `
                 <div class="stats-detail-section">
                     <h4>📝 今日状态</h4>
@@ -4286,7 +4561,7 @@
             title = `🔥 活跃度详情`;
             const totalRecords = userStats.reduce((sum, u) => sum + u.total, 0);
             const activeUsers = userStats.filter(u => u.total > 0).length;
-            
+
             content = `
                 <div class="stats-detail-section">
                     <h4>📊 活跃度统计</h4>
@@ -4304,7 +4579,7 @@
                             <div class="stats-detail-label">人均次数</div>
                         </div>
                         <div class="stats-detail-item">
-                            <div class="stats-detail-num">${Math.round(activeUsers / USERS.length * 100)}%</div>
+                            <div class="stats-detail-num">${USERS.length > 0 ? Math.round(activeUsers / USERS.length * 100) : 0}%</div>
                             <div class="stats-detail-label">活跃率</div>
                         </div>
                     </div>
@@ -4322,13 +4597,13 @@
                 </div>
             `;
         }
-        
+
         titleEl.innerText = title;
         bodyEl.innerHTML = content;
         popup.classList.add('show');
         hapticFeedback('light');
     };
-    
+
     window.closeStatsDetail = function() {
         const popup = document.getElementById('statsDetailPopup');
         if (popup) {
@@ -4336,136 +4611,75 @@
             hapticFeedback('light');
         }
     };
-    
-    // 酒类统计人员筛选和排序功能
+
     window.drinkStatsState = {};
-    
+
     window.setDrinkSort = function(contentId, sortBy) {
-        // 更新按钮状态
         const container = document.getElementById(contentId);
         if (!container) return;
-        
+
         const popup = container.closest('.stats-detail-content');
         if (popup) {
             popup.querySelectorAll('.drink-sort-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.sort === sortBy);
             });
         }
-        
-        // 保存当前排序状态
+
         drinkStatsState[contentId] = drinkStatsState[contentId] || {};
         drinkStatsState[contentId].sortBy = sortBy;
-        
-        // 更新显示
         updateDrinkPersonStats(contentId);
         hapticFeedback('light');
     };
-    
+
     window.updateDrinkPersonStats = function(contentId) {
         const container = document.getElementById(contentId);
         if (!container) return;
-        
-        // 获取当前筛选和排序状态
-        const filterSelect = document.getElementById('drinkPersonFilter');
-        const filterBy = filterSelect ? filterSelect.value : 'all';
-        
+
         const state = drinkStatsState[contentId] || {};
+        const filterSelect = document.getElementById(state.filterId);
+        const filterBy = filterSelect ? filterSelect.value : 'all';
         const sortBy = state.sortBy || 'count';
-        
-        // 重新获取数据
-        const { personStats } = getMonthDrinkStatsForUpdate();
+
+        const { personStats } = getMonthDrinkStatsSummary();
         const activePersons = Object.values(personStats).filter(p => p.totalCount > 0);
-        
-        // 筛选
-        let filteredPersons = [...activePersons];
-        if (filterBy !== 'all') {
-            filteredPersons = filteredPersons.filter(p => p.user.id === filterBy);
+
+        let selectedUserId = state.selectedUserId;
+        if (!selectedUserId || !activePersons.some(p => p.user.id === selectedUserId)) {
+            selectedUserId = activePersons[0]?.user.id || null;
         }
-        
-        // 排序
-        filteredPersons.sort((a, b) => {
-            if (sortBy === 'count') return b.totalCount - a.totalCount;
-            if (sortBy === 'amount') return b.totalAmount - a.totalAmount;
-            if (sortBy === 'name') return a.user.name.localeCompare(b.user.name, 'zh-CN');
-            return 0;
-        });
-        
-        // 生成HTML
-        if (filteredPersons.length === 0) {
-            container.innerHTML = '<div class="drink-person-empty">暂无匹配的人员数据</div>';
-            return;
+        if (filterBy !== 'all' && selectedUserId !== filterBy) {
+            selectedUserId = filterBy;
         }
-        
-        container.innerHTML = filteredPersons.map(p => {
-            const drinkTags = Object.entries(p.byType)
-                .filter(([_, s]) => s.count > 0)
-                .sort((a, b) => b[1].count - a[1].count)
-                .slice(0, 3)
-                .map(([type, s]) => {
-                    const info = DRINK_TYPES[type] || DRINK_TYPES['其他'];
-                    return `<span class="drink-person-tag"><span class="icon">${info.icon}</span>${type} ${s.count}次${s.amount}${info.unit}</span>`;
-                }).join('');
-            
-            return `
-                <div class="drink-person-row">
-                    <div class="drink-person-avatar" style="background:${p.user.color};">${p.user.name[0]}</div>
-                    <div class="drink-person-info">
-                        <div class="drink-person-name">${p.user.name}</div>
-                        <div class="drink-person-details">
-                            ${drinkTags}
-                        </div>
-                    </div>
-                    <div class="drink-person-total">
-                        <div class="drink-person-count">${p.totalCount}</div>
-                        <div class="drink-person-count-label">饮酒次数</div>
+        if (filterBy !== 'all' && !activePersons.some(p => p.user.id === selectedUserId)) {
+            selectedUserId = activePersons[0]?.user.id || null;
+        }
+
+        state.selectedUserId = selectedUserId;
+        drinkStatsState[contentId] = state;
+
+        container.innerHTML = renderDrinkPersonStatsHTML(contentId, activePersons, selectedUserId, sortBy, filterBy);
+
+        const detailEl = document.getElementById(state.detailId);
+        if (detailEl) {
+            const person = selectedUserId ? personStats[selectedUserId] : null;
+            detailEl.innerHTML = person ? `
+                <div class="drink-person-panel-head">
+                    <div>
+                        <div class="drink-person-panel-title">${person.user.name} 的本月明细</div>
+                        <div class="drink-person-panel-subtitle">共 ${person.totalCount} 次记录，累计 ${person.totalAmount}</div>
                     </div>
                 </div>
-            `;
-        }).join('');
-    };
-    
-    // 辅助函数：获取本月酒类统计（供更新使用）
-    window.getMonthDrinkStatsForUpdate = function() {
-        const drinkStats = {};
-        DRINK_TYPE_NAMES.forEach(t => drinkStats[t] = { count: 0, amount: 0 });
-        
-        const personStats = {};
-        USERS.forEach(u => {
-            personStats[u.id] = {
-                user: u,
-                totalCount: 0,
-                totalAmount: 0,
-                byType: {}
-            };
-            DRINK_TYPE_NAMES.forEach(t => personStats[u.id].byType[t] = { count: 0, amount: 0 });
-        });
-        
-        const tDays = new Date(curYear, curMonth + 1, 0).getDate();
-        for (let d = 1; d <= tDays; d++) {
-            const dayData = appData?.[curMonth]?.[d];
-            if (!dayData?.drinks) continue;
-            
-            Object.entries(dayData.drinks).forEach(([userId, drinks]) => {
-                if (Array.isArray(drinks)) {
-                    drinks.forEach(drink => {
-                        if (drink.type && drink.amount && drinkStats[drink.type]) {
-                            drinkStats[drink.type].count++;
-                            drinkStats[drink.type].amount += drink.amount;
-                            
-                            if (personStats[userId]) {
-                                personStats[userId].totalCount++;
-                                personStats[userId].totalAmount += drink.amount;
-                                if (personStats[userId].byType[drink.type]) {
-                                    personStats[userId].byType[drink.type].count++;
-                                    personStats[userId].byType[drink.type].amount += drink.amount;
-                                }
-                            }
-                        }
-                    });
-                }
-            });
+                ${renderDrinkPersonDetailHTML(person)}
+            ` : '<div class="drink-person-detail-empty">暂无可展示的成员明细</div>';
         }
-        return { drinkStats, personStats };
+    };
+
+    window.selectDrinkPersonDetail = function(contentId, userId) {
+        const state = drinkStatsState[contentId] || {};
+        state.selectedUserId = userId;
+        drinkStatsState[contentId] = state;
+        updateDrinkPersonStats(contentId);
+        hapticFeedback('light');
     };
     
     // 渲染统计概览
@@ -4503,62 +4717,90 @@
         const denom = USERS.length;
         const todayText = denom ? `${todayCount}/${denom}` : '—';
         const avgDays = denom ? Math.round(monthTotal / denom) : 0;
-
-        // 计算本月酒类统计
-        let drinkStats = {};
-        DRINK_TYPE_NAMES.forEach(t => drinkStats[t] = 0);
-        let totalDrinkCount = 0;
-        for (let d = 1; d <= tDays; d++) {
-            const dayData = appData?.[curMonth]?.[d];
-            if (!dayData?.drinks) continue;
-            Object.values(dayData.drinks).forEach(drinks => {
-                if (Array.isArray(drinks)) {
-                    drinks.forEach(drink => {
-                        if (drink.type && drink.amount && drinkStats[drink.type] !== undefined) {
-                            drinkStats[drink.type] += drink.amount;
-                            totalDrinkCount++;
-                        }
-                    });
-                }
-            });
-        }
-        // 获取最常喝的酒类
-        const topDrink = Object.entries(drinkStats).sort((a, b) => b[1] - a[1])[0];
-        const topDrinkName = topDrink && topDrink[1] > 0 ? topDrink[0] : '';
+        const { drinkStats, personStats } = getMonthDrinkStatsSummary();
+        const totalDrinkCount = Object.values(drinkStats).reduce((sum, d) => sum + d.count, 0);
+        const totalDrinkAmount = Object.values(drinkStats).reduce((sum, d) => sum + d.amount, 0);
+        const topDrink = Object.entries(drinkStats).sort((a, b) => b[1].amount - a[1].amount)[0];
+        const topDrinkName = topDrink && topDrink[1].amount > 0 ? topDrink[0] : '';
         const topDrinkInfo = DRINK_TYPES[topDrinkName] || {};
-        const drinkText = topDrinkName ? `${topDrinkInfo.icon}${topDrinkName}` : '暂无';
+        const drinkText = topDrinkName ? `${topDrinkInfo.icon} ${topDrinkName}` : '暂无明细';
+        const hottestPerson = Object.values(personStats)
+            .filter(p => p.totalCount > 0)
+            .sort((a, b) => b.totalCount - a.totalCount)[0];
+        const activeRate = denom ? Math.round(activeUsers / denom * 100) : 0;
+        const weekHint = isCurrentMonth ? `${weekTotal} 次周内记录` : '切换到当月可看周节奏';
+        const heroValue = `${monthTotal}`;
 
         const overview = document.getElementById('statsOverview');
         overview.innerHTML = `
-            <div class="stats-overview-item" onclick="showStatsDetail('month')">
-                <div class="stats-overview-label">📊 本月总计</div>
-                <div class="stats-overview-value">${monthTotal}</div>
-                <div class="stats-overview-detail">
-                    <span>${activeUsers}人活跃</span>
+            <div class="stats-overview-item stats-overview-hero" onclick="showStatsDetail('month')">
+                <div class="stats-overview-kicker">Monthly Pulse</div>
+                <div class="stats-overview-head">
+                    <div class="stats-overview-meta">
+                        <div class="stats-overview-label">${curYear}年${curMonth + 1}月态势</div>
+                        <div class="stats-overview-caption">${weekHint}</div>
+                    </div>
+                    <div class="stats-overview-icon">📊</div>
+                </div>
+                <div class="stats-overview-main">
+                    <div class="stats-overview-value">${heroValue}</div>
+                    <div class="stats-overview-subvalue">${activeRate}% 活跃率</div>
+                </div>
+                <div class="stats-overview-footer">
+                    <span class="stats-overview-chip">👥 ${activeUsers}/${denom || 0} 人活跃</span>
+                    <span class="stats-overview-chip">🍺 ${totalDrinkCount} 次酒类记录</span>
+                    <span class="stats-overview-chip">🏆 ${hottestPerson ? hottestPerson.user.name : '暂无'} 领先</span>
                 </div>
                 <div class="stats-overview-arrow">›</div>
             </div>
-            <div class="stats-overview-item" onclick="showStatsDetail('drinks')">
-                <div class="stats-overview-label">🍺 酒类统计</div>
-                <div class="stats-overview-value">${drinkText}</div>
-                <div class="stats-overview-detail">
-                    <span>${totalDrinkCount}次饮酒</span>
+            <div class="stats-overview-item" data-tone="amber" onclick="showStatsDetail('drinks')">
+                <div class="stats-overview-head">
+                    <div class="stats-overview-meta">
+                        <div class="stats-overview-label">酒类统计</div>
+                        <div class="stats-overview-caption">${drinkText}</div>
+                    </div>
+                    <div class="stats-overview-icon">🍶</div>
+                </div>
+                <div class="stats-overview-main">
+                    <div class="stats-overview-value">${totalDrinkCount}</div>
+                    <div class="stats-overview-subvalue">${totalDrinkAmount} 总量</div>
+                </div>
+                <div class="stats-overview-footer">
+                    <span class="stats-overview-chip">${topDrinkName ? `偏爱 ${topDrinkName}` : '等待记录'}</span>
                 </div>
                 <div class="stats-overview-arrow">›</div>
             </div>
-            <div class="stats-overview-item" onclick="showStatsDetail('today')">
-                <div class="stats-overview-label">✨ 今日记录</div>
-                <div class="stats-overview-value">${isCurrentMonth ? todayText : '—'}</div>
-                <div class="stats-overview-detail">
-                    <span>${isCurrentMonth ? (denom && todayCount === denom ? '已全员!' : '待记录') : '非本月'}</span>
+            <div class="stats-overview-item" data-tone="green" onclick="showStatsDetail('today')">
+                <div class="stats-overview-head">
+                    <div class="stats-overview-meta">
+                        <div class="stats-overview-label">今日记录</div>
+                        <div class="stats-overview-caption">${isCurrentMonth ? '查看当天谁已记录' : '当前月份不是今天所在月'}</div>
+                    </div>
+                    <div class="stats-overview-icon">✨</div>
+                </div>
+                <div class="stats-overview-main">
+                    <div class="stats-overview-value">${isCurrentMonth ? todayText : '—'}</div>
+                    <div class="stats-overview-subvalue">${isCurrentMonth && denom && todayCount === denom ? '全员完成' : '继续补充'}</div>
+                </div>
+                <div class="stats-overview-footer">
+                    <span class="stats-overview-chip">${isCurrentMonth ? `${todayCount} 人已填` : '切回当月查看'}</span>
                 </div>
                 <div class="stats-overview-arrow">›</div>
             </div>
-            <div class="stats-overview-item" onclick="showStatsDetail('active')">
-                <div class="stats-overview-label">🔥 活跃度</div>
-                <div class="stats-overview-value">${avgDays}天</div>
-                <div class="stats-overview-detail">
-                    <span>平均每人</span>
+            <div class="stats-overview-item" data-tone="rose" onclick="showStatsDetail('active')">
+                <div class="stats-overview-head">
+                    <div class="stats-overview-meta">
+                        <div class="stats-overview-label">活跃度</div>
+                        <div class="stats-overview-caption">${hottestPerson ? `${hottestPerson.user.name} 最活跃` : '本月暂无活跃成员'}</div>
+                    </div>
+                    <div class="stats-overview-icon">🔥</div>
+                </div>
+                <div class="stats-overview-main">
+                    <div class="stats-overview-value">${avgDays}</div>
+                    <div class="stats-overview-subvalue">平均每人</div>
+                </div>
+                <div class="stats-overview-footer">
+                    <span class="stats-overview-chip">${activeUsers} 人有记录</span>
                 </div>
                 <div class="stats-overview-arrow">›</div>
             </div>
