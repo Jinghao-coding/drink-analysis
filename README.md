@@ -30,7 +30,7 @@
 - **纯前端** — HTML5 / CSS3 / JavaScript (ES6+)
 - **存储方案** — JSONBin.io REST API（数据持久化） + LocalStorage（本地用户配置）
 - **国际化** — Intl.DateTimeFormat 农历支持（含备查表）
-- **构建** — 零依赖，单文件即开即用
+- **构建** — 零依赖，静态资源即开即用（`index.html` + `assets/*`）
 
 ---
 
@@ -53,7 +53,7 @@ npx http-server .
 
 1. 注册 JSONBin.io，创建一个私有 Bin。
 2. 获取你的 `BIN_ID`（URL 中的 ID）和 `API_KEY`（X-Master-Key）。
-3. 在 `index.html` 中找到以下两行并替换：
+3. 在 `assets/app.js` 中找到以下两行并替换：
 
 ```javascript
 const BIN_ID = "你的BIN_ID";
