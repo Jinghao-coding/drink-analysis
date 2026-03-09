@@ -2369,10 +2369,37 @@
         }
         @media (max-width: 640px) {
             .main-tabs {
-                grid-template-columns: 1fr;
+                display: flex;
+                gap: 8px;
+                margin: 0 12px;
+                padding: 8px;
+                border-radius: 16px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scroll-snap-type: x proximity;
+                -webkit-overflow-scrolling: touch;
+            }
+            .main-tabs::-webkit-scrollbar {
+                display: none;
             }
             .main-tab {
-                padding: 12px 14px;
+                flex: 0 0 auto;
+                min-width: 98px;
+                padding: 8px 10px;
+                border-radius: 12px;
+                gap: 8px;
+                scroll-snap-align: start;
+            }
+            .main-tab-index {
+                width: 22px;
+                height: 22px;
+                font-size: 10px;
+            }
+            .main-tab-title {
+                font-size: 13px;
+            }
+            .main-tab-subtitle {
+                display: none;
             }
         }
 
