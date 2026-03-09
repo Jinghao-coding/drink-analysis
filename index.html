@@ -4861,11 +4861,18 @@
         }).join('');
     }
 
+    function renderDrinksForUser(userId) {
+        const container = document.getElementById(`drinks-${userId}`);
+        if (container) {
+            container.innerHTML = generateDrinksHTML(userId, tempDrinks[userId] || []);
+        }
+    }
+
     // 添加酒类
     window.addDrinkForUser = function(userId) {
         if (!tempDrinks[userId]) tempDrinks[userId] = [];
         tempDrinks[userId].push({ type: '啤酒', amount: 1 });
-        document.getElementById(`drinks-${userId}`).innerHTML = generateDrinksHTML(userId, tempDrinks[userId]);
+        renderDrinksForUser(userId);
         hapticFeedback('light');
     };
 
@@ -4874,7 +4881,7 @@
         if (tempDrinks[userId] && tempDrinks[userId][index]) {
             tempDrinks[userId][index].type = type;
             // 更新单位显示
-            document.getElementById(`drinks-${userId}`).innerHTML = generateDrinksHTML(userId, tempDrinks[userId]);
+            renderDrinksForUser(userId);
         }
     };
 
@@ -4889,7 +4896,7 @@
     window.removeDrink = function(userId, index) {
         if (tempDrinks[userId]) {
             tempDrinks[userId].splice(index, 1);
-            document.getElementById(`drinks-${userId}`).innerHTML = generateDrinksHTML(userId, tempDrinks[userId]);
+            renderDrinksForUser(userId);
             hapticFeedback('light');
         }
     };
@@ -4975,8 +4982,18 @@
 
     window.setOpt = function(userId, v) {
         if (!userId) return;
-        if (!v) delete tempEdit[userId];
-        else tempEdit[userId] = v;
+        const hadStatus = Boolean(tempEdit[userId]);
+        const hadDrinks = Array.isArray(tempDrinks[userId]) && tempDrinks[userId].length > 0;
+        if (!v) {
+            delete tempEdit[userId];
+            if (hadStatus && hadDrinks) {
+                tempDrinks[userId] = [];
+                renderDrinksForUser(userId);
+                showToast('已清空该成员的酒类记录');
+            }
+        } else {
+            tempEdit[userId] = v;
+        }
 
         // 触觉反馈
         hapticFeedback('light');
@@ -5024,7 +5041,12 @@
 
             // 保存酒类记录
             if (tempDrinks[u.id] && tempDrinks[u.id].length > 0) {
-                const validDrinks = tempDrinks[u.id].filter(d => d.amount > 0);
+                const validDrinks = tempDrinks[u.id]
+                    .filter(d => d && typeof d.type === 'string' && d.type && Number(d.amount) > 0)
+                    .map(d => ({
+                        type: d.type,
+                        amount: Number(d.amount)
+                    }));
                 if (validDrinks.length > 0) {
                     drinksData[u.id] = validDrinks;
                 }
@@ -5038,12 +5060,56 @@
             day.drinks = drinksData;
         }
 
-        appData[curMonth][editDay] = day;
+        const normalizedDay = normalizeDayData(day);
+        const hasDrinks = normalizedDay.drinks && Object.keys(normalizedDay.drinks).length > 0;
+        const hasExtra = normalizedDay.extra && Object.keys(normalizedDay.extra).length > 0;
+        const hasNote = typeof normalizedDay.note === 'string' && normalizedDay.note.trim().length > 0;
+        const isEmpty = Object.keys(normalizedDay.u).length === 0 &&
+            (!normalizedDay.photos || normalizedDay.photos.length === 0) &&
+            !hasDrinks &&
+            !hasExtra &&
+            !hasNote;
+
+        if (isEmpty) {
+            delete appData[curMonth][editDay];
+        } else {
+            appData[curMonth][editDay] = normalizedDay;
+        }
         closeSheet();
         hapticFeedback('success');
         render();
         renderReport();
         push();
+    }
+
+    function prepareAppDataForSync() {
+        ensureAppMeta();
+        migrateAppDataToV2();
+
+        for (let m = 0; m < 12; m++) {
+            const monthData = appData?.[m];
+            if (!monthData || typeof monthData !== 'object') continue;
+
+            for (const [dayKey, rawDayData] of Object.entries(monthData)) {
+                if (!rawDayData || typeof rawDayData !== 'object') continue;
+
+                const normalizedDay = normalizeDayData(rawDayData);
+                const hasDrinks = normalizedDay.drinks && Object.keys(normalizedDay.drinks).length > 0;
+                const hasExtra = normalizedDay.extra && Object.keys(normalizedDay.extra).length > 0;
+                const hasNote = typeof normalizedDay.note === 'string' && normalizedDay.note.trim().length > 0;
+                const isEmpty = Object.keys(normalizedDay.u).length === 0 &&
+                    (!normalizedDay.photos || normalizedDay.photos.length === 0) &&
+                    !hasDrinks &&
+                    !hasExtra &&
+                    !hasNote;
+
+                if (isEmpty) {
+                    delete monthData[dayKey];
+                } else {
+                    monthData[dayKey] = normalizedDay;
+                }
+            }
+        }
     }
 
     async function pull() {
@@ -5104,7 +5170,7 @@
     async function push() {
         updSync('saving', '保存中');
         try {
-            ensureAppMeta();
+            prepareAppDataForSync();
             const ts = localUsersUpdatedAt && localUsersUpdatedAt > 0 ? localUsersUpdatedAt : Date.now();
             if (!localUsersUpdatedAt || localUsersUpdatedAt === 0) {
                 localUsersUpdatedAt = ts;
