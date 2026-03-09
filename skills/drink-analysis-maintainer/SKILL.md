@@ -1,6 +1,6 @@
 ---
 name: drink-analysis-maintainer
-description: Maintain and ship the single-file drink tracking app in this repository. Use when tasks involve understanding or editing index.html/README.md, validating behavior after changes, and publishing updates to GitHub Pages via git commit/push.
+description: Maintain and ship the drink tracking app in this repository. Use when tasks involve understanding or editing index.html/src/main.ts/src/styles.css/README.md, validating behavior after changes, and publishing updates to GitHub Pages via git commit/push.
 ---
 
 # Drink Analysis Maintainer
@@ -9,7 +9,7 @@ Follow this workflow whenever the user asks to modify the drink calendar project
 
 ## Workflow
 
-1. Read `index.html` and map impacted areas before editing.
+1. Read `index.html`, `src/main.ts`, and `src/styles.css` and map impacted areas before editing.
 2. Implement requested changes with minimal diff.
 3. Run local verification using `scripts/verify_project.sh`.
 4. Update `README.md` if behavior, UI, data format, deployment, or usage changed.
@@ -17,7 +17,7 @@ Follow this workflow whenever the user asks to modify the drink calendar project
 
 ## Code Understanding Checklist
 
-Read these sections in `index.html` before editing:
+Read these sections in `src/main.ts` before editing:
 
 - Config and schema constants: `BIN_ID`, `API_KEY`, `APP_SCHEMA_VERSION`, `POSITIONS`, `USERS_STORAGE_KEY`.
 - User model and reconciliation: `normalizeUsers`, `reconcileUsersFromAppData`, `mergeUsers`.
@@ -30,7 +30,7 @@ Load [references/code-map.md](references/code-map.md) when you need a deeper map
 
 ## Editing Rules
 
-- Keep `index.html` as the primary app entry unless the user asks for refactor.
+- Keep `index.html` as the HTML shell and `src/main.ts` as the primary logic entry unless the user asks for further refactor.
 - Preserve backward compatibility for day data (`u`, `photos`, `drinks`, `extra`, legacy slots).
 - Keep user identity stable via `user.id`; do not bind historical data to display name.
 - Avoid breaking JSONBin sync calls and status badges.
