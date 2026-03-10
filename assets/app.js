@@ -1510,9 +1510,6 @@
             }
         }
 
-        // 计算今日记录
-        const todayCount = isCurrentMonth ? StatsUtils.getDayRecordCount(curMonth, today) : 0;
-
         // 计算活跃用户数（本月至少记录过一次）
         let activeUsers = 0;
         USERS.forEach((u) => {
@@ -1521,7 +1518,6 @@
         });
 
         const denom = USERS.length;
-        const todayText = denom ? `${todayCount}/${denom}` : '—';
         const avgDays = denom ? Math.round(monthTotal / denom) : 0;
         const { drinkStats, personStats } = getMonthDrinkStatsSummary();
         const totalDrinkCount = Object.values(drinkStats).reduce((sum, d) => sum + d.count, 0);
@@ -1573,23 +1569,6 @@
                 </div>
                 <div class="stats-overview-footer">
                     <span class="stats-overview-chip">${topDrinkName ? `偏爱 ${topDrinkName}` : '等待记录'}</span>
-                </div>
-                <div class="stats-overview-arrow">›</div>
-            </div>
-            <div class="stats-overview-item" data-tone="green" onclick="showStatsDetail('today')">
-                <div class="stats-overview-head">
-                    <div class="stats-overview-meta">
-                        <div class="stats-overview-label">今日记录</div>
-                        <div class="stats-overview-caption">${isCurrentMonth ? '查看当天谁已记录' : '当前月份不是今天所在月'}</div>
-                    </div>
-                    <div class="stats-overview-icon">✨</div>
-                </div>
-                <div class="stats-overview-main">
-                    <div class="stats-overview-value">${isCurrentMonth ? todayText : '—'}</div>
-                    <div class="stats-overview-subvalue">${isCurrentMonth && denom && todayCount === denom ? '全员完成' : '继续补充'}</div>
-                </div>
-                <div class="stats-overview-footer">
-                    <span class="stats-overview-chip">${isCurrentMonth ? `${todayCount} 人已填` : '切回当月查看'}</span>
                 </div>
                 <div class="stats-overview-arrow">›</div>
             </div>
