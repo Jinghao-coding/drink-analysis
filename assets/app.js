@@ -2,7 +2,7 @@
     const BIN_ID = "697e0a63d0ea881f40962da0";
     const API_KEY = "$2a$10$rvgEXLG9D/lIo3jHDDhfFeiPY00PfhQo21ZWJzVbKlpahwi33MIzG";
 
-    const APP_SCHEMA_VERSION = 3;
+    const APP_SCHEMA_VERSION = 4;
     const USERS_STORAGE_KEY = 'drinkCalendarUsers';
     const THEME_STORAGE_KEY = 'drinkCalendarTheme';
 
@@ -400,11 +400,100 @@
     let appData = {};
     let hasPulled = false;
     let pendingUserPush = false;
+    const YEAR_KEY_PATTERN = /^\d{4}$/;
 
     function ensureAppMeta() {
         if (!appData || typeof appData !== 'object') appData = {};
         if (!appData._meta || typeof appData._meta !== 'object') appData._meta = {};
         if (appData._meta.schemaVersion !== APP_SCHEMA_VERSION) appData._meta.schemaVersion = APP_SCHEMA_VERSION;
+    }
+
+    function isYearKey(key) {
+        return YEAR_KEY_PATTERN.test(String(key));
+    }
+
+    function hasYearScopedData(data = appData) {
+        return Object.keys(data || {}).some(isYearKey);
+    }
+
+    function resolveYearKey(year) {
+        const numericYear = Number(year);
+        if (Number.isFinite(numericYear) && numericYear > 0) {
+            return String(Math.trunc(numericYear));
+        }
+        return String(new Date().getFullYear());
+    }
+
+    function extractFlatMonthData(source) {
+        const months = {};
+        for (let m = 0; m < 12; m++) {
+            const monthData = source?.[m];
+            if (monthData && typeof monthData === 'object' && !Array.isArray(monthData)) {
+                months[m] = monthData;
+            }
+        }
+        return months;
+    }
+
+    function ensureYearScopedData(targetYear) {
+        ensureAppMeta();
+        if (hasYearScopedData(appData)) return;
+
+        const yearKey = resolveYearKey(targetYear);
+        const meta = appData._meta;
+        const months = extractFlatMonthData(appData);
+        appData = { _meta: meta, [yearKey]: months };
+        ensureAppMeta();
+    }
+
+    function getAllYearEntries({ createCurrent = false } = {}) {
+        ensureYearScopedData(typeof curYear === 'number' ? curYear : new Date().getFullYear());
+        let yearKeys = Object.keys(appData).filter(isYearKey).sort();
+
+        if (yearKeys.length === 0 && createCurrent) {
+            const yearKey = resolveYearKey(typeof curYear === 'number' ? curYear : new Date().getFullYear());
+            appData[yearKey] = {};
+            yearKeys = [yearKey];
+        }
+
+        return yearKeys.map((yearKey) => [Number(yearKey), appData[yearKey]]);
+    }
+
+    function getYearData(year, create = false) {
+        ensureYearScopedData(year);
+        const yearKey = resolveYearKey(year);
+        const existing = appData[yearKey];
+
+        if ((!existing || typeof existing !== 'object' || Array.isArray(existing)) && create) {
+            appData[yearKey] = {};
+        }
+
+        const yearData = appData[yearKey];
+        if (!yearData || typeof yearData !== 'object' || Array.isArray(yearData)) {
+            return {};
+        }
+        return yearData;
+    }
+
+    function getMonthData(year, month, create = false) {
+        const yearData = getYearData(year, create);
+        const monthKey = Number(month);
+        const existing = yearData?.[monthKey];
+
+        if ((!existing || typeof existing !== 'object' || Array.isArray(existing)) && create) {
+            yearData[monthKey] = {};
+        }
+
+        const monthData = yearData?.[monthKey];
+        if (!monthData || typeof monthData !== 'object' || Array.isArray(monthData)) {
+            return {};
+        }
+        return monthData;
+    }
+
+    function getDayData(year, month, day) {
+        const monthData = getMonthData(year, month, false);
+        return monthData?.[day];
     }
 
     function syncUsersToAppMeta(updatedAt) {
@@ -464,40 +553,44 @@
     function migrateAppDataToV2() {
         let changed = false;
 
-        for (let m = 0; m < 12; m++) {
-            const monthData = appData?.[m];
-            if (!monthData || typeof monthData !== 'object') continue;
+        for (const [, yearData] of getAllYearEntries({ createCurrent: true })) {
+            if (!yearData || typeof yearData !== 'object') continue;
 
-            for (let d = 1; d <= 31; d++) {
-                const dayData = monthData?.[d];
-                if (!dayData || typeof dayData !== 'object') continue;
+            for (let m = 0; m < 12; m++) {
+                const monthData = yearData?.[m];
+                if (!monthData || typeof monthData !== 'object') continue;
 
-                const alreadyV2 = dayData.u && typeof dayData.u === 'object';
-                const normalized = normalizeDayData(dayData);
+                for (let d = 1; d <= 31; d++) {
+                    const dayData = monthData?.[d];
+                    if (!dayData || typeof dayData !== 'object') continue;
 
-                // 检查是否有任何数据（包括人员状态、照片、酒类记录、费用信息）
-                const hadSomething = alreadyV2 || 
-                    [0, 1, 2, 3].some(i => typeof dayData[i] === 'string') || 
-                    Array.isArray(dayData.photos) ||
-                    (dayData.drinks && typeof dayData.drinks === 'object' && Object.keys(dayData.drinks).length > 0) ||
-                    (dayData.extra && typeof dayData.extra === 'object' && Object.keys(dayData.extra).length > 0) ||
-                    (typeof dayData.note === 'string' && dayData.note.trim().length > 0);
-                
-                // 判断是否为空：检查人员状态、照片、酒类记录、费用信息
-                const hasDrinks = normalized.drinks && Object.keys(normalized.drinks).length > 0;
-                const hasExtra = normalized.extra && Object.keys(normalized.extra).length > 0;
-                const hasNote = typeof normalized.note === 'string' && normalized.note.trim().length > 0;
-                const isEmpty = Object.keys(normalized.u).length === 0 && 
-                               (!normalized.photos || normalized.photos.length === 0) &&
-                               !hasDrinks && !hasExtra && !hasNote;
-                
-                if (hadSomething) {
-                    if (isEmpty) {
-                        delete monthData[d];
-                        changed = true;
-                    } else if (!alreadyV2 || JSON.stringify(dayData) !== JSON.stringify(normalized)) {
-                        monthData[d] = normalized;
-                        changed = true;
+                    const alreadyV2 = dayData.u && typeof dayData.u === 'object';
+                    const normalized = normalizeDayData(dayData);
+
+                    // 检查是否有任何数据（包括人员状态、照片、酒类记录、费用信息）
+                    const hadSomething = alreadyV2 || 
+                        [0, 1, 2, 3].some(i => typeof dayData[i] === 'string') || 
+                        Array.isArray(dayData.photos) ||
+                        (dayData.drinks && typeof dayData.drinks === 'object' && Object.keys(dayData.drinks).length > 0) ||
+                        (dayData.extra && typeof dayData.extra === 'object' && Object.keys(dayData.extra).length > 0) ||
+                        (typeof dayData.note === 'string' && dayData.note.trim().length > 0);
+
+                    // 判断是否为空：检查人员状态、照片、酒类记录、费用信息
+                    const hasDrinks = normalized.drinks && Object.keys(normalized.drinks).length > 0;
+                    const hasExtra = normalized.extra && Object.keys(normalized.extra).length > 0;
+                    const hasNote = typeof normalized.note === 'string' && normalized.note.trim().length > 0;
+                    const isEmpty = Object.keys(normalized.u).length === 0 && 
+                                   (!normalized.photos || normalized.photos.length === 0) &&
+                                   !hasDrinks && !hasExtra && !hasNote;
+
+                    if (hadSomething) {
+                        if (isEmpty) {
+                            delete monthData[d];
+                            changed = true;
+                        } else if (!alreadyV2 || JSON.stringify(dayData) !== JSON.stringify(normalized)) {
+                            monthData[d] = normalized;
+                            changed = true;
+                        }
                     }
                 }
             }
@@ -900,8 +993,8 @@
     });
 
     const StatsUtils = {
-        getDayRecordCount(month, day) {
-            const dayData = appData?.[month]?.[day];
+        getDayRecordCount(year, month, day) {
+            const dayData = getDayData(year, month, day);
             if (!dayData || typeof dayData !== 'object') return 0;
             const u = dayData.u && typeof dayData.u === 'object' ? dayData.u : {};
             const activeIds = USERS.map(x => x.id);
@@ -922,9 +1015,10 @@
             end.setHours(0, 0, 0, 0);
 
             while (cur <= end) {
+                const y = cur.getFullYear();
                 const m = cur.getMonth();
                 const d = cur.getDate();
-                const status = appData?.[m]?.[d]?.u?.[userId];
+                const status = getDayData(y, m, d)?.u?.[userId];
                 if (status) {
                     count++;
                     if (details[status] !== undefined) details[status]++;
@@ -951,9 +1045,10 @@
             const cur = new Date(year, month, day);
             cur.setHours(0, 0, 0, 0);
             while (consecutive < 370) {
+                const y = cur.getFullYear();
                 const m = cur.getMonth();
                 const d = cur.getDate();
-                const status = appData?.[m]?.[d]?.u?.[userId];
+                const status = getDayData(y, m, d)?.u?.[userId];
                 if (!status) break;
                 consecutive++;
                 cur.setDate(cur.getDate() - 1);
@@ -980,7 +1075,7 @@
 
         const tDays = new Date(curYear, curMonth + 1, 0).getDate();
         for (let d = 1; d <= tDays; d++) {
-            const dayData = normalizeDayData(appData?.[curMonth]?.[d]);
+            const dayData = normalizeDayData(getDayData(curYear, curMonth, d));
             if (!dayData?.drinks) continue;
 
             Object.entries(dayData.drinks).forEach(([userId, drinks]) => {
@@ -1123,7 +1218,7 @@
                 stats = StatsUtils.getWeekStats(curYear, curMonth, today, u.id);
             } else if (type === 'today') {
                 const today = realNow.getDate();
-                const dayData = appData?.[curMonth]?.[today];
+                const dayData = getDayData(curYear, curMonth, today);
                 const status = dayData?.u?.[u.id];
                 stats = { total: status ? 1 : 0, details: { '微醺': 0, '刚刚好': 0, '醉了': 0 } };
                 if (status) stats.details[status] = 1;
@@ -1497,7 +1592,7 @@
         // 计算本月总计
         let monthTotal = 0;
         const tDays = new Date(curYear, curMonth + 1, 0).getDate();
-        for (let d = 1; d <= tDays; d++) monthTotal += StatsUtils.getDayRecordCount(curMonth, d);
+        for (let d = 1; d <= tDays; d++) monthTotal += StatsUtils.getDayRecordCount(curYear, curMonth, d);
 
         // 计算本周总计（基于当前日期）
         let weekTotal = 0;
@@ -1505,7 +1600,7 @@
             const range = DateUtils.getWeekRange(curYear, curMonth, today);
             const cur = new Date(range.startDate);
             while (cur <= range.endDate) {
-                weekTotal += StatsUtils.getDayRecordCount(cur.getMonth(), cur.getDate());
+                weekTotal += StatsUtils.getDayRecordCount(cur.getFullYear(), cur.getMonth(), cur.getDate());
                 cur.setDate(cur.getDate() + 1);
             }
         }
@@ -1658,7 +1753,7 @@
 
             // 动态网格生成
             let dotsHTML = '';
-            const dayData = appData?.[curMonth]?.[d];
+            const dayData = getDayData(curYear, curMonth, d);
             const uMap = dayData?.u && typeof dayData.u === 'object' ? dayData.u : {};
 
             usersList.forEach((u) => {
@@ -1684,7 +1779,7 @@
             let t = 0;
             let d = { '微醺':0, '刚刚好':0, '醉了':0 };
             for(let day=1; day<=tDays; day++) {
-                const s = appData?.[curMonth]?.[day]?.u?.[u.id];
+                const s = getDayData(curYear, curMonth, day)?.u?.[u.id];
                 if(s) { t++; if(d[s]!==undefined) d[s]++; }
             }
             return { ...u, total:t, details:d };
@@ -1808,7 +1903,7 @@
         holidayEl.innerHTML = badges.length ? `<div class="sheet-holiday-wrap">${badges.join('')}</div>` : '';
 
         // 快速统计
-        const recordCount = StatsUtils.getDayRecordCount(curMonth, d);
+        const recordCount = StatsUtils.getDayRecordCount(curYear, curMonth, d);
         const denom = USERS.length;
         const recordText = denom ? `${recordCount}/${denom}` : '—';
         const statsHTML = `
@@ -1828,7 +1923,7 @@
         document.getElementById('sheetStats').innerHTML = statsHTML;
 
         // 原有的记录选项
-        const dayData = normalizeDayData(appData?.[curMonth]?.[d]);
+        const dayData = normalizeDayData(getDayData(curYear, curMonth, d));
         tempEdit = { ...(dayData.u || {}) };
         tempPhotos = Array.isArray(dayData.photos) ? [...dayData.photos] : [];
         tempExtra = {}; // 每个人的额外信息
@@ -2089,7 +2184,7 @@
 
     function save() {
         ensureAppMeta();
-        if(!appData[curMonth]) appData[curMonth]={};
+        const monthData = getMonthData(curYear, curMonth, true);
         const cleaned = {};
         for (const [k, v] of Object.entries(tempEdit || {})) {
             if (typeof v === 'string' && v) cleaned[k] = v;
@@ -2145,9 +2240,9 @@
             !hasNote;
 
         if (isEmpty) {
-            delete appData[curMonth][editDay];
+            delete monthData[editDay];
         } else {
-            appData[curMonth][editDay] = normalizedDay;
+            monthData[editDay] = normalizedDay;
         }
         closeSheet();
         hapticFeedback('success');
@@ -2158,29 +2253,34 @@
 
     function prepareAppDataForSync() {
         ensureAppMeta();
+        ensureYearScopedData(curYear);
         migrateAppDataToV2();
 
-        for (let m = 0; m < 12; m++) {
-            const monthData = appData?.[m];
-            if (!monthData || typeof monthData !== 'object') continue;
+        for (const [, yearData] of getAllYearEntries({ createCurrent: true })) {
+            if (!yearData || typeof yearData !== 'object') continue;
 
-            for (const [dayKey, rawDayData] of Object.entries(monthData)) {
-                if (!rawDayData || typeof rawDayData !== 'object') continue;
+            for (let m = 0; m < 12; m++) {
+                const monthData = yearData?.[m];
+                if (!monthData || typeof monthData !== 'object') continue;
 
-                const normalizedDay = normalizeDayData(rawDayData);
-                const hasDrinks = normalizedDay.drinks && Object.keys(normalizedDay.drinks).length > 0;
-                const hasExtra = normalizedDay.extra && Object.keys(normalizedDay.extra).length > 0;
-                const hasNote = typeof normalizedDay.note === 'string' && normalizedDay.note.trim().length > 0;
-                const isEmpty = Object.keys(normalizedDay.u).length === 0 &&
-                    (!normalizedDay.photos || normalizedDay.photos.length === 0) &&
-                    !hasDrinks &&
-                    !hasExtra &&
-                    !hasNote;
+                for (const [dayKey, rawDayData] of Object.entries(monthData)) {
+                    if (!rawDayData || typeof rawDayData !== 'object') continue;
 
-                if (isEmpty) {
-                    delete monthData[dayKey];
-                } else {
-                    monthData[dayKey] = normalizedDay;
+                    const normalizedDay = normalizeDayData(rawDayData);
+                    const hasDrinks = normalizedDay.drinks && Object.keys(normalizedDay.drinks).length > 0;
+                    const hasExtra = normalizedDay.extra && Object.keys(normalizedDay.extra).length > 0;
+                    const hasNote = typeof normalizedDay.note === 'string' && normalizedDay.note.trim().length > 0;
+                    const isEmpty = Object.keys(normalizedDay.u).length === 0 &&
+                        (!normalizedDay.photos || normalizedDay.photos.length === 0) &&
+                        !hasDrinks &&
+                        !hasExtra &&
+                        !hasNote;
+
+                    if (isEmpty) {
+                        delete monthData[dayKey];
+                    } else {
+                        monthData[dayKey] = normalizedDay;
+                    }
                 }
             }
         }
@@ -2216,6 +2316,8 @@
             if (appData.status === 'start') {
                 appData = {};
             }
+
+            ensureYearScopedData(curYear);
             
             hasPulled = true;
 
@@ -2314,6 +2416,7 @@
                 // 简单验证数据格式
                 if (typeof imported === 'object') {
                     appData = imported;
+                    ensureYearScopedData(curYear);
                     hasPulled = true;
                     reconcileUsersFromAppData({ preferCloud: true });
                     migrateAppDataToV2();
@@ -2384,9 +2487,10 @@
         });
 
         for(let m = 0; m < 12; m++) {
-            if(!appData[m]) continue;
+            const monthData = getMonthData(curYear, m, false);
+            if (!monthData || Object.keys(monthData).length === 0) continue;
             for(let d = 1; d <= 31; d++) {
-                const dayData = appData[m][d];
+                const dayData = monthData[d];
                 if(!dayData) continue;
 
                 const status = dayData?.u?.[user.id];
@@ -2673,4 +2777,3 @@
             yearPopup.classList.remove('show');
         }
     });
-
